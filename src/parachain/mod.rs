@@ -1,5 +1,6 @@
 //! Parachain runtime mock.
 
+mod mock_msg_queue;
 mod xcm_config;
 pub use xcm_config::*;
 
@@ -138,8 +139,6 @@ parameter_types! {
     pub const ReservedXcmpWeight: Weight = Weight::from_parts(WEIGHT_REF_TIME_PER_SECOND.saturating_div(4), 0);
     pub const ReservedDmpWeight: Weight = Weight::from_parts(WEIGHT_REF_TIME_PER_SECOND.saturating_div(4), 0);
 }
-
-mod mock_msg_queue;
 
 impl mock_msg_queue::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
