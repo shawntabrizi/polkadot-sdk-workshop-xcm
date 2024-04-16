@@ -1,0 +1,145 @@
+   Compiling proc-macro2 v1.0.80
+   Compiling unicode-ident v1.0.12
+   Compiling serde v1.0.197
+   Compiling generic-array v0.14.7
+   Compiling subtle v2.5.0
+   Compiling memchr v2.7.2
+   Compiling crunchy v0.2.2
+   Compiling tracing-core v0.1.32
+   Compiling serde_json v1.0.115
+   Compiling arrayvec v0.7.4
+   Compiling rand v0.8.5
+   Compiling byteorder v1.5.0
+   Compiling smallvec v1.13.2
+   Compiling blake2b_simd v1.0.2
+   Compiling cfg-expr v0.15.8
+   Compiling tracing-log v0.1.4
+   Compiling aho-corasick v1.1.3
+   Compiling quote v1.0.36
+   Compiling syn v2.0.59
+   Compiling syn v1.0.109
+   Compiling proc-macro-error-attr v1.0.4
+   Compiling include_dir_macros v0.7.3
+   Compiling regex-automata v0.4.6
+   Compiling tiny-keccak v2.0.2
+   Compiling crypto-common v0.1.6
+   Compiling block-buffer v0.10.4
+   Compiling digest v0.9.0
+   Compiling libsecp256k1-core v0.3.0
+   Compiling digest v0.10.7
+   Compiling const-random-macro v0.1.16
+   Compiling include_dir v0.7.3
+   Compiling blake2 v0.10.6
+   Compiling sha2 v0.10.8
+   Compiling sha3 v0.10.8
+   Compiling twox-hash v1.6.3
+   Compiling const-random v0.1.18
+   Compiling sp-crypto-hashing v0.0.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
+   Compiling libsecp256k1-gen-ecmult v0.3.0
+   Compiling libsecp256k1-gen-genmult v0.3.0
+   Compiling libsecp256k1 v0.7.1
+   Compiling regex v1.10.4
+   Compiling Inflector v0.11.4
+   Compiling prettier-please v0.2.0
+   Compiling proc-macro-warning v1.0.2
+   Compiling proc-macro-error v1.0.4
+   Compiling expander v2.1.0
+   Compiling serde_derive v1.0.197
+   Compiling zeroize_derive v1.4.2
+   Compiling sp-debug-derive v14.0.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
+   Compiling ref-cast-impl v1.0.22
+   Compiling tracing-attributes v0.1.27
+   Compiling futures-macro v0.3.30
+   Compiling thiserror-impl v1.0.58
+   Compiling derive-syn-parse v0.2.0
+   Compiling sp-crypto-hashing-proc-macro v0.0.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
+   Compiling async-trait v0.1.80
+   Compiling macro_magic_core_macros v0.5.0
+   Compiling frame-support-procedural-tools-derive v11.0.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
+   Compiling xcm-procedural v7.0.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
+   Compiling impl-trait-for-tuples v0.2.2
+   Compiling derive_more v0.99.17
+   Compiling dyn-clonable-impl v0.9.0
+   Compiling derive-syn-parse v0.1.5
+   Compiling dyn-clonable v0.9.0
+   Compiling aquamarine v0.5.0
+   Compiling ref-cast v1.0.22
+   Compiling nalgebra-macros v0.2.1
+   Compiling derivative v2.2.0
+   Compiling zeroize v1.7.0
+   Compiling nalgebra v0.32.5
+   Compiling futures-util v0.3.30
+   Compiling macro_magic_core v0.5.0
+   Compiling der v0.7.9
+   Compiling merlin v3.0.0
+   Compiling secrecy v0.8.0
+   Compiling thiserror v1.0.58
+   Compiling tracing v0.1.40
+   Compiling crypto-mac v0.8.0
+   Compiling crypto-bigint v0.5.5
+   Compiling block-buffer v0.9.0
+   Compiling hmac v0.8.1
+   Compiling signature v2.2.0
+   Compiling hmac v0.12.1
+   Compiling spki v0.7.3
+   Compiling curve25519-dalek v4.1.2
+   Compiling rfc6979 v0.4.0
+   Compiling sha2 v0.9.9
+   Compiling hmac-drbg v0.3.0
+   Compiling pkcs8 v0.10.2
+   Compiling pbkdf2 v0.12.2
+   Compiling curve25519-dalek v3.2.0
+   Compiling ed25519 v2.2.3
+   Compiling macro_magic_macros v0.5.0
+   Compiling ed25519-dalek v2.1.1
+   Compiling ed25519-zebra v3.1.0
+   Compiling macro_magic v0.5.0
+   Compiling futures-executor v0.3.30
+   Compiling futures v0.3.30
+   Compiling toml_datetime v0.6.5
+   Compiling serde_spanned v0.6.5
+   Compiling bitvec v1.0.1
+   Compiling serdect v0.2.0
+   Compiling impl-serde v0.4.0
+   Compiling tracing-serde v0.1.3
+   Compiling serde_bytes v0.11.14
+   Compiling parity-bip39 v2.0.1
+   Compiling toml_edit v0.20.7
+   Compiling toml_edit v0.19.15
+   Compiling toml_edit v0.21.1
+   Compiling toml_edit v0.22.9
+   Compiling sec1 v0.7.3
+   Compiling schnorrkel v0.11.4
+   Compiling elliptic-curve v0.13.8
+   Compiling ecdsa v0.16.9
+   Compiling substrate-bip39 v0.4.7 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
+   Compiling tracing-subscriber v0.2.25
+   Compiling k256 v0.13.3
+   Compiling ss58-registry v1.47.0
+   Compiling proc-macro-crate v3.1.0
+   Compiling proc-macro-crate v2.0.0
+   Compiling proc-macro-crate v1.3.1
+   Compiling toml v0.8.12
+   Compiling frame-support-procedural-tools v10.0.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
+   Compiling linregress v0.5.3
+   Compiling scale-info-derive v2.11.2
+   Compiling parity-scale-codec-derive v3.6.9
+   Compiling sp-runtime-interface-proc-macro v17.0.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
+   Compiling sp-api-proc-macro v15.0.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
+   Compiling frame-support-procedural v23.0.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
+   Compiling frame-election-provider-solution-type v13.0.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
+   Compiling docify_macros v0.2.8
+   Compiling parity-scale-codec v3.6.9
+   Compiling docify v0.2.8
+   Compiling sp-version-proc-macro v13.0.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
+   Compiling scale-info v2.11.2
+   Compiling impl-codec v0.6.0
+   Compiling sp-storage v19.0.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
+   Compiling sp-tracing v16.0.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
+   Compiling sp-wasm-interface v20.0.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
+   Compiling bounded-collections v0.2.0
+   Compiling primitive-types v0.12.2
+   Compiling sp-arithmetic v23.0.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
+   Compiling frame-metadata v16.0.0
+   Compiling sp-metadata-ir v0.6.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
+   Compiling sp-externalities v0.25.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
