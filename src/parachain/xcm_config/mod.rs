@@ -1,16 +1,19 @@
+pub mod asset_transactor;
+pub mod barrier;
+pub mod locations;
+
+pub use asset_transactor::*;
+pub use locations::*;
+
 use frame_support::{
     parameter_types,
     traits::{Everything, EverythingBut, Nothing},
 };
-use polkadot_parachain_primitives::primitives::Sibling;
 use xcm::latest::prelude::*;
 use xcm_builder::{
-    Account32Hash, AccountId32Aliases, AllowUnpaidExecutionFrom, ConvertedConcreteId,
-    FixedRateOfFungible, FixedWeightBounds, FrameTransactionalProcessor, FungibleAdapter,
-    IsConcrete, NativeAsset, NoChecking, NonFungiblesAdapter, ParentIsPreset,
-    SiblingParachainConvertsVia, SignedAccountId32AsNative, SovereignSignedViaLocation,
+    FixedRateOfFungible, FixedWeightBounds, FrameTransactionalProcessor, NativeAsset,
+    SignedAccountId32AsNative, SovereignSignedViaLocation,
 };
-use xcm_executor::traits::JustTry;
 
 use pallet_xcm::XcmPassthrough;
 
@@ -19,43 +22,12 @@ use super::{
     AccountId, Balances, ForeignUniques, MsgQueue, PolkadotXcm, RuntimeCall, RuntimeOrigin,
 };
 
-parameter_types! {
-    pub const KsmLocation: Location = Location::parent();
-    pub const RelayNetwork: NetworkId = NetworkId::Kusama;
-    pub UniversalLocation: InteriorLocation = Parachain(MsgQueue::parachain_id().into()).into();
-}
-
 pub type XcmRouter = crate::ParachainXcmRouter<super::MsgQueue>;
 
-pub type SovereignAccountOf = (
-    SiblingParachainConvertsVia<Sibling, AccountId>,
-    AccountId32Aliases<RelayNetwork, AccountId>,
-    ParentIsPreset<AccountId>,
-);
-
-pub type LocationToAccountId = (
-    ParentIsPreset<AccountId>,
-    SiblingParachainConvertsVia<Sibling, AccountId>,
-    AccountId32Aliases<RelayNetwork, AccountId>,
-    Account32Hash<(), AccountId>,
-);
-
 pub type XcmOriginToCallOrigin = (
-    SovereignSignedViaLocation<LocationToAccountId, RuntimeOrigin>,
+    SovereignSignedViaLocation<locations::LocationToAccountId<AccountId>, RuntimeOrigin>,
     SignedAccountId32AsNative<RelayNetwork, RuntimeOrigin>,
     XcmPassthrough<RuntimeOrigin>,
-);
-
-pub type LocalAssetTransactor = (
-    FungibleAdapter<Balances, IsConcrete<KsmLocation>, LocationToAccountId, AccountId, ()>,
-    NonFungiblesAdapter<
-        ForeignUniques,
-        ConvertedConcreteId<Location, AssetInstance, JustTry, JustTry>,
-        SovereignAccountOf,
-        AccountId,
-        NoChecking,
-        (),
-    >,
 );
 
 parameter_types! {
@@ -65,8 +37,6 @@ parameter_types! {
     pub const MaxAssetsIntoHolding: u32 = 64;
     pub ForeignPrefix: Location = (Parent,).into();
 }
-
-pub type Barrier = AllowUnpaidExecutionFrom<Everything>;
 
 parameter_types! {
     pub NftCollectionOne: AssetFilter
@@ -81,12 +51,12 @@ pub struct XcmConfig;
 impl xcm_executor::Config for XcmConfig {
     type RuntimeCall = RuntimeCall;
     type XcmSender = XcmRouter;
-    type AssetTransactor = LocalAssetTransactor;
+    type AssetTransactor = asset_transactor::LocalAssetTransactor<AccountId, Balances>;
     type OriginConverter = XcmOriginToCallOrigin;
     type IsReserve = (NativeAsset, TrustedReserves);
     type IsTeleporter = TrustedTeleporters;
     type UniversalLocation = UniversalLocation;
-    type Barrier = Barrier;
+    type Barrier = barrier::Barrier;
     type Weigher = FixedWeightBounds<UnitWeightCost, RuntimeCall, MaxInstructions>;
     type Trader = FixedRateOfFungible<KsmPerSecondPerByte, ()>;
     type ResponseHandler = ();
