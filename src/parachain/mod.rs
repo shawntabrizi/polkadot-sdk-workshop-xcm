@@ -20,7 +20,7 @@ use sp_runtime::{
 use sp_std::prelude::*;
 
 use xcm::latest::prelude::*;
-use xcm_builder::{EnsureXcmOrigin, FixedWeightBounds, SignedToAccountId32};
+use xcm_builder::{EnsureXcmOrigin, SignedToAccountId32};
 use xcm_executor::{traits::ConvertLocation, XcmExecutor};
 
 pub type AccountId = AccountId32;
@@ -170,7 +170,7 @@ impl pallet_xcm::Config for Runtime {
     type XcmExecutor = XcmExecutor<XcmConfig>;
     type XcmTeleportFilter = Nothing;
     type XcmReserveTransferFilter = Everything;
-    type Weigher = FixedWeightBounds<UnitWeightCost, RuntimeCall, MaxInstructions>;
+    type Weigher = xcm_config::Weigher<RuntimeCall>;
     type UniversalLocation = UniversalLocation;
     type RuntimeOrigin = RuntimeOrigin;
     type RuntimeCall = RuntimeCall;
