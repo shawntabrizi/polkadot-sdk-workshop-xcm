@@ -1,145 +1,462 @@
-   Compiling proc-macro2 v1.0.80
-   Compiling unicode-ident v1.0.12
-   Compiling serde v1.0.197
-   Compiling generic-array v0.14.7
-   Compiling subtle v2.5.0
-   Compiling memchr v2.7.2
-   Compiling crunchy v0.2.2
-   Compiling tracing-core v0.1.32
-   Compiling serde_json v1.0.115
-   Compiling arrayvec v0.7.4
-   Compiling rand v0.8.5
-   Compiling byteorder v1.5.0
-   Compiling smallvec v1.13.2
-   Compiling blake2b_simd v1.0.2
-   Compiling cfg-expr v0.15.8
-   Compiling tracing-log v0.1.4
-   Compiling aho-corasick v1.1.3
-   Compiling quote v1.0.36
-   Compiling syn v2.0.59
-   Compiling syn v1.0.109
-   Compiling proc-macro-error-attr v1.0.4
-   Compiling include_dir_macros v0.7.3
-   Compiling regex-automata v0.4.6
-   Compiling tiny-keccak v2.0.2
-   Compiling crypto-common v0.1.6
-   Compiling block-buffer v0.10.4
-   Compiling digest v0.9.0
-   Compiling libsecp256k1-core v0.3.0
-   Compiling digest v0.10.7
-   Compiling const-random-macro v0.1.16
-   Compiling include_dir v0.7.3
-   Compiling blake2 v0.10.6
-   Compiling sha2 v0.10.8
-   Compiling sha3 v0.10.8
-   Compiling twox-hash v1.6.3
-   Compiling const-random v0.1.18
-   Compiling sp-crypto-hashing v0.0.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
-   Compiling libsecp256k1-gen-ecmult v0.3.0
-   Compiling libsecp256k1-gen-genmult v0.3.0
-   Compiling libsecp256k1 v0.7.1
-   Compiling regex v1.10.4
-   Compiling Inflector v0.11.4
-   Compiling prettier-please v0.2.0
-   Compiling proc-macro-warning v1.0.2
-   Compiling proc-macro-error v1.0.4
-   Compiling expander v2.1.0
-   Compiling serde_derive v1.0.197
-   Compiling zeroize_derive v1.4.2
-   Compiling sp-debug-derive v14.0.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
-   Compiling ref-cast-impl v1.0.22
-   Compiling tracing-attributes v0.1.27
-   Compiling futures-macro v0.3.30
-   Compiling thiserror-impl v1.0.58
-   Compiling derive-syn-parse v0.2.0
-   Compiling sp-crypto-hashing-proc-macro v0.0.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
-   Compiling async-trait v0.1.80
-   Compiling macro_magic_core_macros v0.5.0
-   Compiling frame-support-procedural-tools-derive v11.0.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
-   Compiling xcm-procedural v7.0.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
-   Compiling impl-trait-for-tuples v0.2.2
-   Compiling derive_more v0.99.17
-   Compiling dyn-clonable-impl v0.9.0
-   Compiling derive-syn-parse v0.1.5
-   Compiling dyn-clonable v0.9.0
-   Compiling aquamarine v0.5.0
-   Compiling ref-cast v1.0.22
-   Compiling nalgebra-macros v0.2.1
-   Compiling derivative v2.2.0
-   Compiling zeroize v1.7.0
-   Compiling nalgebra v0.32.5
-   Compiling futures-util v0.3.30
-   Compiling macro_magic_core v0.5.0
-   Compiling der v0.7.9
-   Compiling merlin v3.0.0
-   Compiling secrecy v0.8.0
-   Compiling thiserror v1.0.58
-   Compiling tracing v0.1.40
-   Compiling crypto-mac v0.8.0
-   Compiling crypto-bigint v0.5.5
-   Compiling block-buffer v0.9.0
-   Compiling hmac v0.8.1
-   Compiling signature v2.2.0
-   Compiling hmac v0.12.1
-   Compiling spki v0.7.3
-   Compiling curve25519-dalek v4.1.2
-   Compiling rfc6979 v0.4.0
-   Compiling sha2 v0.9.9
-   Compiling hmac-drbg v0.3.0
-   Compiling pkcs8 v0.10.2
-   Compiling pbkdf2 v0.12.2
-   Compiling curve25519-dalek v3.2.0
-   Compiling ed25519 v2.2.3
-   Compiling macro_magic_macros v0.5.0
-   Compiling ed25519-dalek v2.1.1
-   Compiling ed25519-zebra v3.1.0
-   Compiling macro_magic v0.5.0
-   Compiling futures-executor v0.3.30
-   Compiling futures v0.3.30
-   Compiling toml_datetime v0.6.5
-   Compiling serde_spanned v0.6.5
-   Compiling bitvec v1.0.1
-   Compiling serdect v0.2.0
-   Compiling impl-serde v0.4.0
-   Compiling tracing-serde v0.1.3
-   Compiling serde_bytes v0.11.14
-   Compiling parity-bip39 v2.0.1
-   Compiling toml_edit v0.20.7
-   Compiling toml_edit v0.19.15
-   Compiling toml_edit v0.21.1
-   Compiling toml_edit v0.22.9
-   Compiling sec1 v0.7.3
-   Compiling schnorrkel v0.11.4
-   Compiling elliptic-curve v0.13.8
-   Compiling ecdsa v0.16.9
-   Compiling substrate-bip39 v0.4.7 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
-   Compiling tracing-subscriber v0.2.25
-   Compiling k256 v0.13.3
-   Compiling ss58-registry v1.47.0
-   Compiling proc-macro-crate v3.1.0
-   Compiling proc-macro-crate v2.0.0
-   Compiling proc-macro-crate v1.3.1
-   Compiling toml v0.8.12
-   Compiling frame-support-procedural-tools v10.0.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
-   Compiling linregress v0.5.3
-   Compiling scale-info-derive v2.11.2
-   Compiling parity-scale-codec-derive v3.6.9
-   Compiling sp-runtime-interface-proc-macro v17.0.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
-   Compiling sp-api-proc-macro v15.0.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
-   Compiling frame-support-procedural v23.0.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
-   Compiling frame-election-provider-solution-type v13.0.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
-   Compiling docify_macros v0.2.8
-   Compiling parity-scale-codec v3.6.9
-   Compiling docify v0.2.8
-   Compiling sp-version-proc-macro v13.0.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
-   Compiling scale-info v2.11.2
-   Compiling impl-codec v0.6.0
-   Compiling sp-storage v19.0.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
-   Compiling sp-tracing v16.0.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
-   Compiling sp-wasm-interface v20.0.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
-   Compiling bounded-collections v0.2.0
-   Compiling primitive-types v0.12.2
-   Compiling sp-arithmetic v23.0.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
-   Compiling frame-metadata v16.0.0
-   Compiling sp-metadata-ir v0.6.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
-   Compiling sp-externalities v0.25.0 (https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.10.0#7049c3c9)
+   Compiling polkadot-sdk-workshop-xcm v0.1.0 (/Users/shawntabrizi/Documents/GitHub/polkadot-sdk-workshop-xcm)
+error[E0405]: cannot find trait `ExecuteXcm` in this scope
+  --> src/parachain/mock_msg_queue.rs:12:21
+   |
+12 |         type XcmExecutor: ExecuteXcm<Self::RuntimeCall>;
+   |                           ^^^^^^^^^^ not found in this scope
+   |
+help: consider importing one of these items
+   |
+6  +     use crate::ExecuteXcm;
+   |
+6  +     use xcm::opaque::lts::ExecuteXcm;
+   |
+6  +     use xcm::opaque::v2::ExecuteXcm;
+   |
+6  +     use xcm::opaque::v3::ExecuteXcm;
+   |
+     and 2 other candidates
+
+error[E0412]: cannot find type `ParaId` in this scope
+  --> src/parachain/mock_msg_queue.rs:24:59
+   |
+24 |     pub(super) type ParachainId<T: Config> = StorageValue<_, ParaId, ValueQuery>;
+   |                                                              ^^^^^^ not found in this scope
+   |
+help: consider importing this struct
+   |
+6  +     use xcm_simulator::ParaId;
+   |
+
+error[E0412]: cannot find type `Xcm` in this scope
+  --> src/parachain/mock_msg_queue.rs:29:63
+   |
+29 |     pub(super) type ReceivedDmp<T: Config> = StorageValue<_, Vec<Xcm<T::RuntimeCall>>, ValueQuery>;
+   |                                                                  ^^^ not found in this scope
+   |
+help: consider importing one of these items
+   |
+6  +     use crate::Xcm;
+   |
+6  +     use crate::opaque::Xcm;
+   |
+6  +     use xcm::opaque::lts::Xcm;
+   |
+6  +     use xcm::opaque::lts::prelude::Xcm;
+   |
+     and 8 other candidates
+
+error[E0412]: cannot find type `ParaId` in this scope
+  --> src/parachain/mock_msg_queue.rs:31:22
+   |
+31 |     impl<T: Config> Get<ParaId> for Pallet<T> {
+   |                         ^^^^^^ not found in this scope
+   |
+help: consider importing this struct
+   |
+6  +     use xcm_simulator::ParaId;
+   |
+
+error[E0412]: cannot find type `ParaId` in this scope
+  --> src/parachain/mock_msg_queue.rs:32:15
+   |
+32 |         fn get() -> ParaId {
+   |                     ^^^^^^ not found in this scope
+   |
+help: consider importing this struct
+   |
+6  +     use xcm_simulator::ParaId;
+   |
+
+error[E0412]: cannot find type `XcmError` in this scope
+  --> src/parachain/mock_msg_queue.rs:46:25
+   |
+46 |         Fail(Option<T::Hash>, XcmError),
+   |                               ^^^^^^^^ not found in this scope
+   |
+help: consider importing one of these items
+   |
+6  +     use crate::XcmError;
+   |
+6  +     use xcm::opaque::lts::prelude::XcmError;
+   |
+6  +     use xcm::opaque::v2::prelude::XcmError;
+   |
+6  +     use xcm_builder::test_utils::XcmError;
+   |
+     and 1 other candidate
+
+error[E0412]: cannot find type `Outcome` in this scope
+  --> src/parachain/mock_msg_queue.rs:58:31
+   |
+58 |         ExecutedDownward(MessageId, Outcome),
+   |                                     ^^^^^^^ not found in this scope
+   |
+help: consider importing one of these items
+   |
+6  +     use crate::Outcome;
+   |
+6  +     use xcm::opaque::lts::Outcome;
+   |
+6  +     use xcm::opaque::v2::Outcome;
+   |
+6  +     use xcm::opaque::v3::Outcome;
+   |
+     and 2 other candidates
+
+error[E0412]: cannot find type `ParaId` in this scope
+  --> src/parachain/mock_msg_queue.rs:62:31
+   |
+62 |         pub fn set_para_id(para_id: ParaId) {
+   |                                     ^^^^^^ not found in this scope
+   |
+help: consider importing this struct
+   |
+6  +     use xcm_simulator::ParaId;
+   |
+
+error[E0412]: cannot find type `ParaId` in this scope
+  --> src/parachain/mock_msg_queue.rs:67:12
+   |
+67 |             sender: ParaId,
+   |                     ^^^^^^ not found in this scope
+   |
+help: consider importing this struct
+   |
+6  +     use xcm_simulator::ParaId;
+   |
+
+error[E0412]: cannot find type `RelayBlockNumber` in this scope
+  --> src/parachain/mock_msg_queue.rs:68:14
+   |
+68 |             _sent_at: RelayBlockNumber,
+   |                       ^^^^^^^^^^^^^^^^ not found in this scope
+   |
+help: consider importing this type alias
+   |
+6  +     use xcm_simulator::RelayBlockNumber;
+   |
+
+error[E0412]: cannot find type `VersionedXcm` in this scope
+  --> src/parachain/mock_msg_queue.rs:69:9
+   |
+69 |             xcm: VersionedXcm<T::RuntimeCall>,
+   |                  ^^^^^^^^^^^^ not found in this scope
+   |
+help: consider importing one of these items
+   |
+6  +     use crate::VersionedXcm;
+   |
+6  +     use xcm::VersionedXcm;
+   |
+6  +     use xcm::opaque::VersionedXcm;
+   |
+6  +     use xcm_simulator::VersionedXcm;
+   |
+
+error[E0412]: cannot find type `XcmError` in this scope
+  --> src/parachain/mock_msg_queue.rs:71:23
+   |
+71 |         ) -> Result<Weight, XcmError> {
+   |                             ^^^^^^^^ not found in this scope
+   |
+help: consider importing one of these items
+   |
+6  +     use crate::XcmError;
+   |
+6  +     use xcm::opaque::lts::prelude::XcmError;
+   |
+6  +     use xcm::opaque::v2::prelude::XcmError;
+   |
+6  +     use xcm_builder::test_utils::XcmError;
+   |
+     and 1 other candidate
+
+error[E0433]: failed to resolve: use of undeclared type `Xcm`
+  --> src/parachain/mock_msg_queue.rs:74:32
+   |
+74 |             let (result, event) = match Xcm::<T::RuntimeCall>::try_from(xcm) {
+   |                                         ^^^ use of undeclared type `Xcm`
+   |
+help: consider importing one of these items
+   |
+6  +     use crate::Xcm;
+   |
+6  +     use crate::opaque::Xcm;
+   |
+6  +     use xcm::opaque::lts::Xcm;
+   |
+6  +     use xcm::opaque::lts::prelude::Xcm;
+   |
+     and 8 other candidates
+
+error[E0425]: cannot find value `Parent` in this scope
+  --> src/parachain/mock_msg_queue.rs:76:22
+   |
+76 |                     let location = (Parent, Parachain(sender.into()));
+   |                                     ^^^^^^ not found in this scope
+   |
+help: consider importing one of these items
+   |
+6  +     use crate::Parent;
+   |
+6  +     use xcm::opaque::lts::Parent;
+   |
+6  +     use xcm::opaque::v2::Parent;
+   |
+6  +     use xcm::opaque::v3::Parent;
+   |
+     and 2 other candidates
+
+error[E0425]: cannot find function, tuple struct or tuple variant `Parachain` in this scope
+  --> src/parachain/mock_msg_queue.rs:76:30
+   |
+76 |                     let location = (Parent, Parachain(sender.into()));
+   |                                             ^^^^^^^^^ not found in this scope
+   |
+help: consider importing one of these items
+   |
+6  +     use crate::Junction::Parachain;
+   |
+6  +     use polkadot_runtime_parachains::Origin::Parachain;
+   |
+6  +     use polkadot_runtime_parachains::ParaLifecycle::Parachain;
+   |
+6  +     use polkadot_runtime_parachains::paras::ParaKind::Parachain;
+   |
+     and 5 other candidates
+
+error[E0433]: failed to resolve: use of undeclared type `Outcome`
+  --> src/parachain/mock_msg_queue.rs:84:7
+   |
+84 |                         Outcome::Error { error } => (Err(error), Event::Fail(Some(hash), error)),
+   |                         ^^^^^^^ use of undeclared type `Outcome`
+   |
+help: consider importing one of these items
+   |
+6  +     use crate::Outcome;
+   |
+6  +     use xcm::opaque::lts::Outcome;
+   |
+6  +     use xcm::opaque::v2::Outcome;
+   |
+6  +     use xcm::opaque::v3::Outcome;
+   |
+     and 2 other candidates
+
+error[E0433]: failed to resolve: use of undeclared type `Outcome`
+  --> src/parachain/mock_msg_queue.rs:85:7
+   |
+85 |                         Outcome::Complete { used } => (Ok(used), Event::Success(Some(hash))),
+   |                         ^^^^^^^ use of undeclared type `Outcome`
+   |
+help: consider importing one of these items
+   |
+6  +     use crate::Outcome;
+   |
+6  +     use xcm::opaque::lts::Outcome;
+   |
+6  +     use xcm::opaque::v2::Outcome;
+   |
+6  +     use xcm::opaque::v3::Outcome;
+   |
+     and 2 other candidates
+
+error[E0433]: failed to resolve: use of undeclared type `Outcome`
+  --> src/parachain/mock_msg_queue.rs:88:7
+   |
+88 |                         Outcome::Incomplete { used, error } =>
+   |                         ^^^^^^^ use of undeclared type `Outcome`
+   |
+help: consider importing one of these items
+   |
+6  +     use crate::Outcome;
+   |
+6  +     use xcm::opaque::lts::Outcome;
+   |
+6  +     use xcm::opaque::v2::Outcome;
+   |
+6  +     use xcm::opaque::v3::Outcome;
+   |
+     and 2 other candidates
+
+error[E0433]: failed to resolve: use of undeclared type `XcmError`
+  --> src/parachain/mock_msg_queue.rs:92:21
+   |
+92 |                 Err(()) => (Err(XcmError::UnhandledXcmVersion), Event::BadVersion(Some(hash))),
+   |                                 ^^^^^^^^ use of undeclared type `XcmError`
+   |
+help: consider importing one of these items
+   |
+6  +     use crate::XcmError;
+   |
+6  +     use xcm::opaque::lts::prelude::XcmError;
+   |
+6  +     use xcm::opaque::v2::prelude::XcmError;
+   |
+6  +     use xcm_builder::test_utils::XcmError;
+   |
+     and 1 other candidate
+
+error[E0405]: cannot find trait `XcmpMessageHandler` in this scope
+  --> src/parachain/mock_msg_queue.rs:99:18
+   |
+99 |     impl<T: Config> XcmpMessageHandler for Pallet<T> {
+   |                     ^^^^^^^^^^^^^^^^^^ not found in this scope
+   |
+help: consider importing this trait
+   |
+6  +     use polkadot_parachain_primitives::primitives::XcmpMessageHandler;
+   |
+
+error[E0412]: cannot find type `ParaId` in this scope
+   --> src/parachain/mock_msg_queue.rs:100:51
+    |
+100 |         fn handle_xcmp_messages<'a, I: Iterator<Item = (ParaId, RelayBlockNumber, &'a [u8])>>(
+    |                                                         ^^^^^^ not found in this scope
+    |
+help: consider importing this struct
+    |
+6   +     use xcm_simulator::ParaId;
+    |
+
+error[E0412]: cannot find type `RelayBlockNumber` in this scope
+   --> src/parachain/mock_msg_queue.rs:100:59
+    |
+100 |         fn handle_xcmp_messages<'a, I: Iterator<Item = (ParaId, RelayBlockNumber, &'a [u8])>>(
+    |                                                                 ^^^^^^^^^^^^^^^^ not found in this scope
+    |
+help: consider importing this type alias
+    |
+6   +     use xcm_simulator::RelayBlockNumber;
+    |
+
+error[E0433]: failed to resolve: use of undeclared type `XcmpMessageFormat`
+   --> src/parachain/mock_msg_queue.rs:106:13
+    |
+106 |                 let _ = XcmpMessageFormat::decode(&mut data_ref)
+    |                         ^^^^^^^^^^^^^^^^^ use of undeclared type `XcmpMessageFormat`
+    |
+help: consider importing one of these items
+    |
+6   +     use polkadot_parachain_primitives::primitives::XcmpMessageFormat;
+    |
+6   +     use xcm_simulator::XcmpMessageFormat;
+    |
+
+error[E0433]: failed to resolve: use of undeclared type `VersionedXcm`
+   --> src/parachain/mock_msg_queue.rs:112:7
+    |
+112 |                         VersionedXcm::<T::RuntimeCall>::decode(&mut remaining_fragments)
+    |                         ^^^^^^^^^^^^ use of undeclared type `VersionedXcm`
+    |
+help: consider importing one of these items
+    |
+6   +     use crate::VersionedXcm;
+    |
+6   +     use xcm::VersionedXcm;
+    |
+6   +     use xcm::opaque::VersionedXcm;
+    |
+6   +     use xcm_simulator::VersionedXcm;
+    |
+
+error[E0405]: cannot find trait `DmpMessageHandler` in this scope
+   --> src/parachain/mock_msg_queue.rs:124:18
+    |
+124 |     impl<T: Config> DmpMessageHandler for Pallet<T> {
+    |                     ^^^^^^^^^^^^^^^^^ not found in this scope
+    |
+help: consider importing this trait
+    |
+6   +     use polkadot_parachain_primitives::primitives::DmpMessageHandler;
+    |
+
+error[E0412]: cannot find type `RelayBlockNumber` in this scope
+   --> src/parachain/mock_msg_queue.rs:126:32
+    |
+126 |             iter: impl Iterator<Item = (RelayBlockNumber, Vec<u8>)>,
+    |                                         ^^^^^^^^^^^^^^^^ not found in this scope
+    |
+help: consider importing this type alias
+    |
+6   +     use xcm_simulator::RelayBlockNumber;
+    |
+
+error[E0433]: failed to resolve: use of undeclared type `VersionedXcm`
+   --> src/parachain/mock_msg_queue.rs:131:27
+    |
+131 |                 let maybe_versioned = VersionedXcm::<T::RuntimeCall>::decode(&mut &data[..]);
+    |                                       ^^^^^^^^^^^^ use of undeclared type `VersionedXcm`
+    |
+help: consider importing one of these items
+    |
+6   +     use crate::VersionedXcm;
+    |
+6   +     use xcm::VersionedXcm;
+    |
+6   +     use xcm::opaque::VersionedXcm;
+    |
+6   +     use xcm_simulator::VersionedXcm;
+    |
+
+error[E0433]: failed to resolve: use of undeclared type `Xcm`
+   --> src/parachain/mock_msg_queue.rs:136:29
+    |
+136 |                     Ok(versioned) => match Xcm::try_from(versioned) {
+    |                                            ^^^ use of undeclared type `Xcm`
+    |
+help: consider importing one of these items
+    |
+6   +     use crate::Xcm;
+    |
+6   +     use crate::opaque::Xcm;
+    |
+6   +     use xcm::opaque::lts::Xcm;
+    |
+6   +     use xcm::opaque::lts::prelude::Xcm;
+    |
+      and 8 other candidates
+
+error[E0425]: cannot find value `Parent` in this scope
+   --> src/parachain/mock_msg_queue.rs:140:9
+    |
+140 | ...                   Parent,
+    |                       ^^^^^^ not found in this scope
+    |
+help: consider importing one of these items
+    |
+6   +     use crate::Parent;
+    |
+6   +     use xcm::opaque::lts::Parent;
+    |
+6   +     use xcm::opaque::v2::Parent;
+    |
+6   +     use xcm::opaque::v3::Parent;
+    |
+      and 2 other candidates
+
+warning: unused import: `super::*`
+ --> src/parachain/mock_msg_queue.rs:2:5
+  |
+2 | use super::*;
+  |     ^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unused import: `super::*`
+ --> src/parachain/mock_msg_queue.rs:6:6
+  |
+6 |     use super::*;
+  |         ^^^^^^^^
+
+warning: unused import: `event`
+  --> src/parachain/mock_msg_queue.rs:39:12
+   |
+39 |     #[pallet::event]
+   |               ^^^^^
+
+Some errors have detailed explanations: E0405, E0412, E0425, E0433.
+For more information about an error, try `rustc --explain E0405`.
+warning: `polkadot-sdk-workshop-xcm` (bin "polkadot-sdk-workshop-xcm" test) generated 3 warnings
+error: could not compile `polkadot-sdk-workshop-xcm` (bin "polkadot-sdk-workshop-xcm" test) due to 29 previous errors; 3 warnings emitted
