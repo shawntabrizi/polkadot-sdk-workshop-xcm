@@ -6,7 +6,7 @@ use xcm_builder::{
 };
 use xcm_executor::traits::JustTry;
 
-use super::{ForeignUniques, KsmLocation, LocationToAccountId, RelayNetwork};
+use super::{Balances, ForeignUniques, KsmLocation, LocationToAccountId, RelayNetwork};
 
 pub type SovereignAccountOf<AccountId> = (
     SiblingParachainConvertsVia<Sibling, AccountId>,
@@ -14,9 +14,9 @@ pub type SovereignAccountOf<AccountId> = (
     ParentIsPreset<AccountId>,
 );
 
-pub type LocalAssetTransactor<AccountId, BalancesPallet> = (
+pub type LocalAssetTransactor<AccountId> = (
     FungibleAdapter<
-        BalancesPallet,
+        Balances,
         IsConcrete<KsmLocation>,
         LocationToAccountId<AccountId>,
         AccountId,
