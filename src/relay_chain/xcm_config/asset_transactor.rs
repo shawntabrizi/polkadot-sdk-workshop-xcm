@@ -4,7 +4,10 @@ use xcm_builder::{
 };
 use xcm_executor::traits::JustTry;
 
-use super::{Balances, LocationToAccountId, TokenLocation, Uniques};
+use super::{
+    locations::{LocationToAccountId, TokenLocation},
+    Balances, Uniques,
+};
 
 pub type LocalAssetTransactor<AccountId> = (
     FungibleAdapter<
