@@ -27,13 +27,7 @@ mod sandbox {
     );
 
     type LocalAssetTransactor = (
-        FungibleAdapter<
-            Balances,
-            IsConcrete<KsmLocation>,
-            LocationToAccountId<AccountId>,
-            AccountId,
-            (),
-        >,
+        FungibleAdapter<Balances, IsConcrete<KsmLocation>, LocationToAccountId, AccountId, ()>,
         NonFungiblesAdapter<
             ForeignUniques,
             ConvertedConcreteId<Location, AssetInstance, JustTry, JustTry>,

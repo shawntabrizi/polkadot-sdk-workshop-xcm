@@ -1,4 +1,5 @@
-use super::locations::TokenLocation;
+use crate::relay_chain::locations::TokenLocation;
+use crate::relay_chain::RuntimeCall;
 use frame_support::parameter_types;
 use xcm::latest::prelude::*;
 use xcm_builder::FixedWeightBounds;
@@ -11,4 +12,4 @@ parameter_types! {
     pub const MaxAssetsIntoHolding: u32 = 64;
 }
 
-pub type Weigher<RuntimeCall> = FixedWeightBounds<BaseXcmWeight, RuntimeCall, MaxInstructions>;
+pub type Weigher = FixedWeightBounds<BaseXcmWeight, RuntimeCall, MaxInstructions>;

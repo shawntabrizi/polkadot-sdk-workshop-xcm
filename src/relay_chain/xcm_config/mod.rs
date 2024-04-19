@@ -26,7 +26,7 @@ impl Config for XcmConfig {
     type IsTeleporter = ();
     type UniversalLocation = UniversalLocation;
     type Barrier = barrier::Barrier;
-    type Weigher = limits::Weigher<RuntimeCall>;
+    type Weigher = limits::Weigher;
     type Trader = FixedRateOfFungible<limits::TokensPerSecondPerByte, ()>;
     type ResponseHandler = ();
     type AssetTrap = ();

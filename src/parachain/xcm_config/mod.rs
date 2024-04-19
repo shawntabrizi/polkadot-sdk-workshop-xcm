@@ -14,12 +14,10 @@ use frame_support::traits::{Everything, Nothing};
 use xcm_builder::{FixedRateOfFungible, FrameTransactionalProcessor};
 
 // Types from our runtime.
-use super::RuntimeCall;
-// Pallets from our runtime.
-use super::{MsgQueue, PolkadotXcm};
+use crate::parachain::{MsgQueue, PolkadotXcm, RuntimeCall};
 
 // Generated from `decl_test_network!`
-pub type XcmRouter = crate::ParachainXcmRouter<super::MsgQueue>;
+pub type XcmRouter = crate::ParachainXcmRouter<MsgQueue>;
 
 pub struct XcmConfig;
 impl xcm_executor::Config for XcmConfig {
