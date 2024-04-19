@@ -2,6 +2,7 @@ use frame_support::parameter_types;
 use xcm::latest::prelude::*;
 use xcm_builder::{Account32Hash, AccountId32Aliases, ChildParachainConvertsVia};
 
+use crate::relay_chain::AccountId;
 use polkadot_parachain_primitives::primitives::Id as ParaId;
 
 parameter_types! {
@@ -11,7 +12,7 @@ parameter_types! {
     pub UnitWeightCost: u64 = 1_000;
 }
 
-pub type LocationToAccountId<AccountId> = (
+pub type LocationToAccountId = (
     ChildParachainConvertsVia<ParaId, AccountId>,
     AccountId32Aliases<RelayNetwork, AccountId>,
     Account32Hash<(), AccountId>,

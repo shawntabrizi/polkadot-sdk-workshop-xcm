@@ -5,10 +5,11 @@ use xcm_builder::{
     SovereignSignedViaLocation,
 };
 
-use super::locations::{LocationToAccountId, RelayNetwork};
+use crate::relay_chain::locations::{LocationToAccountId, RelayNetwork};
+use crate::relay_chain::RuntimeOrigin;
 
-pub type LocalOriginConverter<AccountId, RuntimeOrigin> = (
-    SovereignSignedViaLocation<LocationToAccountId<AccountId>, RuntimeOrigin>,
+pub type LocalOriginConverter = (
+    SovereignSignedViaLocation<LocationToAccountId, RuntimeOrigin>,
     ChildParachainAsNative<origin::Origin, RuntimeOrigin>,
     SignedAccountId32AsNative<RelayNetwork, RuntimeOrigin>,
     ChildSystemParachainAsSuperuser<ParaId, RuntimeOrigin>,

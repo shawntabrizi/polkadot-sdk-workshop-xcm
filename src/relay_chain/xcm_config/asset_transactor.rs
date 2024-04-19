@@ -4,23 +4,17 @@ use xcm_builder::{
 };
 use xcm_executor::traits::JustTry;
 
-use super::{
+use crate::relay_chain::{
     locations::{LocationToAccountId, TokenLocation},
-    Balances, Uniques,
+    AccountId, Balances, Uniques,
 };
 
-pub type LocalAssetTransactor<AccountId> = (
-    FungibleAdapter<
-        Balances,
-        IsConcrete<TokenLocation>,
-        LocationToAccountId<AccountId>,
-        AccountId,
-        (),
-    >,
+pub type LocalAssetTransactor = (
+    FungibleAdapter<Balances, IsConcrete<TokenLocation>, LocationToAccountId, AccountId, ()>,
     NonFungiblesAdapter<
         Uniques,
         ConvertedConcreteId<u32, u32, AsPrefixedGeneralIndex<(), u32, JustTry>, JustTry>,
-        LocationToAccountId<AccountId>,
+        LocationToAccountId,
         AccountId,
         NoChecking,
         (),

@@ -11,10 +11,7 @@ use frame_support::traits::{Everything, Nothing};
 use xcm_builder::{FixedRateOfFungible, FrameTransactionalProcessor};
 use xcm_executor::Config;
 
-// Types from our runtime.
-use super::{AccountId, Balances, RuntimeCall, RuntimeOrigin};
-// Pallets from our runtime.
-use super::{Uniques, XcmPallet};
+use super::{RuntimeCall, XcmPallet};
 
 // Generated from `decl_test_network!`
 pub type XcmRouter = crate::RelayChainXcmRouter;
@@ -23,8 +20,8 @@ pub struct XcmConfig;
 impl Config for XcmConfig {
     type RuntimeCall = RuntimeCall;
     type XcmSender = XcmRouter;
-    type AssetTransactor = asset_transactor::LocalAssetTransactor<AccountId>;
-    type OriginConverter = origin_converter::LocalOriginConverter<AccountId, RuntimeOrigin>;
+    type AssetTransactor = asset_transactor::LocalAssetTransactor;
+    type OriginConverter = origin_converter::LocalOriginConverter;
     type IsReserve = ();
     type IsTeleporter = ();
     type UniversalLocation = UniversalLocation;
