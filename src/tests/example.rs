@@ -1,5 +1,4 @@
-
-use super::*;
+use crate::*;
 
 use codec::Encode;
 use frame_support::{assert_ok, weights::Weight};

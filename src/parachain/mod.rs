@@ -79,18 +79,6 @@ impl pallet_balances::Config for Runtime {
     type MaxFreezes = ConstU32<0>;
 }
 
-#[cfg(feature = "runtime-benchmarks")]
-pub struct UniquesHelper;
-#[cfg(feature = "runtime-benchmarks")]
-impl pallet_uniques::BenchmarkHelper<Location, AssetInstance> for UniquesHelper {
-    fn collection(i: u16) -> Location {
-        GeneralIndex(i as u128).into()
-    }
-    fn item(i: u16) -> AssetInstance {
-        AssetInstance::Index(i as u128)
-    }
-}
-
 impl pallet_uniques::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
     type CollectionId = Location;
@@ -108,8 +96,6 @@ impl pallet_uniques::Config for Runtime {
     type ValueLimit = ConstU32<128>;
     type Locker = ();
     type WeightInfo = ();
-    #[cfg(feature = "runtime-benchmarks")]
-    type Helper = UniquesHelper;
 }
 
 // `EnsureOriginWithArg` impl for `CreateOrigin` which allows only XCM origins
@@ -127,11 +113,6 @@ impl EnsureOriginWithArg<RuntimeOrigin, Location> for ForeignCreators {
             return Err(o);
         }
         xcm_config::SovereignAccountOf::convert_location(&origin_location).ok_or(o)
-    }
-
-    #[cfg(feature = "runtime-benchmarks")]
-    fn try_successful_origin(a: &Location) -> Result<RuntimeOrigin, ()> {
-        Ok(pallet_xcm::Origin::Xcm(a.clone()).into())
     }
 }
 

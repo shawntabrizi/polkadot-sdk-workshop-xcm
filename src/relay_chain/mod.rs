@@ -95,8 +95,6 @@ impl pallet_uniques::Config for Runtime {
     type ValueLimit = ConstU32<128>;
     type Locker = ();
     type WeightInfo = ();
-    #[cfg(feature = "runtime-benchmarks")]
-    type Helper = ();
 }
 
 impl shared::Config for Runtime {
