@@ -1,12 +1,12 @@
-pub use workspace::*;
+pub use sandbox::*;
 
 #[cfg(feature = "start")]
-mod workspace {
+mod sandbox {
     pub type TrustedTeleporters = ();
 }
 
 #[cfg(feature = "example")]
-mod workspace {
+mod sandbox {
     use frame_support::parameter_types;
     use xcm::latest::prelude::*;
 

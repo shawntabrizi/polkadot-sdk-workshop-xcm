@@ -14,9 +14,9 @@ use frame_support::traits::{Everything, Nothing};
 use xcm_builder::{FixedRateOfFungible, FrameTransactionalProcessor};
 
 // Types from our runtime.
-use super::{AccountId, Balances, RuntimeCall, RuntimeOrigin};
+use super::RuntimeCall;
 // Pallets from our runtime.
-use super::{ForeignUniques, MsgQueue, PolkadotXcm};
+use super::{MsgQueue, PolkadotXcm};
 
 // Generated from `decl_test_network!`
 pub type XcmRouter = crate::ParachainXcmRouter<super::MsgQueue>;
@@ -25,13 +25,13 @@ pub struct XcmConfig;
 impl xcm_executor::Config for XcmConfig {
     type RuntimeCall = RuntimeCall;
     type XcmSender = XcmRouter;
-    type AssetTransactor = asset_transactor::LocalAssetTransactor<AccountId>;
-    type OriginConverter = origin_converter::XcmOriginToCallOrigin<AccountId, RuntimeOrigin>;
+    type AssetTransactor = asset_transactor::AssetTransactor;
+    type OriginConverter = origin_converter::OriginConverter;
     type IsReserve = reserve::TrustedReserves;
     type IsTeleporter = teleporter::TrustedTeleporters;
     type UniversalLocation = UniversalLocation;
     type Barrier = barrier::Barrier;
-    type Weigher = limits::Weigher<RuntimeCall>;
+    type Weigher = limits::Weigher;
     type Trader = FixedRateOfFungible<limits::KsmPerSecondPerByte, ()>;
     type ResponseHandler = ();
     type AssetTrap = ();

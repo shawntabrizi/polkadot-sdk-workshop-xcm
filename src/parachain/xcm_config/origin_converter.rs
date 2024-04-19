@@ -1,10 +1,22 @@
-use xcm_builder::{SignedAccountId32AsNative, SovereignSignedViaLocation};
+pub use sandbox::*;
 
-use super::locations::{LocationToAccountId, RelayNetwork};
-use pallet_xcm::XcmPassthrough;
+#[cfg(feature = "start")]
+mod sandbox {
+    pub type OriginConverter = ();
+}
 
-pub type XcmOriginToCallOrigin<AccountId, RuntimeOrigin> = (
-    SovereignSignedViaLocation<LocationToAccountId<AccountId>, RuntimeOrigin>,
-    SignedAccountId32AsNative<RelayNetwork, RuntimeOrigin>,
-    XcmPassthrough<RuntimeOrigin>,
-);
+#[cfg(feature = "example")]
+mod sandbox {
+    use crate::parachain::locations::{LocationToAccountId, RelayNetwork};
+    use crate::parachain::{AccountId, RuntimeOrigin};
+    use pallet_xcm::XcmPassthrough;
+    use xcm_builder::{SignedAccountId32AsNative, SovereignSignedViaLocation};
+
+    pub type XcmOriginToCallOrigin = (
+        SovereignSignedViaLocation<LocationToAccountId<AccountId>, RuntimeOrigin>,
+        SignedAccountId32AsNative<RelayNetwork, RuntimeOrigin>,
+        XcmPassthrough<RuntimeOrigin>,
+    );
+
+    pub type OriginConverter = XcmOriginToCallOrigin;
+}

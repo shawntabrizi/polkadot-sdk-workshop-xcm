@@ -1,33 +1,48 @@
-use polkadot_parachain_primitives::primitives::Sibling;
-use xcm::latest::prelude::*;
-use xcm_builder::{
-    AccountId32Aliases, ConvertedConcreteId, FungibleAdapter, IsConcrete, NoChecking,
-    NonFungiblesAdapter, ParentIsPreset, SiblingParachainConvertsVia,
-};
-use xcm_executor::traits::JustTry;
+pub use sandbox::*;
 
-use super::{Balances, ForeignUniques, KsmLocation, LocationToAccountId, RelayNetwork};
+#[cfg(feature = "start")]
+mod sandbox {
+    pub type SovereignAccountOf = ();
+    pub type AssetTransactor = ();
+}
 
-pub type SovereignAccountOf<AccountId> = (
-    SiblingParachainConvertsVia<Sibling, AccountId>,
-    AccountId32Aliases<RelayNetwork, AccountId>,
-    ParentIsPreset<AccountId>,
-);
+#[cfg(feature = "example")]
+mod sandbox {
+    use polkadot_parachain_primitives::primitives::Sibling;
+    use xcm::latest::prelude::*;
+    use xcm_builder::{
+        AccountId32Aliases, ConvertedConcreteId, FungibleAdapter, IsConcrete, NoChecking,
+        NonFungiblesAdapter, ParentIsPreset, SiblingParachainConvertsVia,
+    };
+    use xcm_executor::traits::JustTry;
 
-pub type LocalAssetTransactor<AccountId> = (
-    FungibleAdapter<
-        Balances,
-        IsConcrete<KsmLocation>,
-        LocationToAccountId<AccountId>,
-        AccountId,
-        (),
-    >,
-    NonFungiblesAdapter<
-        ForeignUniques,
-        ConvertedConcreteId<Location, AssetInstance, JustTry, JustTry>,
-        SovereignAccountOf<AccountId>,
-        AccountId,
-        NoChecking,
-        (),
-    >,
-);
+    use crate::parachain::{
+        AccountId, Balances, ForeignUniques, KsmLocation, LocationToAccountId, RelayNetwork,
+    };
+
+    pub type SovereignAccountOf = (
+        SiblingParachainConvertsVia<Sibling, AccountId>,
+        AccountId32Aliases<RelayNetwork, AccountId>,
+        ParentIsPreset<AccountId>,
+    );
+
+    type LocalAssetTransactor = (
+        FungibleAdapter<
+            Balances,
+            IsConcrete<KsmLocation>,
+            LocationToAccountId<AccountId>,
+            AccountId,
+            (),
+        >,
+        NonFungiblesAdapter<
+            ForeignUniques,
+            ConvertedConcreteId<Location, AssetInstance, JustTry, JustTry>,
+            SovereignAccountOf,
+            AccountId,
+            NoChecking,
+            (),
+        >,
+    );
+
+    pub type AssetTransactor = LocalAssetTransactor;
+}
