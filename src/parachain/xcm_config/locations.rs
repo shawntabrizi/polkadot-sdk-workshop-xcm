@@ -1,7 +1,6 @@
 use frame_support::parameter_types;
-use polkadot_parachain_primitives::primitives::Sibling;
 use xcm::latest::prelude::*;
-use xcm_builder::{Account32Hash, AccountId32Aliases, ParentIsPreset, SiblingParachainConvertsVia};
+use xcm_builder::{HashedDescription, DescribeFamily, DescribeAllTerminal, AccountId32Aliases};
 
 use crate::parachain::{AccountId, MsgQueue};
 
@@ -12,8 +11,6 @@ parameter_types! {
 }
 
 pub type LocationToAccountId = (
-    ParentIsPreset<AccountId>,
-    SiblingParachainConvertsVia<Sibling, AccountId>,
+    HashedDescription<AccountId, DescribeFamily<DescribeAllTerminal>>,
     AccountId32Aliases<RelayNetwork, AccountId>,
-    Account32Hash<(), AccountId>,
 );

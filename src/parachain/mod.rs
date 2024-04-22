@@ -112,7 +112,7 @@ impl EnsureOriginWithArg<RuntimeOrigin, Location> for ForeignCreators {
         if !a.starts_with(&origin_location) {
             return Err(o);
         }
-        xcm_config::SovereignAccountOf::convert_location(&origin_location).ok_or(o)
+        xcm_config::LocationToAccountId::convert_location(&origin_location).ok_or(o)
     }
 }
 

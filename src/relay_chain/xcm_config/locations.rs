@@ -1,9 +1,8 @@
 use frame_support::parameter_types;
 use xcm::latest::prelude::*;
-use xcm_builder::{Account32Hash, AccountId32Aliases, ChildParachainConvertsVia};
+use xcm_builder::{HashedDescription, DescribeFamily, DescribeAllTerminal, AccountId32Aliases};
 
 use crate::relay_chain::AccountId;
-use polkadot_parachain_primitives::primitives::Id as ParaId;
 
 parameter_types! {
     pub const TokenLocation: Location = Here.into_location();
@@ -13,7 +12,6 @@ parameter_types! {
 }
 
 pub type LocationToAccountId = (
-    ChildParachainConvertsVia<ParaId, AccountId>,
+    HashedDescription<AccountId, DescribeFamily<DescribeAllTerminal>>,
     AccountId32Aliases<RelayNetwork, AccountId>,
-    Account32Hash<(), AccountId>,
 );
