@@ -1,11 +1,26 @@
+// Copyright (C) Parity Technologies (UK) Ltd.
+// This file is part of Polkadot.
+
+// Polkadot is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// Polkadot is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with Polkadot.  If not, see <http://www.gnu.org/licenses/>.
+
+pub use pallet::*;
 use polkadot_core_primitives::BlockNumber as RelayBlockNumber;
 use polkadot_parachain_primitives::primitives::{
     DmpMessageHandler, Id as ParaId, XcmpMessageFormat, XcmpMessageHandler,
 };
 use sp_runtime::traits::{Get, Hash};
 use xcm::{latest::prelude::*, VersionedXcm};
-
-pub use pallet::*;
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -26,11 +41,9 @@ pub mod pallet {
     pub struct Pallet<T>(_);
 
     #[pallet::storage]
-    #[pallet::getter(fn parachain_id)]
     pub(super) type ParachainId<T: Config> = StorageValue<_, ParaId, ValueQuery>;
 
     #[pallet::storage]
-    #[pallet::getter(fn received_dmp)]
     /// A queue of received DMP messages
     pub(super) type ReceivedDmp<T: Config> = StorageValue<_, Vec<Xcm<T::RuntimeCall>>, ValueQuery>;
 
@@ -65,8 +78,19 @@ pub mod pallet {
     }
 
     impl<T: Config> Pallet<T> {
+        /// Get the Parachain Id.
+        pub fn parachain_id() -> ParaId {
+            ParachainId::<T>::get()
+        }
+
+        /// Set the Parachain Id.
         pub fn set_para_id(para_id: ParaId) {
             ParachainId::<T>::put(para_id);
+        }
+
+        /// Get the queue of received DMP messages.
+        pub fn received_dmp() -> Vec<Xcm<T::RuntimeCall>> {
+            ReceivedDmp::<T>::get()
         }
 
         fn handle_xcmp_message(

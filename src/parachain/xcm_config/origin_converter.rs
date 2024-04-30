@@ -7,13 +7,14 @@ mod sandbox {
 
 #[cfg(feature = "example")]
 mod sandbox {
-    use crate::parachain::locations::{LocationToAccountId, RelayNetwork};
-    use crate::parachain::RuntimeOrigin;
+    use crate::parachain::{
+        constants::RelayNetwork, location_converter::LocationConverter, RuntimeOrigin,
+    };
     use pallet_xcm::XcmPassthrough;
     use xcm_builder::{SignedAccountId32AsNative, SovereignSignedViaLocation};
 
-    pub type XcmOriginToCallOrigin = (
-        SovereignSignedViaLocation<LocationToAccountId, RuntimeOrigin>,
+    type XcmOriginToCallOrigin = (
+        SovereignSignedViaLocation<LocationConverter, RuntimeOrigin>,
         SignedAccountId32AsNative<RelayNetwork, RuntimeOrigin>,
         XcmPassthrough<RuntimeOrigin>,
     );

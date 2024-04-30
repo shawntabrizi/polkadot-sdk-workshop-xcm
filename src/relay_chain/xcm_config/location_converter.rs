@@ -14,7 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Polkadot.  If not, see <http://www.gnu.org/licenses/>.
 
-use frame_support::traits::Everything;
-use xcm_builder::AllowUnpaidExecutionFrom;
+use crate::relay_chain::{constants::RelayNetwork, AccountId};
+use xcm_builder::{AccountId32Aliases, DescribeAllTerminal, DescribeFamily, HashedDescription};
 
-pub type Barrier = AllowUnpaidExecutionFrom<Everything>;
+type LocationToAccountId = (
+    HashedDescription<AccountId, DescribeFamily<DescribeAllTerminal>>,
+    AccountId32Aliases<RelayNetwork, AccountId>,
+);
+
+pub type LocationConverter = LocationToAccountId;

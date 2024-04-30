@@ -14,7 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Polkadot.  If not, see <http://www.gnu.org/licenses/>.
 
-use frame_support::traits::Everything;
-use xcm_builder::AllowUnpaidExecutionFrom;
+use crate::relay_chain::RuntimeCall;
+use frame_support::parameter_types;
+use xcm::latest::prelude::*;
+use xcm_builder::FixedWeightBounds;
 
-pub type Barrier = AllowUnpaidExecutionFrom<Everything>;
+parameter_types! {
+    pub const BaseXcmWeight: Weight = Weight::from_parts(1_000, 1_000);
+    pub const MaxInstructions: u32 = 100;
+}
+
+pub type Weigher = FixedWeightBounds<BaseXcmWeight, RuntimeCall, MaxInstructions>;

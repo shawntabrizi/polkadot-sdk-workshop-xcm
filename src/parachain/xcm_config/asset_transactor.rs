@@ -7,23 +7,22 @@ mod sandbox {
 
 #[cfg(feature = "example")]
 mod sandbox {
+    use crate::parachain::{
+        constants::KsmLocation, location_converter::LocationConverter, AccountId, Balances,
+        ForeignUniques,
+    };
     use xcm::latest::prelude::*;
     use xcm_builder::{
-        ConvertedConcreteId, FungibleAdapter, IsConcrete, NoChecking,
-        NonFungiblesAdapter,
+        ConvertedConcreteId, FungibleAdapter, IsConcrete, NoChecking, NonFungiblesAdapter,
     };
     use xcm_executor::traits::JustTry;
 
-    use crate::parachain::{
-        AccountId, Balances, ForeignUniques, KsmLocation, LocationToAccountId,
-    };
-
     type LocalAssetTransactor = (
-        FungibleAdapter<Balances, IsConcrete<KsmLocation>, LocationToAccountId, AccountId, ()>,
+        FungibleAdapter<Balances, IsConcrete<KsmLocation>, LocationConverter, AccountId, ()>,
         NonFungiblesAdapter<
             ForeignUniques,
             ConvertedConcreteId<Location, AssetInstance, JustTry, JustTry>,
-            LocationToAccountId,
+            LocationConverter,
             AccountId,
             NoChecking,
             (),

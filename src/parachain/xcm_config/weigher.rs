@@ -5,13 +5,6 @@ use frame_support::parameter_types;
 use xcm::latest::prelude::*;
 use xcm_builder::FixedWeightBounds;
 
-parameter_types! {
-    pub KsmPerSecondPerByte: (AssetId, u128, u128) = (AssetId(Parent.into()), 1, 1);
-    pub const MaxAssetsIntoHolding: u32 = 64;
-}
-
-pub type Weigher = FixedWeightBounds<UnitWeightCost, RuntimeCall, MaxInstructions>;
-
 #[cfg(feature = "start")]
 mod sandbox {
     use super::*;
@@ -31,3 +24,5 @@ mod sandbox {
         pub const MaxInstructions: u32 = 100;
     }
 }
+
+pub type Weigher = FixedWeightBounds<UnitWeightCost, RuntimeCall, MaxInstructions>;

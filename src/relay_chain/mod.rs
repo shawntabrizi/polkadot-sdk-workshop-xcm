@@ -1,3 +1,19 @@
+// Copyright (C) Parity Technologies (UK) Ltd.
+// This file is part of Polkadot.
+
+// Polkadot is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// Polkadot is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with Polkadot.  If not, see <http://www.gnu.org/licenses/>.
+
 //! Relay chain runtime mock.
 
 mod xcm_config;
@@ -5,12 +21,14 @@ pub use xcm_config::*;
 
 use frame_support::{
     construct_runtime, derive_impl, parameter_types,
-    traits::{AsEnsureOriginWithArg, Everything, Nothing, ProcessMessage, ProcessMessageError},
+    traits::{
+        AsEnsureOriginWithArg, ConstU128, Everything, Nothing, ProcessMessage, ProcessMessageError,
+    },
     weights::{Weight, WeightMeter},
 };
 
 use frame_system::EnsureRoot;
-use sp_core::{ConstU32, H256};
+use sp_core::ConstU32;
 use sp_runtime::{traits::IdentityLookup, AccountId32};
 
 use polkadot_runtime_parachains::{
@@ -31,51 +49,17 @@ parameter_types! {
 
 #[derive_impl(frame_system::config_preludes::TestDefaultConfig)]
 impl frame_system::Config for Runtime {
-    type RuntimeOrigin = RuntimeOrigin;
-    type RuntimeCall = RuntimeCall;
-    type Nonce = u64;
-    type Hash = H256;
-    type Hashing = ::sp_runtime::traits::BlakeTwo256;
     type AccountId = AccountId;
     type Lookup = IdentityLookup<Self::AccountId>;
     type Block = Block;
-    type RuntimeEvent = RuntimeEvent;
-    type BlockHashCount = BlockHashCount;
-    type BlockWeights = ();
-    type BlockLength = ();
-    type Version = ();
-    type PalletInfo = PalletInfo;
     type AccountData = pallet_balances::AccountData<Balance>;
-    type OnNewAccount = ();
-    type OnKilledAccount = ();
-    type DbWeight = ();
-    type BaseCallFilter = Everything;
-    type SystemWeightInfo = ();
-    type SS58Prefix = ();
-    type OnSetCode = ();
-    type MaxConsumers = ConstU32<16>;
 }
 
-parameter_types! {
-    pub ExistentialDeposit: Balance = 1;
-    pub const MaxLocks: u32 = 50;
-    pub const MaxReserves: u32 = 50;
-}
-
+#[derive_impl(pallet_balances::config_preludes::TestDefaultConfig)]
 impl pallet_balances::Config for Runtime {
-    type MaxLocks = MaxLocks;
     type Balance = Balance;
-    type RuntimeEvent = RuntimeEvent;
-    type DustRemoval = ();
-    type ExistentialDeposit = ExistentialDeposit;
+    type ExistentialDeposit = ConstU128<1>;
     type AccountStore = System;
-    type WeightInfo = ();
-    type MaxReserves = MaxReserves;
-    type ReserveIdentifier = [u8; 8];
-    type RuntimeHoldReason = RuntimeHoldReason;
-    type RuntimeFreezeReason = RuntimeFreezeReason;
-    type FreezeIdentifier = ();
-    type MaxFreezes = ConstU32<0>;
 }
 
 impl pallet_uniques::Config for Runtime {
@@ -95,6 +79,8 @@ impl pallet_uniques::Config for Runtime {
     type ValueLimit = ConstU32<128>;
     type Locker = ();
     type WeightInfo = ();
+    #[cfg(feature = "runtime-benchmarks")]
+    type Helper = ();
 }
 
 impl shared::Config for Runtime {
@@ -105,7 +91,8 @@ impl configuration::Config for Runtime {
     type WeightInfo = configuration::TestWeightInfo;
 }
 
-pub type LocalOriginToLocation = SignedToAccountId32<RuntimeOrigin, AccountId, RelayNetwork>;
+pub type LocalOriginToLocation =
+    SignedToAccountId32<RuntimeOrigin, AccountId, constants::RelayNetwork>;
 
 impl pallet_xcm::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
@@ -117,16 +104,16 @@ impl pallet_xcm::Config for Runtime {
     type XcmExecutor = XcmExecutor<XcmConfig>;
     type XcmTeleportFilter = Everything;
     type XcmReserveTransferFilter = Everything;
-    type Weigher = limits::Weigher;
-    type UniversalLocation = UniversalLocation;
+    type Weigher = weigher::Weigher;
+    type UniversalLocation = constants::UniversalLocation;
     type RuntimeOrigin = RuntimeOrigin;
     type RuntimeCall = RuntimeCall;
     const VERSION_DISCOVERY_QUEUE_SIZE: u32 = 100;
     type AdvertisedXcmVersion = pallet_xcm::CurrentXcmVersion;
     type Currency = Balances;
-    type CurrencyMatcher = IsConcrete<TokenLocation>;
+    type CurrencyMatcher = IsConcrete<constants::TokenLocation>;
     type TrustedLockers = ();
-    type SovereignAccountOf = LocationToAccountId;
+    type SovereignAccountOf = location_converter::LocationConverter;
     type MaxLockers = ConstU32<8>;
     type MaxRemoteLockConsumers = ConstU32<0>;
     type RemoteLockConsumerIdentifier = ();
