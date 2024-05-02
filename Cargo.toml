@@ -41,7 +41,8 @@ fundamentals = ["start"]
 asset = []
 instruction = []
 location = []
-xcvm = []
+pallet_xcm = []
+xcm_executor = []
 
 # Final example from xcm-simulator
 example = []
