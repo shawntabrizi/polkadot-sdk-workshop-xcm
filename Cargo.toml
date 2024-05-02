@@ -33,4 +33,5 @@ polkadot-parachain-primitives = { git = "https://github.com/paritytech/polkadot-
 default = []
 start = []
 example = []
-lesson-constants = ["start"]
+fundamentals = ["start"]
+location = []

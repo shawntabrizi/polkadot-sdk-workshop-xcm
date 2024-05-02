@@ -13,17 +13,3 @@ parameter_types! {
     pub const RelayNetwork: NetworkId = NetworkId::Kusama;
     pub UniversalLocation: InteriorLocation = [GlobalConsensus(RelayNetwork::get()), Parachain(MsgQueue::parachain_id().into())].into();
 }
-
-#[cfg(feature = "lesson-constants")]
-pub mod sandbox {
-    use super::*;
-
-    parameter_types! {
-        // How would you define the location of a sibling parachain on Kusama with Id = 1337?
-        pub Sib1337Location: Location = Parachain(1337).into();
-        // How would you define `DotLocation`? (the location of the Polkadot relay chain and its native asset)
-        pub DotLocation: Location = GlobalConsensus(NetworkId::Polkadot).into();
-        // How would you define a parachain on Polkadot with Id = 69?
-        pub Para69Location: Location = [GlobalConsensus(NetworkId::Polkadot), Parachain(69)].into();
-    }
-}
