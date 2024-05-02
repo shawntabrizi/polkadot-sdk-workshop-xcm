@@ -1,6 +1,8 @@
 use frame_support::parameter_types;
 use xcm::latest::prelude::*;
 
+// TODO: Junctions
+
 parameter_types! {
     // How would you define the location of a sibling parachain on Kusama with Id = 1337?
     pub Sib1337Location: Location = Parachain(1337).into();

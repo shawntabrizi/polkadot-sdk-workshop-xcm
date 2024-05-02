@@ -30,8 +30,18 @@ polkadot-runtime-parachains = { git = "https://github.com/paritytech/polkadot-sd
 polkadot-parachain-primitives = { git = "https://github.com/paritytech/polkadot-sdk", branch = "release-polkadot-v1.11.0" }
 
 [features]
-default = []
+default = ["start"]
+
+# Starting point with mostly `()` implementation
 start = []
-example = []
+
+# Fundamentals Lessons
 fundamentals = ["start"]
+# `--features fundamentals,<lesson>`
+asset = []
+instruction = []
 location = []
+xcvm = []
+
+# Final example from xcm-simulator
+example = []
