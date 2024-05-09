@@ -23,10 +23,10 @@ pub use xcm_config::*;
 use core::marker::PhantomData;
 use frame_support::{
     construct_runtime, derive_impl, parameter_types,
-    traits::{ConstU128, ContainsPair, EnsureOrigin, EnsureOriginWithArg, Everything, Nothing},
+    traits::{ConstU128, ContainsPair, EnsureOrigin, EnsureOriginWithArg, Everything, Nothing, AsEnsureOriginWithArg},
     weights::{constants::WEIGHT_REF_TIME_PER_SECOND, Weight},
 };
-use frame_system::EnsureRoot;
+use frame_system::{EnsureRoot, EnsureSigned};
 use sp_core::ConstU32;
 use sp_runtime::{
     traits::{Get, IdentityLookup},
@@ -57,6 +57,29 @@ impl pallet_balances::Config for Runtime {
     type Balance = Balance;
     type ExistentialDeposit = ConstU128<1>;
     type AccountStore = System;
+}
+
+// TODO: Put reasonable values.
+parameter_types! {
+    pub const AssetDeposit: Balance = 1;
+    pub const ApprovalDeposit: Balance = 1;
+    pub const AssetAccountDeposit: Balance = 1;
+    pub const MetadataDepositBase: Balance = 1;
+    pub const MetadataDepositPerByte: Balance = 1;
+}
+
+#[derive_impl(pallet_assets::config_preludes::TestDefaultConfig)]
+impl pallet_assets::Config for Runtime {
+    type Currency = Balances;
+    type Balance = Balance;
+    type CreateOrigin = AsEnsureOriginWithArg<EnsureSigned<AccountId>>;
+    type ForceOrigin = EnsureRoot<AccountId>;
+    type AssetDeposit = AssetDeposit;
+    type ApprovalDeposit = ApprovalDeposit;
+    type AssetAccountDeposit = AssetAccountDeposit;
+    type MetadataDepositBase = MetadataDepositBase;
+    type MetadataDepositPerByte = MetadataDepositPerByte;
+    type Freezer = ();
 }
 
 #[cfg(feature = "runtime-benchmarks")]
@@ -175,6 +198,7 @@ construct_runtime!(
     pub struct Runtime {
         System: frame_system,
         Balances: pallet_balances,
+        Assets: pallet_assets,
         MsgQueue: mock_msg_queue,
         PolkadotXcm: pallet_xcm,
         ForeignUniques: pallet_uniques,
