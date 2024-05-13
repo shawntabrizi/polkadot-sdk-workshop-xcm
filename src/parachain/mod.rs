@@ -25,6 +25,7 @@ use frame_support::{
     construct_runtime, derive_impl, parameter_types,
     traits::{ConstU128, ContainsPair, EnsureOrigin, EnsureOriginWithArg, Everything, Nothing, AsEnsureOriginWithArg},
     weights::{constants::WEIGHT_REF_TIME_PER_SECOND, Weight},
+    instances::{Instance1, Instance2},
 };
 use frame_system::{EnsureRoot, EnsureSigned};
 use sp_core::ConstU32;
@@ -94,18 +95,39 @@ impl pallet_uniques::BenchmarkHelper<Location, AssetInstance> for UniquesHelper 
     }
 }
 
-impl pallet_uniques::Config for Runtime {
+impl pallet_uniques::Config<Instance1> for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type CollectionId = u32; // To identify collections.
+	type ItemId = u32; // To identify individual NFTs.
+	type Currency = Balances;
+	type ForceOrigin = EnsureRoot<AccountId>;
+	type CollectionDeposit = ConstU128<1_000>;
+	type ItemDeposit = ConstU128<1_000>;
+	type MetadataDepositBase = ConstU128<1_000>;
+	type AttributeDepositBase = ConstU128<1_000>;
+	type DepositPerByte = ConstU128<1>;
+	type StringLimit = ConstU32<64>;
+	type KeyLimit = ConstU32<64>;
+	type ValueLimit = ConstU32<128>;
+	type WeightInfo = ();
+	#[cfg(feature = "runtime-benchmarks")]
+	type Helper = UniquesHelper;
+	type CreateOrigin = AsEnsureOriginWithArg<EnsureSigned<AccountId>>;
+	type Locker = ();
+}
+
+impl pallet_uniques::Config<Instance2> for Runtime {
     type RuntimeEvent = RuntimeEvent;
     type CollectionId = Location;
     type ItemId = AssetInstance;
     type Currency = Balances;
     type CreateOrigin = ForeignCreators;
-    type ForceOrigin = frame_system::EnsureRoot<AccountId>;
-    type CollectionDeposit = frame_support::traits::ConstU128<1_000>;
-    type ItemDeposit = frame_support::traits::ConstU128<1_000>;
-    type MetadataDepositBase = frame_support::traits::ConstU128<1_000>;
-    type AttributeDepositBase = frame_support::traits::ConstU128<1_000>;
-    type DepositPerByte = frame_support::traits::ConstU128<1>;
+    type ForceOrigin = EnsureRoot<AccountId>;
+    type CollectionDeposit = ConstU128<1_000>;
+    type ItemDeposit = ConstU128<1_000>;
+    type MetadataDepositBase = ConstU128<1_000>;
+    type AttributeDepositBase = ConstU128<1_000>;
+    type DepositPerByte = ConstU128<1>;
     type StringLimit = ConstU32<64>;
     type KeyLimit = ConstU32<64>;
     type ValueLimit = ConstU32<128>;
@@ -201,6 +223,7 @@ construct_runtime!(
         Assets: pallet_assets,
         MsgQueue: mock_msg_queue,
         PolkadotXcm: pallet_xcm,
-        ForeignUniques: pallet_uniques,
+        Uniques: pallet_uniques::<Instance1>,
+        ForeignUniques: pallet_uniques::<Instance2>,
     }
 );
