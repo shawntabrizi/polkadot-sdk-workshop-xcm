@@ -60,3 +60,25 @@ pub fn withdraw_and_deposit_paying_fees() -> Xcm<()> {
 
     message
 }
+
+/// The `Transact` instruction lets us execute any call on the receiving system.
+/// Try executing `System::remark` on the receiving system.
+/// Remark "Hello, world!".
+/// Assume the receiver is another parachain.
+/// Use `Weight::MAX` as `require_weight_at_most` just for testing.
+/// Remember to pay for fees.
+/// You're going to need to import `codec::Encode` to encode the call.
+pub fn transact() -> Xcm<crate::parachain::RuntimeCall> {
+    use codec::Encode;
+    let call = crate::parachain::RuntimeCall::System(
+        frame_system::Call::<crate::parachain::Runtime>::remark {
+            remark: b"Hello, world!".to_vec()
+        }
+    );
+    let message = Xcm::builder()
+        .withdraw_asset((Parent, 10u128))
+        .buy_execution((Parent, 10u128), Unlimited)
+        .transact(OriginKind::SovereignAccount, Weight::MAX, call.encode())
+        .build();
+    message
+}
