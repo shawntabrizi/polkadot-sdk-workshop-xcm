@@ -14,6 +14,18 @@ fn relative_to_polkadot_para_1000_locations() {
 }
 
 #[test]
+fn relative_to_polkadot_relay_locations() {
+    use relative_to_polkadot_relay::*;
+    assert_eq!(PolkadotPara1000::get(), Location::new(0, [Parachain(1000)]));
+    assert_eq!(PolkadotPara1337::get(), Location::new(0, [Parachain(1337)]));
+    assert_eq!(PolkadotRelay::get(), Location::new(0, []));
+    assert_eq!(PolkadotPara1337Alice::get(), Location::new(0, [Parachain(1337), AliceBytes::get().into()]));
+    assert_eq!(PolkadotRelayBalancesPallet::get(), Location::new(0, [PalletInstance(1)]));
+    assert_eq!(PolkadotPara1000Asset1984::get(), Location::new(0, [Parachain(1000), PalletInstance(2), GeneralIndex(1984)]));
+    assert_eq!(KusamaPara69::get(), Location::new(1, [GlobalConsensus(Kusama), Parachain(69)]));
+}
+
+#[test]
 fn absolute_locations() {
     use absolute::*;
     assert_eq!(PolkadotPara1000::get(), Location::new(0, [GlobalConsensus(Polkadot), Parachain(1000)]));
