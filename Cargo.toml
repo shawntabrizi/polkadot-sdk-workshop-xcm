@@ -37,13 +37,13 @@ default = ["start"]
 start = []
 
 # Fundamentals Lessons
-fundamentals = ["start"]
+fundamentals = []
 # `--features fundamentals,<lesson>`
 location = []
 asset = []
 instruction = []
-pallet_xcm = []
 xcm_executor = []
+pallet_xcm = []
 
 # Final example from xcm-simulator
 example = []

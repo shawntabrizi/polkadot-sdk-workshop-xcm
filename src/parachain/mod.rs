@@ -25,7 +25,6 @@ use frame_support::{
     construct_runtime, derive_impl, parameter_types,
     traits::{ConstU128, ContainsPair, EnsureOrigin, EnsureOriginWithArg, Everything, Nothing, AsEnsureOriginWithArg},
     weights::{constants::WEIGHT_REF_TIME_PER_SECOND, Weight},
-    instances::{Instance1, Instance2},
 };
 use frame_system::{EnsureRoot, EnsureSigned};
 use sp_core::ConstU32;
@@ -95,7 +94,7 @@ impl pallet_uniques::BenchmarkHelper<Location, AssetInstance> for UniquesHelper 
     }
 }
 
-impl pallet_uniques::Config<Instance1> for Runtime {
+impl pallet_uniques::Config<pallet_uniques::Instance1> for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type CollectionId = u32; // To identify collections.
 	type ItemId = u32; // To identify individual NFTs.
@@ -116,7 +115,7 @@ impl pallet_uniques::Config<Instance1> for Runtime {
 	type Locker = ();
 }
 
-impl pallet_uniques::Config<Instance2> for Runtime {
+impl pallet_uniques::Config<pallet_uniques::Instance2> for Runtime {
     type RuntimeEvent = RuntimeEvent;
     type CollectionId = Location;
     type ItemId = AssetInstance;
