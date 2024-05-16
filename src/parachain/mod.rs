@@ -220,12 +220,12 @@ type Block = frame_system::mocking::MockBlock<Runtime>;
 
 construct_runtime!(
 	pub struct Runtime {
-		System: frame_system,
-		Balances: pallet_balances,
-		Assets: pallet_assets,
-		MsgQueue: mock_msg_queue,
-		PolkadotXcm: pallet_xcm,
-		Uniques: pallet_uniques<Instance1>,
-		ForeignUniques: pallet_uniques<Instance2>,
+		System: frame_system = 0,
+		Balances: pallet_balances = 1,
+		Assets: pallet_assets = 2,
+		MsgQueue: mock_msg_queue = 3,
+		PolkadotXcm: pallet_xcm = 4,
+		Uniques: pallet_uniques::<Instance1> = 5,
+		ForeignUniques: pallet_uniques::<Instance2> = 6,
 	}
 );
