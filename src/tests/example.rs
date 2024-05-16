@@ -424,7 +424,7 @@ fn reserve_asset_class_create_and_reserve_transfer() {
             origin_kind: OriginKind::Xcm,
             require_weight_at_most: Weight::from_parts(1_000_000_000, 1024 * 1024),
             call: parachain::RuntimeCall::from(
-                pallet_uniques::Call::<parachain::Runtime>::create {
+                pallet_uniques::Call::<parachain::Runtime, pallet_uniques::Instance2>::create {
                     collection: (Parent, 2u64).into(),
                     admin: parent_account_id(),
                 },

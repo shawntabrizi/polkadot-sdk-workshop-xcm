@@ -1,5 +1,8 @@
-use frame_support::dispatch::GetDispatchInfo;
-use frame_support::dispatch::PostDispatchInfo;
+//! # Fundamentals lesson 4: XCM Executor
+//!
+//! Create your own executor for XCM.
+
+use frame_support::dispatch::{GetDispatchInfo, PostDispatchInfo};
 use frame_support::Parameter;
 use sp_runtime::traits::Dispatchable;
 use sp_std::{
@@ -8,8 +11,7 @@ use sp_std::{
     prelude::*,
 };
 use xcm::latest::prelude::*;
-use xcm_executor::traits::ShouldExecute;
-use xcm_executor::traits::TransactAsset;
+use xcm_executor::traits::{TransactAsset, ShouldExecute};
 
 /// Map of non-wildcard fungible and non-fungible assets held in the holding register.
 #[derive(Default, Clone, Debug, Eq, PartialEq)]
@@ -34,12 +36,34 @@ pub trait XcmConfig {
 }
 
 pub struct XcmExecutor<Config: XcmConfig> {
-    holding: AssetsInHolding,
+    pub holding: AssetsInHolding,
+    pub origin: Option<Location>,
     _config: PhantomData<Config>,
 }
 
 // TODO: Have students implement the logic for a few basic instructions.
 impl<Config: XcmConfig> XcmExecutor<Config> {
+    pub fn new(origin: Location) -> Self {
+        Self {
+            holding: Default::default(),
+            origin: Some(origin),
+            _config: PhantomData,
+        }
+    }
+
+    /// Process an entire XCM program.
+    pub fn execute(&mut self, xcm: Xcm<Config::RuntimeCall>) -> Result<(), XcmError> {
+        log::trace!(
+            target: "xcm::execute",
+            "xcm: {:?}",
+            xcm
+        );
+        for instruction in xcm.0.into_iter() {
+            self.process_instruction(instruction)?;
+        }
+        Ok(())
+    }
+
     /// Process a single XCM instruction, mutating the state of the XCM virtual machine.
     fn process_instruction(
         &mut self,
@@ -51,7 +75,22 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
             instr
         );
         match instr {
-            _ => unimplemented!(),
+            WithdrawAsset(assets) => {
+                let origin = self.origin.as_ref().ok_or(XcmError::BadOrigin)?;
+                for asset in assets.inner() {
+                    Config::AssetTransactor::withdraw_asset(asset, origin, None)?;
+                    match asset.fun {
+                        Fungibility::Fungible(amount) => {
+                            self.holding.fungible.insert(asset.id.clone(), amount);
+                        },
+                        Fungibility::NonFungible(instance) => {
+                            self.holding.non_fungible.insert((asset.id.clone(), instance));
+                        },
+                    }
+                }
+                Ok(())
+            }
+            _ => todo!(),
         }
     }
 }

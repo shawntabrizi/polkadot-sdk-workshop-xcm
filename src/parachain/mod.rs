@@ -23,10 +23,10 @@ pub use xcm_config::*;
 use core::marker::PhantomData;
 use frame_support::{
     construct_runtime, derive_impl, parameter_types,
-    traits::{ConstU128, ContainsPair, EnsureOrigin, EnsureOriginWithArg, Everything, Nothing},
+    traits::{ConstU128, ContainsPair, EnsureOrigin, EnsureOriginWithArg, Everything, Nothing, AsEnsureOriginWithArg},
     weights::{constants::WEIGHT_REF_TIME_PER_SECOND, Weight},
 };
-use frame_system::EnsureRoot;
+use frame_system::{EnsureRoot, EnsureSigned};
 use sp_core::ConstU32;
 use sp_runtime::{
     traits::{Get, IdentityLookup},
@@ -59,6 +59,29 @@ impl pallet_balances::Config for Runtime {
     type AccountStore = System;
 }
 
+// TODO: Put reasonable values.
+parameter_types! {
+    pub const AssetDeposit: Balance = 1;
+    pub const ApprovalDeposit: Balance = 1;
+    pub const AssetAccountDeposit: Balance = 1;
+    pub const MetadataDepositBase: Balance = 1;
+    pub const MetadataDepositPerByte: Balance = 1;
+}
+
+#[derive_impl(pallet_assets::config_preludes::TestDefaultConfig)]
+impl pallet_assets::Config for Runtime {
+    type Currency = Balances;
+    type Balance = Balance;
+    type CreateOrigin = AsEnsureOriginWithArg<EnsureSigned<AccountId>>;
+    type ForceOrigin = EnsureRoot<AccountId>;
+    type AssetDeposit = AssetDeposit;
+    type ApprovalDeposit = ApprovalDeposit;
+    type AssetAccountDeposit = AssetAccountDeposit;
+    type MetadataDepositBase = MetadataDepositBase;
+    type MetadataDepositPerByte = MetadataDepositPerByte;
+    type Freezer = ();
+}
+
 #[cfg(feature = "runtime-benchmarks")]
 pub struct UniquesHelper;
 #[cfg(feature = "runtime-benchmarks")]
@@ -71,18 +94,39 @@ impl pallet_uniques::BenchmarkHelper<Location, AssetInstance> for UniquesHelper 
     }
 }
 
-impl pallet_uniques::Config for Runtime {
+impl pallet_uniques::Config<pallet_uniques::Instance1> for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type CollectionId = u32; // To identify collections.
+	type ItemId = u32; // To identify individual NFTs.
+	type Currency = Balances;
+	type ForceOrigin = EnsureRoot<AccountId>;
+	type CollectionDeposit = ConstU128<1_000>;
+	type ItemDeposit = ConstU128<1_000>;
+	type MetadataDepositBase = ConstU128<1_000>;
+	type AttributeDepositBase = ConstU128<1_000>;
+	type DepositPerByte = ConstU128<1>;
+	type StringLimit = ConstU32<64>;
+	type KeyLimit = ConstU32<64>;
+	type ValueLimit = ConstU32<128>;
+	type WeightInfo = ();
+	#[cfg(feature = "runtime-benchmarks")]
+	type Helper = UniquesHelper;
+	type CreateOrigin = AsEnsureOriginWithArg<EnsureSigned<AccountId>>;
+	type Locker = ();
+}
+
+impl pallet_uniques::Config<pallet_uniques::Instance2> for Runtime {
     type RuntimeEvent = RuntimeEvent;
     type CollectionId = Location;
     type ItemId = AssetInstance;
     type Currency = Balances;
     type CreateOrigin = ForeignCreators;
-    type ForceOrigin = frame_system::EnsureRoot<AccountId>;
-    type CollectionDeposit = frame_support::traits::ConstU128<1_000>;
-    type ItemDeposit = frame_support::traits::ConstU128<1_000>;
-    type MetadataDepositBase = frame_support::traits::ConstU128<1_000>;
-    type AttributeDepositBase = frame_support::traits::ConstU128<1_000>;
-    type DepositPerByte = frame_support::traits::ConstU128<1>;
+    type ForceOrigin = EnsureRoot<AccountId>;
+    type CollectionDeposit = ConstU128<1_000>;
+    type ItemDeposit = ConstU128<1_000>;
+    type MetadataDepositBase = ConstU128<1_000>;
+    type AttributeDepositBase = ConstU128<1_000>;
+    type DepositPerByte = ConstU128<1>;
     type StringLimit = ConstU32<64>;
     type KeyLimit = ConstU32<64>;
     type ValueLimit = ConstU32<128>;
@@ -175,8 +219,10 @@ construct_runtime!(
     pub struct Runtime {
         System: frame_system,
         Balances: pallet_balances,
+        Assets: pallet_assets,
         MsgQueue: mock_msg_queue,
         PolkadotXcm: pallet_xcm,
-        ForeignUniques: pallet_uniques,
+        Uniques: pallet_uniques::<Instance1>,
+        ForeignUniques: pallet_uniques::<Instance2>,
     }
 );
