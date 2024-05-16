@@ -7,22 +7,22 @@ use xcm_builder::FixedWeightBounds;
 
 #[cfg(feature = "start")]
 mod sandbox {
-    use super::*;
+	use super::*;
 
-    parameter_types! {
-        pub const UnitWeightCost: Weight = Weight::zero();
-        pub const MaxInstructions: u32 = 0;
-    }
+	parameter_types! {
+		pub const UnitWeightCost: Weight = Weight::zero();
+		pub const MaxInstructions: u32 = 0;
+	}
 }
 
 #[cfg(feature = "example")]
 mod sandbox {
-    use super::*;
+	use super::*;
 
-    parameter_types! {
-        pub const UnitWeightCost: Weight = Weight::from_parts(1, 1);
-        pub const MaxInstructions: u32 = 100;
-    }
+	parameter_types! {
+		pub const UnitWeightCost: Weight = Weight::from_parts(1, 1);
+		pub const MaxInstructions: u32 = 100;
+	}
 }
 
 pub type Weigher = FixedWeightBounds<UnitWeightCost, RuntimeCall, MaxInstructions>;

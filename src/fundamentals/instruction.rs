@@ -11,9 +11,9 @@ use xcm::latest::prelude::*;
 /// This instruction clears the origin of the sender, meaning after this point,
 /// no special privileges are granted.
 pub fn clear_origin_message() -> Xcm<()> {
-    let message = Xcm(vec![ClearOrigin]);
+	let message = Xcm(vec![ClearOrigin]);
 
-    message
+	message
 }
 
 /// Put all your knowledge of assets to the test.
@@ -22,10 +22,10 @@ pub fn clear_origin_message() -> Xcm<()> {
 /// The XCM program is executed on a parachain.
 /// This program won't do anything with the funds.
 pub fn withdraw_asset() -> Xcm<()> {
-    let assets: Assets = (Parent, 100u128).into();
-    let message = Xcm(vec![WithdrawAsset(assets)]);
+	let assets: Assets = (Parent, 100u128).into();
+	let message = Xcm(vec![WithdrawAsset(assets)]);
 
-    message
+	message
 }
 
 /// Let's do something with the funds.
@@ -35,13 +35,16 @@ pub fn withdraw_asset() -> Xcm<()> {
 /// Deposit all the assets to `crate::ALICE`.
 /// Remember how to use wildcards.
 pub fn withdraw_and_deposit() -> Xcm<()> {
-    let assets: Assets = (Parent, 100u128).into();
-    let message = Xcm(vec![
-        WithdrawAsset(assets),
-        DepositAsset { assets: All.into(), beneficiary: AccountId32 { id: crate::ALICE.into(), network: None }.into() }
-    ]);
+	let assets: Assets = (Parent, 100u128).into();
+	let message = Xcm(vec![
+		WithdrawAsset(assets),
+		DepositAsset {
+			assets: All.into(),
+			beneficiary: AccountId32 { id: crate::ALICE.into(), network: None }.into(),
+		},
+	]);
 
-    message
+	message
 }
 
 /// Normally, we charge fees for execution on the Blockchain.
@@ -51,14 +54,14 @@ pub fn withdraw_and_deposit() -> Xcm<()> {
 /// You're going to have to first convert `crate::ALICE` into bytes.
 /// Bonus points: Use the builder pattern.
 pub fn withdraw_and_deposit_paying_fees() -> Xcm<()> {
-    let alice_bytes: [u8; 32] = crate::ALICE.into();
-    let message = Xcm::builder()
-        .withdraw_asset((Parent, 100u128))
-        .buy_execution((Parent, 10u128), Unlimited)
-        .deposit_asset(All, alice_bytes)
-        .build();
+	let alice_bytes: [u8; 32] = crate::ALICE.into();
+	let message = Xcm::builder()
+		.withdraw_asset((Parent, 100u128))
+		.buy_execution((Parent, 10u128), Unlimited)
+		.deposit_asset(All, alice_bytes)
+		.build();
 
-    message
+	message
 }
 
 /// The `Transact` instruction lets us execute any call on the receiving system.
@@ -69,16 +72,16 @@ pub fn withdraw_and_deposit_paying_fees() -> Xcm<()> {
 /// Remember to pay for fees.
 /// You're going to need to import `codec::Encode` to encode the call.
 pub fn transact() -> Xcm<crate::parachain::RuntimeCall> {
-    use codec::Encode;
-    let call = crate::parachain::RuntimeCall::System(
-        frame_system::Call::<crate::parachain::Runtime>::remark {
-            remark: b"Hello, world!".to_vec()
-        }
-    );
-    let message = Xcm::builder()
-        .withdraw_asset((Parent, 10u128))
-        .buy_execution((Parent, 10u128), Unlimited)
-        .transact(OriginKind::SovereignAccount, Weight::MAX, call.encode())
-        .build();
-    message
+	use codec::Encode;
+	let call = crate::parachain::RuntimeCall::System(frame_system::Call::<
+		crate::parachain::Runtime,
+	>::remark {
+		remark: b"Hello, world!".to_vec(),
+	});
+	let message = Xcm::builder()
+		.withdraw_asset((Parent, 10u128))
+		.buy_execution((Parent, 10u128), Unlimited)
+		.transact(OriginKind::SovereignAccount, Weight::MAX, call.encode())
+		.build();
+	message
 }
