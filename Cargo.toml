@@ -37,7 +37,7 @@ default = ["start"]
 start = []
 
 # Fundamentals Lessons
-fundamentals = []
+fundamentals = ["start"]
 # `--features fundamentals,<lesson>`
 location = []
 asset = []
