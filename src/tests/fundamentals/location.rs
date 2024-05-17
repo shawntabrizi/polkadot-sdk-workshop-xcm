@@ -29,10 +29,10 @@ fn relative_to_polkadot_relay_locations() {
 		PolkadotPara1337Alice::get(),
 		Location::new(0, [Parachain(1337), AliceBytes::get().into()])
 	);
-	assert_eq!(PolkadotRelayBalancesPallet::get(), Location::new(0, [PalletInstance(1)]));
+	assert_eq!(PolkadotRelayBalancesPallet::get(), Location::new(0, [PalletInstance(2)]));
 	assert_eq!(
-		PolkadotPara1000Asset1984::get(),
-		Location::new(0, [Parachain(1000), PalletInstance(2), GeneralIndex(1984)])
+		PolkadotPara1000Asset21::get(),
+		Location::new(0, [Parachain(1000), PalletInstance(2), GeneralIndex(21)])
 	);
 	assert_eq!(KusamaPara69::get(), Location::new(1, [GlobalConsensus(Kusama), Parachain(69)]));
 }
