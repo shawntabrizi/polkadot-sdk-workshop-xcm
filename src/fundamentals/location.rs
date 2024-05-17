@@ -5,7 +5,6 @@ use xcm::latest::prelude::*;
 const ALICE: sp_runtime::AccountId32 = sp_runtime::AccountId32::new([1u8; 32]);
 const Bob: [u8; 20] = [2u8; 20];
 
-
 // Relay A Topography:
 //                   ┌───────────┐
 //                   │  Relay A  │

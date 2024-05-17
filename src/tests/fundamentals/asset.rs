@@ -6,8 +6,8 @@ fn fungibles() {
 	assert_eq!(EmptyAssets::get(), Assets::new());
 	assert_eq!(NativeToken::get(), AssetId(Location::new(0, [])));
 	assert_eq!(DotToken::get(), AssetId(Location::new(1, [])));
-	assert_eq!(AmountInNativeToken::get(), (NativeToken::get(), 100u128).into());
-	assert_eq!(AmountInDot::get(), (DotToken::get(), 100u128).into());
+	assert_eq!(OneHundredNative::get(), (NativeToken::get(), 100_000_000_000_000u128).into());
+	assert_eq!(OneHundredDot::get(), (DotToken::get(), 1_000_000_000_000u128).into());
 }
 
 #[test]
