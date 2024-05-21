@@ -18,3 +18,10 @@ fn nonfungibles() {
 	);
 	assert_eq!(Nft::get(), (NftLocation::get(), 69u64).into());
 }
+
+#[test]
+fn filters() {
+	assert_eq!(AllAssetsFilter::get(), AssetFilter::Wild(WildAsset::All));
+	assert_eq!(DotFilter::get(), AssetFilter::Definite(vec![OneHundredDot::get()].into()));
+	assert_eq!(NativeFilter::get(), AssetFilter::Definite(vec![OneHundredNative::get()].into()));
+}

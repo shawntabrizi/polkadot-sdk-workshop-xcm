@@ -1,3 +1,7 @@
+//! # Fundamentals lesson 6: Pallet XCM
+//!
+//! Implement the core functionality of Pallet XCM
+
 use frame_support::pallet_prelude::*;
 use frame_system::pallet_prelude::*;
 // TODO: Teach about Versioned Types

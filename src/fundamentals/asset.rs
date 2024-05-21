@@ -55,7 +55,7 @@ parameter_types! {
 	pub OneHundredDot: Asset = (DotToken::get(), 100u128 * 10u128.pow(DOT_DECIMALS)).into();
 }
 
-// Non-Fungible Tokens.
+// Non-Fungible Tokens
 parameter_types! {
 	// Location of NFT collection with id 42 inside of the uniques pallet in Polkadot parachain 1000.
 	pub NftLocation: Location = Location::new(1, [Parachain(1000), PalletInstance(5), GeneralIndex(42)]);
@@ -63,4 +63,12 @@ parameter_types! {
 	pub Nft: Asset = (NftLocation::get(), 69u64).into();
 }
 
-// TODO: Asset Filters
+// Asset Filters
+parameter_types! {
+	// A filter which will capture all possible assets.
+	pub AllAssetsFilter: AssetFilter = AssetFilter::Wild(WildAsset::All);
+	// A filter specific for the DOT Token
+	pub DotFilter: AssetFilter = OneHundredDot::get().into();
+	// A filter specific for the Native Token
+	pub NativeFilter: AssetFilter = OneHundredNative::get().into();
+}
