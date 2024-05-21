@@ -372,6 +372,10 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 					Ok(())
 				})
 			},
+			ClearOrigin => {
+				self.context.origin = None;
+				Ok(())
+			},
 			_ => unimplemented!(),
 		}
 	}
