@@ -11,9 +11,13 @@ pub mod asset;
 pub mod instruction;
 
 // Lesson 4
+#[cfg(feature = "holding")]
+pub mod holding;
+
+// Lesson 5
 #[cfg(feature = "xcm_executor")]
 pub mod xcm_executor;
 
-// Lesson 5
+// Lesson 6
 #[cfg(feature = "pallet_xcm")]
 pub mod pallet_xcm;

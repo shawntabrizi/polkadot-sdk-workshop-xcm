@@ -62,3 +62,5 @@ parameter_types! {
 	// The NFT with id 69 inside of that collection.
 	pub Nft: Asset = (NftLocation::get(), 69u64).into();
 }
+
+// TODO: Asset Filters

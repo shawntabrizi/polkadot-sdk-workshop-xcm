@@ -42,7 +42,8 @@ fundamentals = ["start"]
 location = []
 asset = []
 instruction = []
-xcm_executor = []
+holding = []
+xcm_executor = ["holding"]
 pallet_xcm = []
 
 # Final example from xcm-simulator

@@ -6,6 +6,7 @@ features=(
     "fundamentals,location"
     "fundamentals,asset"
     "fundamentals,instruction"
+    "fundamentals,holding"
 	"fundamentals,xcm_executor"
 	"fundamentals,pallet_xcm"
 )
