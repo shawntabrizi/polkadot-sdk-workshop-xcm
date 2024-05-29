@@ -13,7 +13,7 @@
 use super::holding::*;
 
 use frame_support::{
-	dispatch::{GetDispatchInfo, PostDispatchInfo},
+	dispatch::{DispatchResult, GetDispatchInfo, PostDispatchInfo},
 	Parameter,
 };
 use sp_runtime::traits::Dispatchable;
@@ -135,5 +135,16 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 			},
 			_ => unimplemented!(),
 		}
+	}
+}
+
+pub trait ExecuteXcm<RuntimeCall> {
+	fn execute(origin: impl Into<Location>, xcm: Xcm<RuntimeCall>) -> DispatchResult;
+}
+
+impl<Config: XcmConfig> ExecuteXcm<Config::RuntimeCall> for XcmExecutor<Config> {
+	fn execute(origin: impl Into<Location>, xcm: Xcm<Config::RuntimeCall>) -> DispatchResult {
+		let mut vm = Self::new(origin);
+		vm.execute(xcm).map_err(|_| "xcm_executor error".into())
 	}
 }

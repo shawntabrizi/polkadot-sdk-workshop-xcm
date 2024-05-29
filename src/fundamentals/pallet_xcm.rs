@@ -5,10 +5,9 @@
 use frame_support::pallet_prelude::*;
 use frame_system::pallet_prelude::*;
 // TODO: Teach about Versioned Types
+use crate::fundamentals::xcm_executor::ExecuteXcm;
 pub use pallet::*;
 use xcm::{prelude::*, VersionedAssets, VersionedLocation, VersionedXcm};
-
-type RuntimeCallFor<T> = <<T as Config>::XcmConfig as super::xcm_executor::XcmConfig>::RuntimeCall;
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -25,7 +24,7 @@ pub mod pallet {
 
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
-		type XcmConfig: crate::fundamentals::xcm_executor::XcmConfig;
+		type XcmExecutor: ExecuteXcm<Self::RuntimeCall>;
 		/// Required origin for executing XCM messages, including the teleport functionality. If
 		/// successful, then it resolves to `Location` which exists as an interior location
 		/// within this chain's XCM context.
@@ -42,15 +41,12 @@ struct Sandbox<T: Config>(PhantomData<T>);
 impl<T: Config> Sandbox<T> {
 	fn execute(
 		origin: OriginFor<T>,
-		message: Box<VersionedXcm<RuntimeCallFor<T>>>,
+		message: Box<VersionedXcm<T::RuntimeCall>>,
 		_max_weight: Weight,
 	) -> DispatchResult {
 		let execute_origin = T::ExecuteXcmOrigin::ensure_origin(origin)?;
-		let mut xcm_executor =
-			super::xcm_executor::XcmExecutor::<T::XcmConfig>::new(execute_origin);
 		let message = (*message).try_into().map_err(|()| Error::<T>::BadVersion)?;
-		xcm_executor.execute(message).map_err(|_| Error::<T>::ExecutorError)?;
-		Ok(())
+		T::XcmExecutor::execute(execute_origin, message)
 	}
 
 	fn send(
