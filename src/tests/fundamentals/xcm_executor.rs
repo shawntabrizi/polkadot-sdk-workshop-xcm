@@ -7,7 +7,7 @@ use crate::{
 	},
 	ParaA,
 };
-use frame_support::assert_ok;
+use frame_support::{assert_ok, traits::fungible::Inspect};
 use xcm::latest::prelude::*;
 use xcm_builder::{
 	ConvertedConcreteId, FrameTransactionalProcessor, FungibleAdapter, IsConcrete, NoChecking,
@@ -38,13 +38,22 @@ impl XcmConfig for Config {
 
 #[test]
 fn clear_origin_works() {
-	// TODO
+	let starting_origin: Location = AccountId32 { id: crate::ALICE.into(), network: None }.into();
+	let mut executor = XcmExecutor::<Config>::new(starting_origin.clone());
+
+	let message = Xcm::<parachain::RuntimeCall>::builder_unsafe().clear_origin().build();
+
+	assert_eq!(executor.context.origin, Some(starting_origin));
+	assert_ok!(executor.execute(message));
+	assert_eq!(executor.context.origin, None);
 }
 
-// TODO FIX
 #[test]
 fn withdraw_works() {
 	ParaA::execute_with(|| {
+		// Alice should have some non-zero starting balance.
+		let alice_original_balance = Balances::balance(&crate::ALICE);
+
 		let message = Xcm::<parachain::RuntimeCall>::builder_unsafe()
 			.withdraw_asset((Parent, 100u128))
 			.build();
@@ -53,20 +62,66 @@ fn withdraw_works() {
 		let mut executor = XcmExecutor::<Config>::new(origin);
 		assert_ok!(executor.execute(message));
 		assert_eq!(executor.holding.fungible.get(&Parent.into()), Some(&100u128));
+		// Alice's balance is updated
+		assert_eq!(Balances::balance(&crate::ALICE), alice_original_balance - 100u128);
 	});
 }
 
 #[test]
-fn buy_execution_works() {
-	// TODO
-}
-
-#[test]
 fn deposit_asset_works() {
-	// TODO
+	ParaA::execute_with(|| {
+		// Alice might have some non-zero starting balance.
+		let alice_original_balance = Balances::balance(&crate::ALICE);
+
+		let asset: Asset = (Parent, 100u128).into();
+		let filter: AssetFilter = asset.into();
+		let alice_location: Location =
+			AccountId32 { id: crate::ALICE.into(), network: None }.into();
+		let message = Xcm::<parachain::RuntimeCall>::builder_unsafe()
+			.deposit_asset(filter, alice_location)
+			.build();
+
+		let mut executor = XcmExecutor::<Config>::new(Parent);
+
+		// Artificially place some assets into the holding.
+		executor.holding.subsume((Parent, 100u128).into());
+		assert_eq!(executor.holding.fungible.get(&Parent.into()), Some(&100u128));
+
+		// Execute the deposit
+		assert_ok!(executor.execute(message));
+		// Holding is now empty
+		assert_eq!(executor.holding.fungible.get(&Parent.into()), None);
+		// Alice's balance is updated
+		assert_eq!(Balances::balance(&crate::ALICE), alice_original_balance + 100u128);
+	});
 }
 
 #[test]
-fn transact_works() {
-	// TODO
+fn transfer_asset_works() {
+	ParaA::execute_with(|| {
+		// Alice and bob might have some non-zero starting balance.
+		let alice_original_balance = Balances::balance(&crate::ALICE);
+		const BOB: sp_runtime::AccountId32 = sp_runtime::AccountId32::new([2u8; 32]);
+
+		let bob_original_balance = Balances::balance(&BOB);
+
+		let asset: Asset = (Parent, 100u128).into();
+		let alice_location: Location =
+			AccountId32 { id: crate::ALICE.into(), network: None }.into();
+		let bob_location: Location = AccountId32 { id: BOB.into(), network: None }.into();
+
+		let message = Xcm::<parachain::RuntimeCall>::builder_unsafe()
+			.transfer_asset(asset, bob_location)
+			.build();
+
+		let mut executor = XcmExecutor::<Config>::new(alice_location);
+
+		// Execute the transfer
+		assert_ok!(executor.execute(message));
+		// Holding stays empty
+		assert_eq!(executor.holding.fungible.get(&Parent.into()), None);
+		// Alice and Bob have their balances updated
+		assert_eq!(Balances::balance(&crate::ALICE), alice_original_balance - 100u128);
+		assert_eq!(Balances::balance(&BOB), bob_original_balance + 100u128);
+	});
 }

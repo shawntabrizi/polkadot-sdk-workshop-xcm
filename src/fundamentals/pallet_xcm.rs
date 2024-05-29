@@ -169,7 +169,11 @@ impl<T: Config> Pallet<T> {
 
 		// TODO: Clean up API somehow
 		Self::do_execute(origin.clone(), Box::new(VersionedXcm::V4(local_execute_xcm)))?;
-		Self::do_send(origin, Box::new(VersionedLocation::V4(dest)), Box::new(VersionedXcm::V4(xcm_on_dest)))?;
+		Self::do_send(
+			origin,
+			Box::new(VersionedLocation::V4(dest)),
+			Box::new(VersionedXcm::V4(xcm_on_dest)),
+		)?;
 
 		Ok(())
 	}

@@ -77,6 +77,10 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 			instr
 		);
 		match instr {
+			ClearOrigin => {
+				self.context.origin = None;
+				Ok(())
+			},
 			WithdrawAsset(assets) => {
 				let origin = self.origin_ref().ok_or(XcmError::BadOrigin)?;
 				Config::TransactionalProcessor::process(|| {
@@ -129,15 +133,12 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 					Ok(())
 				})
 			},
-			ClearOrigin => {
-				self.context.origin = None;
-				Ok(())
-			},
 			_ => unimplemented!(),
 		}
 	}
 }
 
+#[allow(dead_code)]
 pub trait ExecuteXcm<RuntimeCall> {
 	fn execute(origin: impl Into<Location>, xcm: Xcm<RuntimeCall>) -> DispatchResult;
 }
