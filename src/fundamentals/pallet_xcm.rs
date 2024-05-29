@@ -44,53 +44,65 @@ pub mod pallet {
 		/// The type used to actually dispatch an XCM to its destination.
 		type XcmRouter: SendXcm;
 	}
-}
 
-// TODO: Have students implement these functions (close as makes sense), that are also implemented
-// in Pallet XCM. TODO: Potentially use XCM Executor implementation.
-struct Sandbox<T: Config>(PhantomData<T>);
-impl<T: Config> Sandbox<T> {
-	fn execute(
-		origin: OriginFor<T>,
-		message: Box<VersionedXcm<T::RuntimeCall>>,
-		_max_weight: Weight,
-	) -> DispatchResult {
-		let execute_origin = T::ExecuteXcmOrigin::ensure_origin(origin)?;
-		let message = (*message).try_into().map_err(|()| Error::<T>::BadVersion)?;
-		T::XcmExecutor::execute(execute_origin, message)
-	}
+	#[pallet::call]
+	impl<T: Config> Pallet<T> {
+		#[pallet::call_index(0)]
+		#[pallet::weight(Weight::default())]
+		pub fn execute(
+			origin: OriginFor<T>,
+			message: Box<VersionedXcm<T::RuntimeCall>>,
+			_max_weight: Weight,
+		) -> DispatchResult {
+			let execute_origin = T::ExecuteXcmOrigin::ensure_origin(origin)?;
+			let message = (*message).try_into().map_err(|()| Error::<T>::BadVersion)?;
+			T::XcmExecutor::execute(execute_origin, message)
+		}
 
-	fn send(
-		origin: OriginFor<T>,
-		dest: Box<VersionedLocation>,
-		message: Box<VersionedXcm<()>>,
-	) -> DispatchResult {
-		let origin_location = T::SendXcmOrigin::ensure_origin(origin)?;
-		let dest = Location::try_from(*dest).map_err(|()| Error::<T>::BadVersion)?;
-		let message: Xcm<()> = (*message).try_into().map_err(|()| Error::<T>::BadVersion)?;
-		let (ticket, _) = T::XcmRouter::validate(&mut Some(dest), &mut Some(message))
-			.map_err(|_| Error::<T>::RouterError)?;
-		let _message_id = T::XcmRouter::deliver(ticket).map_err(|_| Error::<T>::RouterError)?;
-		Ok(())
-	}
+		#[pallet::call_index(1)]
+		#[pallet::weight(Weight::default())]
+		pub fn send(
+			origin: OriginFor<T>,
+			dest: Box<VersionedLocation>,
+			message: Box<VersionedXcm<()>>,
+		) -> DispatchResult {
+			let origin_location = T::SendXcmOrigin::ensure_origin(origin)?;
+			let interior: Junctions =
+				origin_location.clone().try_into().map_err(|_| Error::<T>::InvalidOrigin)?;
+			let dest = Location::try_from(*dest).map_err(|()| Error::<T>::BadVersion)?;
+			let mut message: Xcm<()> =
+				(*message).try_into().map_err(|()| Error::<T>::BadVersion)?;
+			if interior != Junctions::Here {
+				message.0.insert(0, DescendOrigin(interior.clone()));
+			}
+			let (ticket, _) = T::XcmRouter::validate(&mut Some(dest), &mut Some(message))
+				.map_err(|_| Error::<T>::RouterError)?;
+			let _message_id = T::XcmRouter::deliver(ticket).map_err(|_| Error::<T>::RouterError)?;
+			Ok(())
+		}
 
-	fn teleport_asset(
-		_origin: OriginFor<T>,
-		_dest: Box<VersionedLocation>,
-		_beneficiary: Box<VersionedLocation>,
-		_assets: Box<VersionedAssets>,
-		_fee_asset_item: u32,
-	) -> DispatchResult {
-		unimplemented!();
-	}
+		#[pallet::call_index(2)]
+		#[pallet::weight(Weight::default())]
+		pub fn teleport_asset(
+			_origin: OriginFor<T>,
+			_dest: Box<VersionedLocation>,
+			_beneficiary: Box<VersionedLocation>,
+			_assets: Box<VersionedAssets>,
+			_fee_asset_item: u32,
+		) -> DispatchResult {
+			unimplemented!();
+		}
 
-	fn reserve_transfer_assets(
-		_origin: OriginFor<T>,
-		_dest: Box<VersionedLocation>,
-		_beneficiary: Box<VersionedLocation>,
-		_assets: Box<VersionedAssets>,
-		_fee_asset_item: u32,
-	) -> DispatchResult {
-		unimplemented!();
+		#[pallet::call_index(3)]
+		#[pallet::weight(Weight::default())]
+		pub fn reserve_transfer_assets(
+			_origin: OriginFor<T>,
+			_dest: Box<VersionedLocation>,
+			_beneficiary: Box<VersionedLocation>,
+			_assets: Box<VersionedAssets>,
+			_fee_asset_item: u32,
+		) -> DispatchResult {
+			unimplemented!();
+		}
 	}
 }
