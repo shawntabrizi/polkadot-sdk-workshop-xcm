@@ -20,6 +20,8 @@ pub mod pallet {
 	pub enum Error<T> {
 		BadVersion,
 		ExecutorError,
+		InvalidOrigin,
+		RouterError,
 	}
 
 	#[pallet::config]
@@ -32,6 +34,15 @@ pub mod pallet {
 			<Self as frame_system::Config>::RuntimeOrigin,
 			Success = Location,
 		>;
+
+		/// Required origin for sending XCM messages. If successful, it resolves to `Location`
+		/// which exists as an interior location within this chain's XCM context.
+		type SendXcmOrigin: EnsureOrigin<
+			<Self as frame_system::Config>::RuntimeOrigin,
+			Success = Location,
+		>;
+		/// The type used to actually dispatch an XCM to its destination.
+		type XcmRouter: SendXcm;
 	}
 }
 
@@ -50,11 +61,17 @@ impl<T: Config> Sandbox<T> {
 	}
 
 	fn send(
-		_origin: OriginFor<T>,
-		_dest: Box<VersionedLocation>,
-		_message: Box<VersionedXcm<()>>,
+		origin: OriginFor<T>,
+		dest: Box<VersionedLocation>,
+		message: Box<VersionedXcm<()>>,
 	) -> DispatchResult {
-		unimplemented!();
+		let origin_location = T::SendXcmOrigin::ensure_origin(origin)?;
+		let dest = Location::try_from(*dest).map_err(|()| Error::<T>::BadVersion)?;
+		let message: Xcm<()> = (*message).try_into().map_err(|()| Error::<T>::BadVersion)?;
+		let (ticket, _) = T::XcmRouter::validate(&mut Some(dest), &mut Some(message))
+			.map_err(|_| Error::<T>::RouterError)?;
+		let _message_id = T::XcmRouter::deliver(ticket).map_err(|_| Error::<T>::RouterError)?;
+		Ok(())
 	}
 
 	fn teleport_asset(
