@@ -6,10 +6,15 @@ use frame_support::pallet_prelude::*;
 use frame_system::pallet_prelude::*;
 // TODO: Teach about Versioned Types
 use crate::fundamentals::xcm_executor::ExecuteXcm;
+// TODO: Double check this allow statements.
+#[allow(unused_imports)]
 pub use pallet::*;
 use xcm::{prelude::*, VersionedAssets, VersionedLocation, VersionedXcm};
 
 #[frame_support::pallet]
+// TODO: Double check these allow statements.
+#[allow(dead_code)]
+#[allow(unused_imports)]
 pub mod pallet {
 	use super::*;
 
