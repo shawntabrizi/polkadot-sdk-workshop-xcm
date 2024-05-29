@@ -5,12 +5,54 @@
 use frame_support::pallet_prelude::*;
 use frame_system::pallet_prelude::*;
 // TODO: Teach about Versioned Types
-use xcm::{VersionedAssets, VersionedLocation, VersionedXcm};
+pub use pallet::*;
+use xcm::{prelude::*, VersionedAssets, VersionedLocation, VersionedXcm};
+
+type RuntimeCallFor<T> = <<T as Config>::XcmConfig as super::xcm_executor::XcmConfig>::RuntimeCall;
+
+#[frame_support::pallet]
+pub mod pallet {
+	use super::*;
+
+	#[pallet::pallet]
+	pub struct Pallet<T>(_);
+
+	#[pallet::error]
+	pub enum Error<T> {
+		BadVersion,
+		ExecutorError,
+	}
+
+	#[pallet::config]
+	pub trait Config: frame_system::Config {
+		type XcmConfig: crate::fundamentals::xcm_executor::XcmConfig;
+		/// Required origin for executing XCM messages, including the teleport functionality. If
+		/// successful, then it resolves to `Location` which exists as an interior location
+		/// within this chain's XCM context.
+		type ExecuteXcmOrigin: EnsureOrigin<
+			<Self as frame_system::Config>::RuntimeOrigin,
+			Success = Location,
+		>;
+	}
+}
 
 // TODO: Have students implement these functions (close as makes sense), that are also implemented
 // in Pallet XCM. TODO: Potentially use XCM Executor implementation.
-struct Sandbox<T: pallet_xcm::Config>(PhantomData<T>);
-impl<T: pallet_xcm::Config> Sandbox<T> {
+struct Sandbox<T: Config>(PhantomData<T>);
+impl<T: Config> Sandbox<T> {
+	fn execute(
+		origin: OriginFor<T>,
+		message: Box<VersionedXcm<RuntimeCallFor<T>>>,
+		_max_weight: Weight,
+	) -> DispatchResult {
+		let execute_origin = T::ExecuteXcmOrigin::ensure_origin(origin)?;
+		let mut xcm_executor =
+			super::xcm_executor::XcmExecutor::<T::XcmConfig>::new(execute_origin);
+		let message = (*message).try_into().map_err(|()| Error::<T>::BadVersion)?;
+		xcm_executor.execute(message).map_err(|_| Error::<T>::ExecutorError)?;
+		Ok(())
+	}
+
 	fn send(
 		_origin: OriginFor<T>,
 		_dest: Box<VersionedLocation>,
@@ -35,14 +77,6 @@ impl<T: pallet_xcm::Config> Sandbox<T> {
 		_beneficiary: Box<VersionedLocation>,
 		_assets: Box<VersionedAssets>,
 		_fee_asset_item: u32,
-	) -> DispatchResult {
-		unimplemented!();
-	}
-
-	fn execute(
-		_origin: OriginFor<T>,
-		_message: Box<VersionedXcm<<T as pallet_xcm::Config>::RuntimeCall>>,
-		_max_weight: Weight,
 	) -> DispatchResult {
 		unimplemented!();
 	}

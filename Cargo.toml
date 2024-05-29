@@ -44,7 +44,7 @@ asset = []
 instruction = []
 holding = []
 xcm_executor = ["holding"]
-pallet_xcm = []
+pallet_xcm = ["xcm_executor"]
 
 # Final example from xcm-simulator
 example = []
