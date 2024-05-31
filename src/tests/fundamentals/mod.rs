@@ -11,11 +11,11 @@ pub mod asset;
 pub mod instruction;
 
 // Lesson 4
-#[cfg(feature = "holding")]
+#[cfg(all(feature = "holding", not(feature = "xcm_executor"), not(feature = "pallet_xcm")))]
 pub mod holding;
 
 // Lesson 5
-#[cfg(feature = "xcm_executor")]
+#[cfg(all(feature = "xcm_executor", not(feature = "pallet_xcm")))]
 pub mod xcm_executor;
 
 // Lesson 6
