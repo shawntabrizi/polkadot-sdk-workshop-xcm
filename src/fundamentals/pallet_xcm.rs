@@ -78,14 +78,14 @@ pub mod pallet {
 
 		#[pallet::call_index(2)]
 		#[pallet::weight(Weight::default())]
-		pub fn teleport_asset(
+		pub fn teleport_assets(
 			origin: OriginFor<T>,
 			dest: Box<VersionedLocation>,
 			beneficiary: Box<VersionedLocation>,
 			assets: Box<VersionedAssets>,
 			fee_asset_item: u32,
 		) -> DispatchResult {
-			Self::do_teleport_asset(origin, dest, beneficiary, assets, fee_asset_item)
+			Self::do_teleport_assets(origin, dest, beneficiary, assets, fee_asset_item)
 		}
 
 		#[pallet::call_index(3)]
@@ -131,7 +131,7 @@ impl<T: Config> Pallet<T> {
 		Ok(())
 	}
 
-	pub fn do_teleport_asset(
+	pub fn do_teleport_assets(
 		origin: OriginFor<T>,
 		dest: Box<VersionedLocation>,
 		beneficiary: Box<VersionedLocation>,

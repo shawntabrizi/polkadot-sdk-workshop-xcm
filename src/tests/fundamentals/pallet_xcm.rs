@@ -9,7 +9,7 @@ use crate::{
 };
 use frame_support::{assert_ok, traits::fungible::Inspect};
 use fundamentals_pallet_xcm::Pallet as PalletXcm;
-use xcm::{latest::prelude::*, VersionedXcm};
+use xcm::{latest::prelude::*, VersionedAssets, VersionedLocation, VersionedXcm};
 use xcm_builder::{
 	ConvertedConcreteId, EnsureXcmOrigin, FrameTransactionalProcessor, FungibleAdapter, IsConcrete,
 	NoChecking, NonFungiblesAdapter,
@@ -68,6 +68,52 @@ fn execute_works() {
 
 		// Alice's balance is updated
 		assert_eq!(Balances::balance(&crate::ALICE), alice_original_balance - 100u128);
+		assert_eq!(Balances::balance(&BOB), bob_original_balance + 100u128);
+	});
+}
+
+#[test]
+fn do_teleport_works() {
+	//sp_tracing::init_for_tests();
+	crate::MockNet::reset();
+	pub const BOB: sp_runtime::AccountId32 = sp_runtime::AccountId32::new([2u8; 32]);
+
+	let bob_bytes: [u8; 32] = BOB.into();
+	let mut bob_original_balance = 0;
+
+	ParaB::execute_with(|| {
+		// Alice and bob might have some non-zero starting balance.
+		bob_original_balance = Balances::balance(&BOB);
+	});
+
+	ParaA::execute_with(|| {
+		// Alice and bob might have some non-zero starting balance.
+		let alice_original_balance = Balances::balance(&crate::ALICE);
+
+		let alice_origin: RuntimeOrigin = frame_system::RawOrigin::Signed(crate::ALICE).into();
+
+		let dest: Location = Location::new(1, [Parachain(2)]);
+		let bob_dest: Location = Location::new(1, [Parachain(2), bob_bytes.into()]);
+		let asset: Asset = (Parent, 100u128).into();
+
+		let v_dest = Box::new(VersionedLocation::V4(dest));
+		let v_bob_dest = Box::new(VersionedLocation::V4(bob_dest));
+		let v_asset = Box::new(VersionedAssets::V4(asset.into()));
+
+		assert_ok!(PalletXcm::<Test>::teleport_assets(
+			alice_origin,
+			v_dest,
+			v_bob_dest,
+			v_asset,
+			0
+		));
+
+		// Alice's balance is updated
+		assert_eq!(Balances::balance(&crate::ALICE), alice_original_balance - 100u128);
+	});
+
+	ParaB::execute_with(|| {
+		// Bob's balance is updated
 		assert_eq!(Balances::balance(&BOB), bob_original_balance + 100u128);
 	});
 }
