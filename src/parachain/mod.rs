@@ -22,7 +22,7 @@ pub use xcm_config::*;
 
 use core::marker::PhantomData;
 use frame_support::{
-	construct_runtime, derive_impl, parameter_types,
+	derive_impl, parameter_types,
 	traits::{
 		AsEnsureOriginWithArg, ConstU128, ContainsPair, EnsureOrigin, EnsureOriginWithArg,
 		Everything, Nothing,
@@ -218,14 +218,40 @@ impl pallet_xcm::Config for Runtime {
 
 type Block = frame_system::mocking::MockBlock<Runtime>;
 
-construct_runtime!(
-	pub struct Runtime {
-		System: frame_system = 0,
-		Balances: pallet_balances = 1,
-		Assets: pallet_assets = 2,
-		MsgQueue: mock_msg_queue = 3,
-		PolkadotXcm: pallet_xcm = 4,
-		Uniques: pallet_uniques::<Instance1> = 5,
-		ForeignUniques: pallet_uniques::<Instance2> = 6,
-	}
-);
+#[frame_support::runtime]
+mod runtime {
+	#[runtime::runtime]
+	#[runtime::derive(
+		RuntimeCall,
+		RuntimeEvent,
+		RuntimeError,
+		RuntimeOrigin,
+		RuntimeFreezeReason,
+		RuntimeHoldReason,
+		RuntimeSlashReason,
+		RuntimeLockId,
+		RuntimeTask
+	)]
+	pub struct Runtime;
+
+	#[runtime::pallet_index(0)]
+	pub type System = frame_system;
+
+	#[runtime::pallet_index(1)]
+	pub type Balances = pallet_balances;
+
+	#[runtime::pallet_index(2)]
+	pub type Assets = pallet_assets;
+
+	#[runtime::pallet_index(3)]
+	pub type MsgQueue = mock_msg_queue;
+
+	#[runtime::pallet_index(4)]
+	pub type PolkadotXcm = pallet_xcm;
+
+	#[runtime::pallet_index(5)]
+	pub type Uniques = pallet_uniques<Instance1>;
+
+	#[runtime::pallet_index(6)]
+	pub type ForeignUniques = pallet_uniques<Instance2>;
+}
