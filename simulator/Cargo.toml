@@ -1,0 +1,6 @@
+[package]
+name = "simulator"
+description = "XCM Simulator Exercises"
+version = "0.1.0"
+edition = "2021"
+publish = false
