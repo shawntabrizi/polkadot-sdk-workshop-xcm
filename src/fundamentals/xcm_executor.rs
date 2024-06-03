@@ -174,6 +174,9 @@ impl<Config: XcmConfig> ExecuteXcm<Config::RuntimeCall> for XcmExecutor<Config> 
 		.map_err(|_| "XCM Barrier Error")?;
 
 		let mut vm = Self::new(origin);
-		vm.process(xcm).map_err(|_| "xcm_executor error".into())
+		vm.process(xcm).map_err(|e| {
+			log::trace!(target: "xcm::execute", "xcm_executor error: {:?}", e);
+			return "xcm_executor error".into()
+		})
 	}
 }
