@@ -13,10 +13,10 @@ Students will first go through, learn, and use all the fundamental building bloc
 - Assets and Filters
 	- Learn how to represent various types of assets like fungible tokens and non-fungible tokens.
 	- Constructing asset filters to target pools of assets.
+- Asset Holding
+	- Learn how we can manage multiple assets in memory using the `AssetsInHolding` abstraction.
 - Instructions
 	- Construct common XCM messages through individual XCM instructions.
-- Asset Holding
-	- Learn how the XCM Executor manages assets in its own state using the `AssetsInHolding` abstraction.
 - The XCM Executor
 	- Learn how the XCM Executor actually functions, and loosely implement a few common instructions needed to complete end to end scenarios.
 - Pallet XCM
