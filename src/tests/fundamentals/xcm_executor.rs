@@ -7,11 +7,14 @@ use crate::{
 	},
 	ParaA,
 };
-use frame_support::{assert_ok, traits::fungible::Inspect};
+use frame_support::{
+	assert_err, assert_ok,
+	traits::{fungible::Inspect, Contains, Everything},
+};
 use xcm::latest::prelude::*;
 use xcm_builder::{
-	ConvertedConcreteId, FrameTransactionalProcessor, FungibleAdapter, IsConcrete, NoChecking,
-	NonFungiblesAdapter,
+	AllowUnpaidExecutionFrom, ConvertedConcreteId, FrameTransactionalProcessor, FungibleAdapter,
+	IsConcrete, NoChecking, NonFungiblesAdapter,
 };
 use xcm_executor::traits::JustTry;
 use xcm_simulator::TestExt;
@@ -33,7 +36,7 @@ impl XcmConfig for Config {
 	type RuntimeCall = parachain::RuntimeCall;
 	type AssetTransactor = TestAssetTransactor;
 	type TransactionalProcessor = FrameTransactionalProcessor;
-	type Barrier = ();
+	type Barrier = AllowUnpaidExecutionFrom<Everything>;
 }
 
 #[test]
@@ -44,7 +47,7 @@ fn clear_origin_works() {
 	let message = Xcm::<parachain::RuntimeCall>::builder_unsafe().clear_origin().build();
 
 	assert_eq!(executor.context.origin, Some(starting_origin));
-	assert_ok!(executor.execute(message));
+	assert_ok!(executor.process(message));
 	assert_eq!(executor.context.origin, None);
 }
 
@@ -60,7 +63,7 @@ fn withdraw_works() {
 		let origin: Location = AccountId32 { id: crate::ALICE.into(), network: None }.into();
 
 		let mut executor = XcmExecutor::<Config>::new(origin);
-		assert_ok!(executor.execute(message));
+		assert_ok!(executor.process(message));
 		assert_eq!(executor.holding.fungible.get(&Parent.into()), Some(&100u128));
 		// Alice's balance is updated
 		assert_eq!(Balances::balance(&crate::ALICE), alice_original_balance - 100u128);
@@ -88,7 +91,7 @@ fn deposit_asset_works() {
 		assert_eq!(executor.holding.fungible.get(&Parent.into()), Some(&100u128));
 
 		// Execute the deposit
-		assert_ok!(executor.execute(message));
+		assert_ok!(executor.process(message));
 		// Holding is now empty
 		assert_eq!(executor.holding.fungible.get(&Parent.into()), None);
 		// Alice's balance is updated
@@ -117,11 +120,47 @@ fn transfer_asset_works() {
 		let mut executor = XcmExecutor::<Config>::new(alice_location);
 
 		// Execute the transfer
-		assert_ok!(executor.execute(message));
+		assert_ok!(executor.process(message));
 		// Holding stays empty
 		assert_eq!(executor.holding.fungible.get(&Parent.into()), None);
 		// Alice and Bob have their balances updated
 		assert_eq!(Balances::balance(&crate::ALICE), alice_original_balance - 100u128);
 		assert_eq!(Balances::balance(&BOB), bob_original_balance + 100u128);
 	});
+}
+
+pub struct OnlyAlice;
+impl Contains<Location> for OnlyAlice {
+	fn contains(location: &Location) -> bool {
+		let alice_location: Location =
+			AccountId32 { id: crate::ALICE.into(), network: None }.into();
+		location == &alice_location
+	}
+}
+
+struct OnlyAliceConfig;
+impl XcmConfig for OnlyAliceConfig {
+	type RuntimeCall = parachain::RuntimeCall;
+	type AssetTransactor = TestAssetTransactor;
+	type TransactionalProcessor = FrameTransactionalProcessor;
+	type Barrier = AllowUnpaidExecutionFrom<OnlyAlice>;
+}
+
+#[test]
+fn barrier_works() {
+	// Alice Works
+	let alice_origin: Location = AccountId32 { id: crate::ALICE.into(), network: None }.into();
+	let message = Xcm::<parachain::RuntimeCall>::builder_unsafe().clear_origin().build();
+	assert_ok!(XcmExecutor::<OnlyAliceConfig>::execute(alice_origin.clone(), message.clone()));
+
+	// Bob does not
+	const BOB: sp_runtime::AccountId32 = sp_runtime::AccountId32::new([2u8; 32]);
+	let bob_origin: Location = AccountId32 { id: BOB.into(), network: None }.into();
+	assert_err!(
+		XcmExecutor::<OnlyAliceConfig>::execute(bob_origin.clone(), message.clone()),
+		"XCM Barrier Error"
+	);
+
+	// Bob does work with regular config
+	assert_ok!(XcmExecutor::<Config>::execute(bob_origin.clone(), message));
 }

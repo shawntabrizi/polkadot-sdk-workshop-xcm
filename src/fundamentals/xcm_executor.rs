@@ -19,7 +19,7 @@ use frame_support::{
 use sp_runtime::traits::Dispatchable;
 use sp_std::{marker::PhantomData, prelude::*};
 use xcm::latest::prelude::*;
-use xcm_executor::traits::{ProcessTransaction, ShouldExecute, TransactAsset};
+use xcm_executor::traits::{ProcessTransaction, Properties, ShouldExecute, TransactAsset};
 
 pub trait XcmConfig {
 	type RuntimeCall: Parameter + Dispatchable<PostInfo = PostDispatchInfo> + GetDispatchInfo;
@@ -54,12 +54,9 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 	}
 
 	/// Process an entire XCM program.
-	pub fn execute(&mut self, xcm: Xcm<Config::RuntimeCall>) -> Result<(), XcmError> {
-		log::trace!(
-			target: "xcm::execute",
-			"xcm: {:?}",
-			xcm
-		);
+	pub fn process(&mut self, xcm: Xcm<Config::RuntimeCall>) -> Result<(), XcmError> {
+		log::trace!(target: "xcm::process", "xcm: {:?}", xcm);
+
 		for instruction in xcm.0.into_iter() {
 			self.process_instruction(instruction)?;
 		}
@@ -71,11 +68,7 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 		&mut self,
 		instr: Instruction<Config::RuntimeCall>,
 	) -> Result<(), XcmError> {
-		log::trace!(
-			target: "xcm::process_instruction",
-			"=== {:?}",
-			instr
-		);
+		log::trace!(target: "xcm::process_instruction", "=== {:?}", instr);
 		match instr {
 			ClearOrigin => {
 				self.context.origin = None;
@@ -168,8 +161,19 @@ pub trait ExecuteXcm<RuntimeCall> {
 }
 
 impl<Config: XcmConfig> ExecuteXcm<Config::RuntimeCall> for XcmExecutor<Config> {
-	fn execute(origin: impl Into<Location>, xcm: Xcm<Config::RuntimeCall>) -> DispatchResult {
+	fn execute(origin: impl Into<Location>, mut xcm: Xcm<Config::RuntimeCall>) -> DispatchResult {
+		let origin = origin.into();
+		log::trace!(target: "xcm::execute", "xcm: {:?}", xcm);
+		let mut properties = Properties { weight_credit: Weight::default(), message_id: None };
+		Config::Barrier::should_execute(
+			&origin,
+			xcm.inner_mut(),
+			Weight::default(),
+			&mut properties,
+		)
+		.map_err(|_| "XCM Barrier Error")?;
+
 		let mut vm = Self::new(origin);
-		vm.execute(xcm).map_err(|_| "xcm_executor error".into())
+		vm.process(xcm).map_err(|_| "xcm_executor error".into())
 	}
 }

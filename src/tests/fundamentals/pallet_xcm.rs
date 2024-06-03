@@ -7,12 +7,15 @@ use crate::{
 	},
 	ParaA, ParaB,
 };
-use frame_support::{assert_ok, traits::fungible::Inspect};
+use frame_support::{
+	assert_ok,
+	traits::{fungible::Inspect, Everything},
+};
 use fundamentals_pallet_xcm::Pallet as PalletXcm;
 use xcm::{latest::prelude::*, VersionedAssets, VersionedLocation, VersionedXcm};
 use xcm_builder::{
-	ConvertedConcreteId, EnsureXcmOrigin, FrameTransactionalProcessor, FungibleAdapter, IsConcrete,
-	NoChecking, NonFungiblesAdapter,
+	AllowUnpaidExecutionFrom, ConvertedConcreteId, EnsureXcmOrigin, FrameTransactionalProcessor,
+	FungibleAdapter, IsConcrete, NoChecking, NonFungiblesAdapter,
 };
 use xcm_executor::traits::JustTry;
 use xcm_simulator::TestExt;
@@ -36,7 +39,7 @@ impl XcmConfig for Config {
 	type RuntimeCall = parachain::RuntimeCall;
 	type AssetTransactor = TestAssetTransactor;
 	type TransactionalProcessor = FrameTransactionalProcessor;
-	type Barrier = ();
+	type Barrier = AllowUnpaidExecutionFrom<Everything>;
 }
 
 // NOTE: This pallet isn't actually integrated into the Construct Runtime...
