@@ -1,4 +1,4 @@
-//! # Fundamentals lesson 4: Assets Holding
+//! # Fundamentals lesson 3: Assets Holding
 //!
 //! Create and managing an in-memory asset holding for the XCM Executor.
 
@@ -38,6 +38,7 @@ impl From<Assets> for AssetsInHolding {
 	}
 }
 
+#[allow(dead_code)]
 impl AssetsInHolding {
 	/// New value, containing no assets.
 	pub fn new() -> Self {

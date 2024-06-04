@@ -7,12 +7,12 @@ pub mod location;
 pub mod asset;
 
 // Lesson 3
-#[cfg(feature = "instruction")]
-pub mod instruction;
-
-// Lesson 4
 #[cfg(feature = "holding")]
 pub mod holding;
+
+// Lesson 4
+#[cfg(feature = "instruction")]
+pub mod instruction;
 
 // Lesson 5
 #[cfg(feature = "xcm_executor")]
