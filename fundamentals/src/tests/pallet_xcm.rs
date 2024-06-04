@@ -1,4 +1,4 @@
-use frame_support::{assert_ok, traits::fungible::Inspect};
+use frame_support::{assert_ok, traits::{Everything, fungible::Inspect}};
 use fundamentals_pallet_xcm::Pallet as PalletXcm;
 use xcm::{latest::prelude::*, VersionedAssets, VersionedLocation, VersionedXcm};
 use xcm_builder::{
@@ -8,46 +8,16 @@ use xcm_builder::{
 use xcm_executor::traits::JustTry;
 use xcm_simulator::TestExt;
 
-use chains::network::{ParaA, ParaB, MockNet, ALICE};
-use chains::parachain::{
+use crate::constants::ALICE;
+use crate::network::{ParaA, ParaB, MockNet};
+use crate::network::parachain::{
 	self,
-	constants::UniversalLocation, constants::KsmLocation, location_converter::LocationConverter, AccountId,
-	Balances, ForeignUniques, LocalOriginToLocation, RuntimeOrigin, XcmRouter,
+	UniversalLocation, ParentLocation, LocationConverter, AccountId,
+	Balances, LocalOriginToLocation, RuntimeOrigin, XcmRouter, Runtime,
 };
 use crate::{
 	pallet_xcm::pallet as fundamentals_pallet_xcm, xcm_executor::*,
 };
-
-type TestAssetTransactor = (
-	FungibleAdapter<Balances, IsConcrete<KsmLocation>, LocationConverter, AccountId, ()>,
-	NonFungiblesAdapter<
-		ForeignUniques,
-		ConvertedConcreteId<Location, AssetInstance, JustTry, JustTry>,
-		LocationConverter,
-		AccountId,
-		NoChecking,
-		(),
-	>,
-);
-
-use parachain::Runtime as Test;
-
-pub struct Config;
-impl XcmConfig for Config {
-	type RuntimeCall = parachain::RuntimeCall;
-	type AssetTransactor = TestAssetTransactor;
-	type TransactionalProcessor = FrameTransactionalProcessor;
-	type Barrier = AllowUnpaidExecutionFrom<Everything>;
-}
-
-// NOTE: This pallet isn't actually integrated into the Construct Runtime...
-impl fundamentals_pallet_xcm::Config for Test {
-	type XcmExecutor = XcmExecutor<Config>;
-	type ExecuteXcmOrigin = EnsureXcmOrigin<RuntimeOrigin, LocalOriginToLocation>;
-	type SendXcmOrigin = EnsureXcmOrigin<RuntimeOrigin, LocalOriginToLocation>;
-	type XcmRouter = XcmRouter;
-	type UniversalLocation = UniversalLocation;
-}
 
 #[test]
 fn execute_works() {
@@ -65,7 +35,7 @@ fn execute_works() {
 			.transfer_asset(asset, bob_location)
 			.build();
 		let versioned_message = Box::new(VersionedXcm::V4(message));
-		assert_ok!(PalletXcm::<Test>::execute(alice_origin, versioned_message, Weight::default()));
+		assert_ok!(PalletXcm::<Runtime>::execute(alice_origin, versioned_message, Weight::default()));
 
 		// Alice's balance is updated
 		assert_eq!(Balances::balance(&ALICE), alice_original_balance - 100u128);
@@ -94,14 +64,14 @@ fn do_teleport_works() {
 		let alice_origin: RuntimeOrigin = frame_system::RawOrigin::Signed(ALICE).into();
 
 		let dest: Location = Location::new(1, [Parachain(2)]);
-		let bob_dest: Location = Location::new(1, [Parachain(2), bob_bytes.into()]);
+		let bob_account: Location = Location::new(0, [AccountId32 { id: bob_bytes.into(), network: None }]);
 		let asset: Asset = (Parent, 100u128).into();
 
 		let v_dest = Box::new(VersionedLocation::V4(dest));
-		let v_bob_dest = Box::new(VersionedLocation::V4(bob_dest));
+		let v_bob_dest = Box::new(VersionedLocation::V4(bob_account));
 		let v_asset = Box::new(VersionedAssets::V4(asset.into()));
 
-		assert_ok!(PalletXcm::<Test>::teleport_assets(
+		assert_ok!(PalletXcm::<Runtime>::teleport_assets(
 			alice_origin,
 			v_dest,
 			v_bob_dest,

@@ -6,12 +6,11 @@ use xcm::prelude::*;
 use xcm_executor::traits::ConvertLocation;
 use xcm_simulator::{decl_test_network, decl_test_parachain, decl_test_relay_chain, TestExt};
 
+use crate::constants::{ALICE, INITIAL_BALANCE};
+
 pub mod relay_chain;
 pub mod parachain;
 pub mod mock_message_queue;
-
-pub const ALICE: sp_runtime::AccountId32 = sp_runtime::AccountId32::new([1u8; 32]);
-pub const INITIAL_BALANCE: u128 = 1_000_000_000;
 
 decl_test_parachain! {
 	pub struct ParaA {

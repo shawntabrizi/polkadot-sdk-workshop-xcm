@@ -12,10 +12,12 @@
 
 use super::holding::*;
 
+use codec::{Encode, Decode};
 use frame_support::{
 	dispatch::{DispatchResult, GetDispatchInfo, PostDispatchInfo},
 	Parameter,
 };
+use scale_info::TypeInfo;
 use sp_runtime::traits::Dispatchable;
 use sp_std::{marker::PhantomData, prelude::*};
 use xcm::latest::prelude::*;
@@ -150,32 +152,82 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 					Ok(())
 				})
 			},
+			DescendOrigin(who) => self
+				.context
+				.origin
+				.as_mut()
+				.ok_or(XcmError::BadOrigin)?
+				.append_with(who)
+				.map_err(|_| XcmError::LocationFull),
 			_ => unimplemented!(),
 		}
 	}
 }
 
 pub trait ExecuteXcm<RuntimeCall> {
-	fn execute(origin: impl Into<Location>, xcm: Xcm<RuntimeCall>) -> DispatchResult;
+	fn execute(origin: impl Into<Location>, xcm: Xcm<RuntimeCall>) -> Outcome;
+}
+
+/// Outcome of an XCM execution.
+#[derive(Clone, Encode, Decode, Eq, PartialEq, Debug, TypeInfo)]
+pub enum Outcome {
+	/// Execution completed successfully; given weight was used.
+	Complete { used: Weight },
+	/// Execution started, but did not complete successfully due to the given error; given weight
+	/// was used.
+	Incomplete { used: Weight, error: XcmError },
+	/// Execution did not start due to the given error.
+	Error { error: XcmError },
+}
+
+impl Outcome {
+	pub fn ensure_complete(self) -> Result<(), XcmError> {
+		match self {
+			Outcome::Complete { .. } => Ok(()),
+			Outcome::Incomplete { error, .. } => Err(error),
+			Outcome::Error { error, .. } => Err(error),
+		}
+	}
+	pub fn ensure_execution(self) -> Result<Weight, XcmError> {
+		match self {
+			Outcome::Complete { used, .. } => Ok(used),
+			Outcome::Incomplete { used, .. } => Ok(used),
+			Outcome::Error { error, .. } => Err(error),
+		}
+	}
+	/// How much weight was used by the XCM execution attempt.
+	pub fn weight_used(&self) -> Weight {
+		match self {
+			Outcome::Complete { used, .. } => *used,
+			Outcome::Incomplete { used, .. } => *used,
+			Outcome::Error { .. } => Weight::zero(),
+		}
+	}
 }
 
 impl<Config: XcmConfig> ExecuteXcm<Config::RuntimeCall> for XcmExecutor<Config> {
-	fn execute(origin: impl Into<Location>, mut xcm: Xcm<Config::RuntimeCall>) -> DispatchResult {
+	fn execute(origin: impl Into<Location>, mut xcm: Xcm<Config::RuntimeCall>) -> Outcome {
 		let origin = origin.into();
 		log::trace!(target: "xcm::execute", "xcm: {:?}", xcm);
 		let mut properties = Properties { weight_credit: Weight::default(), message_id: None };
-		Config::Barrier::should_execute(
+		if let Err(error) = Config::Barrier::should_execute(
 			&origin,
 			xcm.inner_mut(),
 			Weight::default(),
 			&mut properties,
-		)
-		.map_err(|_| "XCM Barrier Error")?;
+		) {
+			return Outcome::Error { error: XcmError::Barrier }
+		};
 
 		let mut vm = Self::new(origin);
-		vm.process(xcm).map_err(|e| {
-			log::trace!(target: "xcm::execute", "xcm_executor error: {:?}", e);
-			return "xcm_executor error".into()
-		})
+		match vm.process(xcm) {
+			Err(error) => {
+				log::trace!(target: "xcm::execute", "xcm_executor error: {:?}", error);
+				Outcome::Error { error }
+			},
+			Ok(()) => {
+				Outcome::Complete { used: Weight::zero() }
+			}
+		}
 	}
 }

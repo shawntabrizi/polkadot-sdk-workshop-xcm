@@ -611,34 +611,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
-name = "chains"
-version = "0.1.0"
-dependencies = [
- "frame-support",
- "frame-system",
- "log",
- "pallet-assets",
- "pallet-balances",
- "pallet-message-queue",
- "pallet-uniques",
- "pallet-xcm",
- "parity-scale-codec",
- "polkadot-core-primitives",
- "polkadot-parachain-primitives",
- "polkadot-runtime-parachains",
- "scale-info",
- "sp-core",
- "sp-io",
- "sp-runtime",
- "sp-std 14.0.0 (git+https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.11.0)",
- "sp-tracing 16.0.0 (git+https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.11.0)",
- "staging-xcm",
- "staging-xcm-builder",
- "staging-xcm-executor",
- "xcm-simulator",
-]
-
-[[package]]
 name = "common"
 version = "0.1.0"
 source = "git+https://github.com/w3f/ring-proof#b273d33f9981e2bb3375ab45faeb537f7ee35224"
@@ -1291,7 +1263,6 @@ dependencies = [
 name = "fundamentals"
 version = "0.1.0"
 dependencies = [
- "chains",
  "frame-support",
  "frame-system",
  "log",
@@ -1310,6 +1281,7 @@ dependencies = [
  "sp-runtime",
  "sp-std 14.0.0 (git+https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.11.0)",
  "sp-tracing 16.0.0 (git+https://github.com/paritytech/polkadot-sdk?branch=release-polkadot-v1.11.0)",
+ "sp-weights",
  "staging-xcm",
  "staging-xcm-builder",
  "staging-xcm-executor",

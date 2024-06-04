@@ -28,7 +28,7 @@ use sp_std::prelude::*;
 use xcm::{latest::prelude::*, VersionedXcm};
 
 // We use the custom executor trait.
-use crate::xcm_executor::ExecuteXcm;
+use crate::xcm_executor::{ExecuteXcm, Outcome};
 
 pub use pallet::*;
 
@@ -92,6 +92,10 @@ pub mod pallet {
 			ParachainId::<T>::put(para_id);
 		}
 
+		pub fn parachain_id() -> ParaId {
+			ParachainId::<T>::get()
+		}
+
 		fn handle_xcmp_message(
 			sender: ParaId,
 			_sent_at: RelayBlockNumber,
@@ -103,12 +107,9 @@ pub mod pallet {
 			let (result, event) = match Xcm::<T::RuntimeCall>::try_from(xcm) {
 				Ok(xcm) => {
 					let location = (Parent, Parachain(sender.into()));
-					match T::XcmExecutor::prepare_and_execute(
+					match T::XcmExecutor::execute(
 						location,
 						xcm,
-						&mut message_hash,
-						max_weight,
-						Weight::zero(),
 					) {
 						Outcome::Error { error } =>
 							(Err(error), Event::Fail { message_id: Some(hash), error }),
@@ -171,18 +172,16 @@ pub mod pallet {
 						Err(()) =>
 							Self::deposit_event(Event::UnsupportedVersion { message_id: id }),
 						Ok(x) => {
-							let outcome = T::XcmExecutor::prepare_and_execute(
+							let outcome = T::XcmExecutor::execute(
 								Parent,
 								x.clone(),
-								&mut id,
-								limit,
-								Weight::zero(),
 							);
 							ReceivedDmp::<T>::append(x);
-							Self::deposit_event(Event::ExecutedDownward {
-								message_id: id,
-								outcome,
-							});
+							// TODO: Convert from custom `Outcome` to expected `Outcome`.
+							// Self::deposit_event(Event::ExecutedDownward {
+							// 	message_id: id,
+							// 	outcome,
+							// });
 						},
 					},
 				}

@@ -1,6 +1,6 @@
-use frame_support::parameter_types;
+use frame_support::{parameter_types, traits::Everything};
 use xcm::prelude::*;
-use xcm_builder::{IsConcrete, FungibleAdapter, FrameTransactionalProcessor, SignedToAccountId32};
+use xcm_builder::{IsConcrete, FungibleAdapter, FrameTransactionalProcessor, SignedToAccountId32, AllowUnpaidExecutionFrom};
 
 // We use the custom xcm config trait.
 use crate::xcm_executor::XcmConfig;
@@ -29,5 +29,5 @@ impl XcmConfig for Config {
     type RuntimeCall = super::RuntimeCall;
     type AssetTransactor = TestAssetTransactor;
     type TransactionalProcessor = FrameTransactionalProcessor;
-    type Barrier = ();
+    type Barrier = AllowUnpaidExecutionFrom<Everything>;
 }

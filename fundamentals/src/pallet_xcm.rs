@@ -111,7 +111,9 @@ impl<T: Config> Pallet<T> {
 	) -> DispatchResult {
 		let execute_origin = T::ExecuteXcmOrigin::ensure_origin(origin)?;
 		let message = (*message).try_into().map_err(|()| Error::<T>::BadVersion)?;
-		T::XcmExecutor::execute(execute_origin, message)
+		let outcome = T::XcmExecutor::execute(execute_origin, message);
+		outcome.ensure_complete().map_err(|_| Error::<T>::ExecutorError)?;
+		Ok(())
 	}
 
 	pub fn do_send(

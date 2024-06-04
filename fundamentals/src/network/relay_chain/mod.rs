@@ -3,6 +3,8 @@
 mod xcm_config;
 pub use xcm_config::*;
 
+mod process_message;
+
 use frame_support::{
 	construct_runtime, derive_impl, parameter_types,
 	traits::{
@@ -84,9 +86,9 @@ impl ProcessMessage for MessageProcessor {
 		let para = match origin {
 			AggregateMessageOrigin::Ump(UmpQueueId::Para(para)) => para,
 		};
-		xcm_builder::ProcessXcmMessage::<
+		process_message::ProcessXcmMessage::<
 			Junction,
-			xcm_executor::XcmExecutor<Config>,
+			XcmExecutor<Config>,
 			RuntimeCall,
 		>::process_message(message, Junction::Parachain(para.into()), meter, id)
 	}
