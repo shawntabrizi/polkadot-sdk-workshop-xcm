@@ -1,8 +1,8 @@
-use crate::*;
+use simulator::{ParaA, ParaB, parachain, constants::{ALICE, INITIAL_BALANCE}, child_account_id, ParachainPalletXcm, MockNet, Relay, parent_account_id, child_account_account_id, RelayChainPalletXcm, sibling_account_account_id, parent_account_account_id, relay_chain};
 
 use codec::Encode;
 use frame_support::{assert_ok, weights::Weight};
-use xcm::latest::QueryResponseInfo;
+use xcm::prelude::*;
 use xcm_simulator::TestExt;
 
 // Helper function for forming buy execution message
@@ -155,7 +155,7 @@ fn remote_locking_and_unlocking() {
 
 	ParaA::execute_with(|| {
 		assert_eq!(
-			parachain::MsgQueue::received_dmp(),
+			parachain::MessageQueue::received_dmp(),
 			vec![Xcm(vec![NoteUnlockable {
 				owner: (Parent, Parachain(2)).into(),
 				asset: (Parent, locked_amount).into()
@@ -486,7 +486,7 @@ fn query_holding() {
 	// Check that QueryResponse message was received
 	ParaA::execute_with(|| {
 		assert_eq!(
-			parachain::MsgQueue::received_dmp(),
+			parachain::MessageQueue::received_dmp(),
 			vec![Xcm(vec![QueryResponse {
 				query_id: query_id_set,
 				response: Response::Assets(Assets::new()),

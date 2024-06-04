@@ -7,6 +7,8 @@
 
 use xcm::latest::prelude::*;
 
+use crate::constants::ALICE;
+
 /// A message containing only a simple `ClearOrigin` instruction.
 /// This instruction clears the origin of the sender, meaning after this point,
 /// no special privileges are granted.
@@ -32,7 +34,7 @@ pub fn withdraw_asset() -> Xcm<()> {
 /// This time, incorporate the `DepositAsset` instruction right after
 /// withdrawing the assets.
 /// Use the same assets.
-/// Deposit all the assets to `crate::constants::ALICE`.
+/// Deposit all the assets to `ALICE`.
 /// Remember how to use wildcards.
 pub fn withdraw_and_deposit() -> Xcm<()> {
 	let assets: Assets = (Parent, 100u128).into();
@@ -40,7 +42,7 @@ pub fn withdraw_and_deposit() -> Xcm<()> {
 		WithdrawAsset(assets),
 		DepositAsset {
 			assets: All.into(),
-			beneficiary: AccountId32 { id: crate::constants::ALICE.into(), network: None }.into(),
+			beneficiary: AccountId32 { id: ALICE.into(), network: None }.into(),
 		},
 	]);
 
@@ -51,10 +53,10 @@ pub fn withdraw_and_deposit() -> Xcm<()> {
 /// XCM programs specify paying this fee with the `BuyExecution` instruction.
 /// We're missing paying execution fees in the previous example.
 /// Use up to 10% of the assets to pay for execution.
-/// You're going to have to first convert `crate::constants::ALICE` into bytes.
+/// You're going to have to first convert `ALICE` into bytes.
 /// Bonus points: Use the builder pattern.
 pub fn withdraw_and_deposit_paying_fees() -> Xcm<()> {
-	let alice_bytes: [u8; 32] = crate::constants::ALICE.into();
+	let alice_bytes: [u8; 32] = ALICE.into();
 	let message = Xcm::builder()
 		.withdraw_asset((Parent, 100u128))
 		.buy_execution((Parent, 10u128), Unlimited)
