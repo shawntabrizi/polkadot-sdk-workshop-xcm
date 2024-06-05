@@ -22,10 +22,6 @@ pub mod xcm_executor;
 #[cfg(feature = "pallet_xcm")]
 pub mod pallet_xcm;
 
-/// Mock network for running the `pallet_xcm` tests.
-#[cfg(feature = "pallet_xcm")]
-pub mod network;
-
 /// Constants for accounts.
 mod constants;
 

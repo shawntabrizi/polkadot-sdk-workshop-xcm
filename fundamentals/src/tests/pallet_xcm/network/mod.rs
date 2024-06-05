@@ -62,20 +62,22 @@ pub fn child_account_id(para: u32) -> relay_chain::AccountId {
 	relay_chain::LocationConverter::convert_location(&location.into()).unwrap()
 }
 
-pub fn child_account_account_id(para: u32, who: sp_runtime::AccountId32) -> relay_chain::AccountId {
-	let location = (Parachain(para), AccountId32 { network: None, id: who.into() });
-	relay_chain::LocationConverter::convert_location(&location.into()).unwrap()
-}
+// TODO: Clean up unused
 
-pub fn sibling_account_account_id(para: u32, who: sp_runtime::AccountId32) -> parachain::AccountId {
-	let location = (Parent, Parachain(para), AccountId32 { network: None, id: who.into() });
-	parachain::LocationConverter::convert_location(&location.into()).unwrap()
-}
+// pub fn child_account_account_id(para: u32, who: sp_runtime::AccountId32) ->
+// relay_chain::AccountId { 	let location = (Parachain(para), AccountId32 { network: None, id:
+// who.into() }); 	relay_chain::LocationConverter::convert_location(&location.into()).unwrap()
+// }
 
-pub fn parent_account_account_id(who: sp_runtime::AccountId32) -> parachain::AccountId {
-	let location = (Parent, AccountId32 { network: None, id: who.into() });
-	parachain::LocationConverter::convert_location(&location.into()).unwrap()
-}
+// pub fn sibling_account_account_id(para: u32, who: sp_runtime::AccountId32) ->
+// parachain::AccountId { 	let location = (Parent, Parachain(para), AccountId32 { network: None, id:
+// who.into() }); 	parachain::LocationConverter::convert_location(&location.into()).unwrap()
+// }
+
+// pub fn parent_account_account_id(who: sp_runtime::AccountId32) -> parachain::AccountId {
+// 	let location = (Parent, AccountId32 { network: None, id: who.into() });
+// 	parachain::LocationConverter::convert_location(&location.into()).unwrap()
+// }
 
 pub fn para_ext(para_id: u32) -> sp_io::TestExternalities {
 	use parachain::{MessageQueue, Runtime, System};

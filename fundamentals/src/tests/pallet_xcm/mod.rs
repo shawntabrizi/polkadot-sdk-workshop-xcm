@@ -3,13 +3,13 @@ use fundamentals_pallet_xcm::Pallet as PalletXcm;
 use xcm::{latest::prelude::*, VersionedAssets, VersionedLocation, VersionedXcm};
 use xcm_simulator::TestExt;
 
-use crate::{
-	constants::ALICE,
-	network::{
-		parachain::{self, Balances, Runtime, RuntimeOrigin},
-		MockNet, ParaA, ParaB,
-	},
-	pallet_xcm::pallet as fundamentals_pallet_xcm,
+mod network;
+
+use crate::{constants::ALICE, pallet_xcm::pallet as fundamentals_pallet_xcm};
+
+use network::{
+	parachain::{self, Balances, Runtime, RuntimeOrigin},
+	MockNet, ParaA, ParaB,
 };
 
 #[test]
