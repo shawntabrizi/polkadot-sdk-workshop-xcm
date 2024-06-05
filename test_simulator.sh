@@ -9,7 +9,7 @@ features=(
 
 # Run cargo test commands
 for feature in "${features[@]}"; do
-    cargo test --features $feature --no-default-features
+    cargo test -p simulator --features $feature --no-default-features
 
     # Check the exit status of the previous command
     if [ $? -ne 0 ]; then
