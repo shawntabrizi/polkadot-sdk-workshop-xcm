@@ -171,11 +171,10 @@ pub trait ExecuteXcm<RuntimeCall> {
 /// Outcome of an XCM execution.
 #[derive(Clone, Encode, Decode, Eq, PartialEq, Debug, TypeInfo)]
 pub enum Outcome {
-	/// Execution completed successfully; given weight was used.
-	Complete { used: Weight },
-	/// Execution started, but did not complete successfully due to the given error; given weight
-	/// was used.
-	Incomplete { used: Weight, error: XcmError },
+	/// Execution completed successfully.
+	Complete,
+	/// Execution started, but did not complete successfully due to the given error.
+	Incomplete { error: XcmError },
 	/// Execution did not start due to the given error.
 	Error { error: XcmError },
 }
@@ -188,21 +187,6 @@ impl Outcome {
 			Outcome::Error { error, .. } => Err(error),
 		}
 	}
-	pub fn ensure_execution(self) -> Result<Weight, XcmError> {
-		match self {
-			Outcome::Complete { used, .. } => Ok(used),
-			Outcome::Incomplete { used, .. } => Ok(used),
-			Outcome::Error { error, .. } => Err(error),
-		}
-	}
-	/// How much weight was used by the XCM execution attempt.
-	pub fn weight_used(&self) -> Weight {
-		match self {
-			Outcome::Complete { used, .. } => *used,
-			Outcome::Incomplete { used, .. } => *used,
-			Outcome::Error { .. } => Weight::zero(),
-		}
-	}
 }
 
 impl<Config: XcmConfig> ExecuteXcm<Config::RuntimeCall> for XcmExecutor<Config> {
@@ -210,12 +194,13 @@ impl<Config: XcmConfig> ExecuteXcm<Config::RuntimeCall> for XcmExecutor<Config> 
 		let origin = origin.into();
 		log::trace!(target: "xcm::execute", "xcm: {:?}", xcm);
 		let mut properties = Properties { weight_credit: Weight::default(), message_id: None };
-		if let Err(error) = Config::Barrier::should_execute(
+		if let Err(e) = Config::Barrier::should_execute(
 			&origin,
 			xcm.inner_mut(),
 			Weight::default(),
 			&mut properties,
 		) {
+			log::trace!(target: "xcm::execute", "Barrier Error: {e:?}");
 			return Outcome::Error { error: XcmError::Barrier }
 		};
 
@@ -225,7 +210,7 @@ impl<Config: XcmConfig> ExecuteXcm<Config::RuntimeCall> for XcmExecutor<Config> 
 				log::trace!(target: "xcm::execute", "xcm_executor error: {:?}", error);
 				Outcome::Error { error }
 			},
-			Ok(()) => Outcome::Complete { used: Weight::zero() },
+			Ok(()) => Outcome::Complete,
 		}
 	}
 }
