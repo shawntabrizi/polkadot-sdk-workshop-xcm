@@ -1,5 +1,8 @@
 use codec::{Decode, FullCodec, MaxEncodedLen};
-use frame_support::{LOG_TARGET, traits::{ProcessMessage, ProcessMessageError}};
+use frame_support::{
+	traits::{ProcessMessage, ProcessMessageError},
+	LOG_TARGET,
+};
 use scale_info::TypeInfo;
 use sp_std::{fmt::Debug, marker::PhantomData};
 use sp_weights::{Weight, WeightMeter};
@@ -43,8 +46,7 @@ impl<
 			ProcessMessageError::Unsupported
 		})?;
 
-		let (consumed, result) = match XcmExecutor::execute(origin.into(), message)
-		{
+		let (consumed, result) = match XcmExecutor::execute(origin.into(), message) {
 			Outcome::Complete { used } => {
 				log::trace!(
 					target: LOG_TARGET,
@@ -66,7 +68,7 @@ impl<
 					"XCM message execution error: {error:?}",
 				);
 				let error = match error {
-					xcm::latest::Error::ExceedsStackLimit => ProcessMessageError::Unsupported, // TODO: Use correct error.
+					xcm::latest::Error::ExceedsStackLimit => ProcessMessageError::Unsupported, /* TODO: Use correct error. */
 					_ => ProcessMessageError::Unsupported,
 				};
 
@@ -76,4 +78,3 @@ impl<
 		result
 	}
 }
-

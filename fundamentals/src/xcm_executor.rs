@@ -12,7 +12,7 @@
 
 use super::holding::*;
 
-use codec::{Encode, Decode};
+use codec::{Decode, Encode};
 use frame_support::{
 	dispatch::{DispatchResult, GetDispatchInfo, PostDispatchInfo},
 	Parameter,
@@ -225,9 +225,7 @@ impl<Config: XcmConfig> ExecuteXcm<Config::RuntimeCall> for XcmExecutor<Config> 
 				log::trace!(target: "xcm::execute", "xcm_executor error: {:?}", error);
 				Outcome::Error { error }
 			},
-			Ok(()) => {
-				Outcome::Complete { used: Weight::zero() }
-			}
+			Ok(()) => Outcome::Complete { used: Weight::zero() },
 		}
 	}
 }

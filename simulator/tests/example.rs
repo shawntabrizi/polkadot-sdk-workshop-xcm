@@ -1,6 +1,12 @@
 #![cfg(feature = "example")]
 
-use simulator::{ParaA, ParaB, parachain, constants::{ALICE, INITIAL_BALANCE}, child_account_id, ParachainPalletXcm, MockNet, Relay, parent_account_id, child_account_account_id, RelayChainPalletXcm, sibling_account_account_id, parent_account_account_id, relay_chain};
+use simulator::{
+	child_account_account_id, child_account_id,
+	constants::{ALICE, INITIAL_BALANCE},
+	parachain, parent_account_account_id, parent_account_id, relay_chain,
+	sibling_account_account_id, MockNet, ParaA, ParaB, ParachainPalletXcm, Relay,
+	RelayChainPalletXcm,
+};
 
 use codec::Encode;
 use frame_support::{assert_ok, weights::Weight};

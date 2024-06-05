@@ -1,4 +1,7 @@
-use frame_support::{assert_ok, traits::{Everything, fungible::Inspect}};
+use frame_support::{
+	assert_ok,
+	traits::{fungible::Inspect, Everything},
+};
 use fundamentals_pallet_xcm::Pallet as PalletXcm;
 use xcm::{latest::prelude::*, VersionedAssets, VersionedLocation, VersionedXcm};
 use xcm_builder::{
@@ -8,15 +11,17 @@ use xcm_builder::{
 use xcm_executor::traits::JustTry;
 use xcm_simulator::TestExt;
 
-use crate::constants::ALICE;
-use crate::network::{ParaA, ParaB, MockNet};
-use crate::network::parachain::{
-	self,
-	UniversalLocation, ParentLocation, LocationConverter, AccountId,
-	Balances, LocalOriginToLocation, RuntimeOrigin, XcmRouter, Runtime,
-};
 use crate::{
-	pallet_xcm::pallet as fundamentals_pallet_xcm, xcm_executor::*,
+	constants::ALICE,
+	network::{
+		parachain::{
+			self, AccountId, Balances, LocalOriginToLocation, LocationConverter, ParentLocation,
+			Runtime, RuntimeOrigin, UniversalLocation, XcmRouter,
+		},
+		MockNet, ParaA, ParaB,
+	},
+	pallet_xcm::pallet as fundamentals_pallet_xcm,
+	xcm_executor::*,
 };
 
 #[test]
@@ -35,7 +40,11 @@ fn execute_works() {
 			.transfer_asset(asset, bob_location)
 			.build();
 		let versioned_message = Box::new(VersionedXcm::V4(message));
-		assert_ok!(PalletXcm::<Runtime>::execute(alice_origin, versioned_message, Weight::default()));
+		assert_ok!(PalletXcm::<Runtime>::execute(
+			alice_origin,
+			versioned_message,
+			Weight::default()
+		));
 
 		// Alice's balance is updated
 		assert_eq!(Balances::balance(&ALICE), alice_original_balance - 100u128);
@@ -64,7 +73,8 @@ fn do_teleport_works() {
 		let alice_origin: RuntimeOrigin = frame_system::RawOrigin::Signed(ALICE).into();
 
 		let dest: Location = Location::new(1, [Parachain(2)]);
-		let bob_account: Location = Location::new(0, [AccountId32 { id: bob_bytes.into(), network: None }]);
+		let bob_account: Location =
+			Location::new(0, [AccountId32 { id: bob_bytes.into(), network: None }]);
 		let asset: Asset = (Parent, 100u128).into();
 
 		let v_dest = Box::new(VersionedLocation::V4(dest));

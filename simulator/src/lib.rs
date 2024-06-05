@@ -6,10 +6,10 @@ use xcm::prelude::*;
 use xcm_executor::traits::ConvertLocation;
 use xcm_simulator::{decl_test_network, decl_test_parachain, decl_test_relay_chain, TestExt};
 
-pub mod relay_chain;
-pub mod parachain;
-pub mod mock_message_queue;
 pub mod constants;
+pub mod mock_message_queue;
+pub mod parachain;
+pub mod relay_chain;
 
 use constants::{ALICE, INITIAL_BALANCE};
 

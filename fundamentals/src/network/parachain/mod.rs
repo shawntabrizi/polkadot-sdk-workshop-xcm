@@ -22,9 +22,8 @@ use sp_std::prelude::*;
 use xcm::latest::prelude::*;
 use xcm_builder::{EnsureXcmOrigin, SignedToAccountId32};
 
-use crate::xcm_executor::{XcmExecutor};
-use crate::pallet_xcm::pallet as fundamentals_pallet_xcm;
 use super::mock_message_queue;
+use crate::{pallet_xcm::pallet as fundamentals_pallet_xcm, xcm_executor::XcmExecutor};
 
 pub type AccountId = AccountId32;
 pub type Balance = u128;
@@ -60,10 +59,10 @@ impl fundamentals_pallet_xcm::Config for Runtime {
 }
 
 construct_runtime! {
-    pub struct Runtime {
-        System: frame_system = 0,
-        Balances: pallet_balances = 1,
-        MessageQueue: mock_message_queue = 2,
-        XcmPallet: fundamentals_pallet_xcm = 3,
-    }
+	pub struct Runtime {
+		System: frame_system = 0,
+		Balances: pallet_balances = 1,
+		MessageQueue: mock_message_queue = 2,
+		XcmPallet: fundamentals_pallet_xcm = 3,
+	}
 }

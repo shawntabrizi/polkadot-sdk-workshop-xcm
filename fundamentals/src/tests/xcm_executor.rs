@@ -1,9 +1,12 @@
-use frame_support::{derive_impl, construct_runtime, parameter_types, assert_ok, assert_err, traits::{Contains, Everything, ConstU128, fungible::Inspect}};
-use sp_runtime::{BuildStorage, traits::IdentityLookup};
+use frame_support::{
+	assert_err, assert_ok, construct_runtime, derive_impl, parameter_types,
+	traits::{fungible::Inspect, ConstU128, Contains, Everything},
+};
+use sp_runtime::{traits::IdentityLookup, BuildStorage};
 use xcm::latest::prelude::*;
 use xcm_builder::{
-	AllowUnpaidExecutionFrom, FrameTransactionalProcessor, FungibleAdapter,
-	IsConcrete, AccountId32Aliases,
+	AccountId32Aliases, AllowUnpaidExecutionFrom, FrameTransactionalProcessor, FungibleAdapter,
+	IsConcrete,
 };
 
 construct_runtime! {
@@ -13,8 +16,10 @@ construct_runtime! {
 	}
 }
 
-use crate::constants::{ALICE, INITIAL_BALANCE};
-use crate::xcm_executor::{XcmExecutor, ExecuteXcm, XcmConfig};
+use crate::{
+	constants::{ALICE, INITIAL_BALANCE},
+	xcm_executor::{ExecuteXcm, XcmConfig, XcmExecutor},
+};
 
 type AccountId = sp_runtime::AccountId32;
 type Balance = u128;
@@ -38,11 +43,9 @@ impl pallet_balances::Config for Runtime {
 fn new_ext() -> sp_io::TestExternalities {
 	let mut t = frame_system::GenesisConfig::<Runtime>::default().build_storage().unwrap();
 
-	pallet_balances::GenesisConfig::<Runtime> {
-		balances: vec![(ALICE, INITIAL_BALANCE)],
-	}
-	.assimilate_storage(&mut t)
-	.unwrap();
+	pallet_balances::GenesisConfig::<Runtime> { balances: vec![(ALICE, INITIAL_BALANCE)] }
+		.assimilate_storage(&mut t)
+		.unwrap();
 
 	let mut ext = sp_io::TestExternalities::new(t);
 	ext.execute_with(|| {
@@ -59,9 +62,8 @@ parameter_types! {
 
 type LocationConverter = AccountId32Aliases<RelayNetwork, AccountId>;
 
-type TestAssetTransactor = (
-	FungibleAdapter<Balances, IsConcrete<KsmLocation>, LocationConverter, AccountId, ()>,
-);
+type TestAssetTransactor =
+	(FungibleAdapter<Balances, IsConcrete<KsmLocation>, LocationConverter, AccountId, ()>,);
 
 struct Config;
 impl XcmConfig for Config {
@@ -89,9 +91,8 @@ fn withdraw_works() {
 		// Alice should have some non-zero starting balance.
 		let alice_original_balance = Balances::balance(&ALICE);
 
-		let message = Xcm::<RuntimeCall>::builder_unsafe()
-			.withdraw_asset((Parent, 100u128))
-			.build();
+		let message =
+			Xcm::<RuntimeCall>::builder_unsafe().withdraw_asset((Parent, 100u128)).build();
 		let origin: Location = AccountId32 { id: ALICE.into(), network: None }.into();
 
 		let mut executor = XcmExecutor::<Config>::new(origin);
@@ -110,8 +111,7 @@ fn deposit_asset_works() {
 
 		let asset: Asset = (Parent, 100u128).into();
 		let filter: AssetFilter = asset.into();
-		let alice_location: Location =
-			AccountId32 { id: ALICE.into(), network: None }.into();
+		let alice_location: Location = AccountId32 { id: ALICE.into(), network: None }.into();
 		let message = Xcm::<RuntimeCall>::builder_unsafe()
 			.deposit_asset(filter, alice_location)
 			.build();
@@ -141,13 +141,11 @@ fn transfer_asset_works() {
 		let bob_original_balance = Balances::balance(&BOB);
 
 		let asset: Asset = (Parent, 100u128).into();
-		let alice_location: Location =
-			AccountId32 { id: ALICE.into(), network: None }.into();
+		let alice_location: Location = AccountId32 { id: ALICE.into(), network: None }.into();
 		let bob_location: Location = AccountId32 { id: BOB.into(), network: None }.into();
 
-		let message = Xcm::<RuntimeCall>::builder_unsafe()
-			.transfer_asset(asset, bob_location)
-			.build();
+		let message =
+			Xcm::<RuntimeCall>::builder_unsafe().transfer_asset(asset, bob_location).build();
 
 		let mut executor = XcmExecutor::<Config>::new(alice_location);
 
@@ -164,8 +162,7 @@ fn transfer_asset_works() {
 pub struct OnlyAlice;
 impl Contains<Location> for OnlyAlice {
 	fn contains(location: &Location) -> bool {
-		let alice_location: Location =
-			AccountId32 { id: ALICE.into(), network: None }.into();
+		let alice_location: Location = AccountId32 { id: ALICE.into(), network: None }.into();
 		location == &alice_location
 	}
 }
@@ -183,13 +180,15 @@ fn barrier_works() {
 	// Alice Works
 	let alice_origin: Location = AccountId32 { id: ALICE.into(), network: None }.into();
 	let message = Xcm::<RuntimeCall>::builder_unsafe().clear_origin().build();
-	assert_ok!(XcmExecutor::<OnlyAliceConfig>::execute(alice_origin.clone(), message.clone()).ensure_complete());
+	assert_ok!(XcmExecutor::<OnlyAliceConfig>::execute(alice_origin.clone(), message.clone())
+		.ensure_complete());
 
 	// Bob does not
 	const BOB: sp_runtime::AccountId32 = sp_runtime::AccountId32::new([2u8; 32]);
 	let bob_origin: Location = AccountId32 { id: BOB.into(), network: None }.into();
 	assert_err!(
-		XcmExecutor::<OnlyAliceConfig>::execute(bob_origin.clone(), message.clone()).ensure_complete(),
+		XcmExecutor::<OnlyAliceConfig>::execute(bob_origin.clone(), message.clone())
+			.ensure_complete(),
 		XcmError::Barrier
 	);
 

@@ -2,10 +2,10 @@
 
 use codec::{Decode, Encode};
 
+use polkadot_core_primitives::BlockNumber as RelayBlockNumber;
 use polkadot_parachain_primitives::primitives::{
 	DmpMessageHandler, Id as ParaId, XcmpMessageFormat, XcmpMessageHandler,
 };
-use polkadot_core_primitives::BlockNumber as RelayBlockNumber;
 use sp_runtime::traits::{Get, Hash};
 
 use sp_std::prelude::*;
@@ -73,13 +73,13 @@ pub mod pallet {
 			ParachainId::<T>::put(para_id);
 		}
 
-        pub fn parachain_id() -> ParaId {
-            ParachainId::<T>::get()
-        }
+		pub fn parachain_id() -> ParaId {
+			ParachainId::<T>::get()
+		}
 
-        pub fn received_dmp() -> Vec<Xcm<T::RuntimeCall>> {
-            ReceivedDmp::<T>::get()
-        }
+		pub fn received_dmp() -> Vec<Xcm<T::RuntimeCall>> {
+			ReceivedDmp::<T>::get()
+		}
 
 		fn handle_xcmp_message(
 			sender: ParaId,

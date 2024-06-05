@@ -1,4 +1,4 @@
-use super::{RelayNetwork, AccountId};
+use super::{AccountId, RelayNetwork};
 use xcm_builder::{AccountId32Aliases, DescribeAllTerminal, DescribeFamily, HashedDescription};
 
 type LocationToAccountId = (

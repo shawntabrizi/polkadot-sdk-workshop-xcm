@@ -1,8 +1,7 @@
 use codec::Encode;
 use xcm::latest::prelude::*;
 
-use crate::constants;
-use crate::instruction::*;
+use crate::{constants, instruction::*};
 
 #[test]
 fn clear_origin_message_correct() {

@@ -18,10 +18,10 @@
 
 use codec::{Decode, Encode};
 
+use polkadot_core_primitives::BlockNumber as RelayBlockNumber;
 use polkadot_parachain_primitives::primitives::{
 	DmpMessageHandler, Id as ParaId, XcmpMessageFormat, XcmpMessageHandler,
 };
-use polkadot_core_primitives::BlockNumber as RelayBlockNumber;
 use sp_runtime::traits::{Get, Hash};
 
 use sp_std::prelude::*;
@@ -107,10 +107,7 @@ pub mod pallet {
 			let (result, event) = match Xcm::<T::RuntimeCall>::try_from(xcm) {
 				Ok(xcm) => {
 					let location = (Parent, Parachain(sender.into()));
-					match T::XcmExecutor::execute(
-						location,
-						xcm,
-					) {
+					match T::XcmExecutor::execute(location, xcm) {
 						Outcome::Error { error } =>
 							(Err(error), Event::Fail { message_id: Some(hash), error }),
 						Outcome::Complete { used } =>
@@ -172,10 +169,7 @@ pub mod pallet {
 						Err(()) =>
 							Self::deposit_event(Event::UnsupportedVersion { message_id: id }),
 						Ok(x) => {
-							let outcome = T::XcmExecutor::execute(
-								Parent,
-								x.clone(),
-							);
+							let outcome = T::XcmExecutor::execute(Parent, x.clone());
 							ReceivedDmp::<T>::append(x);
 							// TODO: Convert from custom `Outcome` to expected `Outcome`.
 							// Self::deposit_event(Event::ExecutedDownward {

@@ -23,10 +23,9 @@ use polkadot_runtime_parachains::{
 	origin, shared,
 };
 use xcm::latest::prelude::*;
-use xcm_builder::{IsConcrete, SignedToAccountId32, EnsureXcmOrigin};
+use xcm_builder::{EnsureXcmOrigin, IsConcrete, SignedToAccountId32};
 
-use crate::xcm_executor::XcmExecutor;
-use crate::pallet_xcm::pallet as fundamentals_pallet_xcm;
+use crate::{pallet_xcm::pallet as fundamentals_pallet_xcm, xcm_executor::XcmExecutor};
 
 pub type AccountId = AccountId32;
 pub type Balance = u128;
@@ -54,8 +53,7 @@ impl configuration::Config for Runtime {
 	type WeightInfo = configuration::TestWeightInfo;
 }
 
-pub type LocalOriginToLocation =
-	SignedToAccountId32<RuntimeOrigin, AccountId, RelayNetwork>;
+pub type LocalOriginToLocation = SignedToAccountId32<RuntimeOrigin, AccountId, RelayNetwork>;
 
 parameter_types! {
 	pub const FirstMessageFactorPercent: u64 = 100;
@@ -125,4 +123,3 @@ construct_runtime!(
 		MessageQueue: pallet_message_queue = 4,
 	}
 );
-
