@@ -14,7 +14,7 @@ use super::holding::*;
 
 use codec::{Decode, Encode};
 use frame_support::{
-	dispatch::{DispatchResult, GetDispatchInfo, PostDispatchInfo},
+	dispatch::{GetDispatchInfo, PostDispatchInfo},
 	Parameter,
 };
 use scale_info::TypeInfo;

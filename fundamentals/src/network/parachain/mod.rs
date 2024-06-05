@@ -3,24 +3,10 @@
 mod xcm_config;
 pub use xcm_config::*;
 
-use core::marker::PhantomData;
-use frame_support::{
-	construct_runtime, derive_impl, parameter_types,
-	traits::{
-		AsEnsureOriginWithArg, ConstU128, ContainsPair, EnsureOrigin, EnsureOriginWithArg,
-		Everything, Nothing,
-	},
-	weights::{constants::WEIGHT_REF_TIME_PER_SECOND, Weight},
-};
-use frame_system::{EnsureRoot, EnsureSigned};
-use sp_core::ConstU32;
-use sp_runtime::{
-	traits::{Get, IdentityLookup},
-	AccountId32,
-};
+use frame_support::{construct_runtime, derive_impl, traits::ConstU128};
+use sp_runtime::{traits::IdentityLookup, AccountId32};
 use sp_std::prelude::*;
-use xcm::latest::prelude::*;
-use xcm_builder::{EnsureXcmOrigin, SignedToAccountId32};
+use xcm_builder::EnsureXcmOrigin;
 
 use super::mock_message_queue;
 use crate::{pallet_xcm::pallet as fundamentals_pallet_xcm, xcm_executor::XcmExecutor};

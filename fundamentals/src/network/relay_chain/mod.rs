@@ -7,14 +7,10 @@ mod process_message;
 
 use frame_support::{
 	construct_runtime, derive_impl, parameter_types,
-	traits::{
-		AsEnsureOriginWithArg, ConstU128, Everything, Nothing, ProcessMessage, ProcessMessageError,
-	},
+	traits::{ConstU128, ProcessMessage, ProcessMessageError},
 	weights::{Weight, WeightMeter},
 };
 
-use frame_system::EnsureRoot;
-use sp_core::ConstU32;
 use sp_runtime::{traits::IdentityLookup, AccountId32};
 
 use polkadot_runtime_parachains::{
@@ -23,7 +19,7 @@ use polkadot_runtime_parachains::{
 	origin, shared,
 };
 use xcm::latest::prelude::*;
-use xcm_builder::{EnsureXcmOrigin, IsConcrete, SignedToAccountId32};
+use xcm_builder::{EnsureXcmOrigin, SignedToAccountId32};
 
 use crate::{pallet_xcm::pallet as fundamentals_pallet_xcm, xcm_executor::XcmExecutor};
 

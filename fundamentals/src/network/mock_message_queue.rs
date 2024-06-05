@@ -100,10 +100,9 @@ pub mod pallet {
 			sender: ParaId,
 			_sent_at: RelayBlockNumber,
 			xcm: VersionedXcm<T::RuntimeCall>,
-			max_weight: xcm::latest::Weight,
+			_max_weight: xcm::latest::Weight,
 		) -> Result<xcm::latest::Weight, XcmError> {
 			let hash = Encode::using_encoded(&xcm, T::Hashing::hash);
-			let mut message_hash = Encode::using_encoded(&xcm, sp_io::hashing::blake2_256);
 			let (result, event) = match Xcm::<T::RuntimeCall>::try_from(xcm) {
 				Ok(xcm) => {
 					let location = (Parent, Parachain(sender.into()));
@@ -159,7 +158,7 @@ pub mod pallet {
 			limit: Weight,
 		) -> Weight {
 			for (_sent_at, data) in iter {
-				let mut id = sp_io::hashing::blake2_256(&data[..]);
+				let id = sp_io::hashing::blake2_256(&data[..]);
 				let maybe_versioned = VersionedXcm::<T::RuntimeCall>::decode(&mut &data[..]);
 				match maybe_versioned {
 					Err(_) => {
@@ -169,7 +168,7 @@ pub mod pallet {
 						Err(()) =>
 							Self::deposit_event(Event::UnsupportedVersion { message_id: id }),
 						Ok(x) => {
-							let outcome = T::XcmExecutor::execute(Parent, x.clone());
+							let _outcome = T::XcmExecutor::execute(Parent, x.clone());
 							ReceivedDmp::<T>::append(x);
 							// TODO: Convert from custom `Outcome` to expected `Outcome`.
 							// Self::deposit_event(Event::ExecutedDownward {

@@ -1,27 +1,15 @@
-use frame_support::{
-	assert_ok,
-	traits::{fungible::Inspect, Everything},
-};
+use frame_support::{assert_ok, traits::fungible::Inspect};
 use fundamentals_pallet_xcm::Pallet as PalletXcm;
 use xcm::{latest::prelude::*, VersionedAssets, VersionedLocation, VersionedXcm};
-use xcm_builder::{
-	AllowUnpaidExecutionFrom, ConvertedConcreteId, EnsureXcmOrigin, FrameTransactionalProcessor,
-	FungibleAdapter, IsConcrete, NoChecking, NonFungiblesAdapter,
-};
-use xcm_executor::traits::JustTry;
 use xcm_simulator::TestExt;
 
 use crate::{
 	constants::ALICE,
 	network::{
-		parachain::{
-			self, AccountId, Balances, LocalOriginToLocation, LocationConverter, ParentLocation,
-			Runtime, RuntimeOrigin, UniversalLocation, XcmRouter,
-		},
+		parachain::{self, Balances, Runtime, RuntimeOrigin},
 		MockNet, ParaA, ParaB,
 	},
 	pallet_xcm::pallet as fundamentals_pallet_xcm,
-	xcm_executor::*,
 };
 
 #[test]

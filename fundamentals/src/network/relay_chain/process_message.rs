@@ -46,7 +46,7 @@ impl<
 			ProcessMessageError::Unsupported
 		})?;
 
-		let (consumed, result) = match XcmExecutor::execute(origin.into(), message) {
+		let (_consumed, result) = match XcmExecutor::execute(origin.into(), message) {
 			Outcome::Complete { used } => {
 				log::trace!(
 					target: LOG_TARGET,
