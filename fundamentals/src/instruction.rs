@@ -3,8 +3,6 @@
 //! Instructions are the fundamental building block of XCM programs.
 //! Let's look at the most basic ones.
 
-#![allow(dead_code)]
-
 use xcm::latest::prelude::*;
 
 use crate::constants::ALICE;

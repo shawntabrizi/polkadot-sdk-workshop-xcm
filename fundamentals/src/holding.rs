@@ -38,7 +38,6 @@ impl From<Assets> for AssetsInHolding {
 	}
 }
 
-#[allow(dead_code)]
 impl AssetsInHolding {
 	/// New value, containing no assets.
 	pub fn new() -> Self {

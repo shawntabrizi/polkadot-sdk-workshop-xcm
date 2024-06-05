@@ -9,14 +9,9 @@ use xcm::{prelude::*, VersionedAssets, VersionedLocation, VersionedXcm};
 
 use crate::xcm_executor::ExecuteXcm;
 
-// TODO: Double check this allow statements.
-#[allow(unused_imports)]
 pub use pallet::*;
 
 #[frame_support::pallet]
-// TODO: Double check these allow statements.
-#[allow(dead_code)]
-#[allow(unused_imports)]
 pub mod pallet {
 	use super::*;
 
