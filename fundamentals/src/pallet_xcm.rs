@@ -61,6 +61,8 @@ pub mod pallet {
 			message: Box<VersionedXcm<T::RuntimeCall>>,
 			_max_weight: Weight,
 		) -> DispatchResult {
+			let message = (*message).try_into().map_err(|()| Error::<T>::BadVersion)?;
+
 			Self::do_execute(origin, message)
 		}
 
@@ -71,6 +73,9 @@ pub mod pallet {
 			dest: Box<VersionedLocation>,
 			message: Box<VersionedXcm<()>>,
 		) -> DispatchResult {
+			let dest = Location::try_from(*dest).map_err(|()| Error::<T>::BadVersion)?;
+			let message: Xcm<()> = (*message).try_into().map_err(|()| Error::<T>::BadVersion)?;
+
 			Self::do_send(origin, dest, message)
 		}
 
@@ -83,6 +88,11 @@ pub mod pallet {
 			assets: Box<VersionedAssets>,
 			fee_asset_item: u32,
 		) -> DispatchResult {
+			let dest: Location = (*dest).try_into().map_err(|()| Error::<T>::BadVersion)?;
+			let beneficiary: Location =
+				(*beneficiary).try_into().map_err(|()| Error::<T>::BadVersion)?;
+			let assets: Assets = (*assets).try_into().map_err(|()| Error::<T>::BadVersion)?;
+
 			Self::do_teleport_assets(origin, dest, beneficiary, assets, fee_asset_item)
 		}
 
@@ -101,26 +111,16 @@ pub mod pallet {
 }
 
 impl<T: Config> Pallet<T> {
-	pub fn do_execute(
-		origin: OriginFor<T>,
-		message: Box<VersionedXcm<T::RuntimeCall>>,
-	) -> DispatchResult {
-		let execute_origin = T::ExecuteXcmOrigin::ensure_origin(origin)?;
-		let message = (*message).try_into().map_err(|()| Error::<T>::BadVersion)?;
+	pub fn do_execute(origin: OriginFor<T>, message: Xcm<T::RuntimeCall>) -> DispatchResult {
+		let execute_origin: Location = T::ExecuteXcmOrigin::ensure_origin(origin)?;
 		T::XcmExecutor::execute(execute_origin, message).map_err(|_| Error::<T>::ExecutorError)?;
 		Ok(())
 	}
 
-	pub fn do_send(
-		origin: OriginFor<T>,
-		dest: Box<VersionedLocation>,
-		message: Box<VersionedXcm<()>>,
-	) -> DispatchResult {
+	pub fn do_send(origin: OriginFor<T>, dest: Location, mut message: Xcm<()>) -> DispatchResult {
 		let origin_location = T::SendXcmOrigin::ensure_origin(origin)?;
 		let interior: Junctions =
 			origin_location.clone().try_into().map_err(|_| Error::<T>::InvalidOrigin)?;
-		let dest = Location::try_from(*dest).map_err(|()| Error::<T>::BadVersion)?;
-		let mut message: Xcm<()> = (*message).try_into().map_err(|()| Error::<T>::BadVersion)?;
 		if interior != Junctions::Here {
 			message.0.insert(0, DescendOrigin(interior.clone()));
 		}
@@ -132,16 +132,11 @@ impl<T: Config> Pallet<T> {
 
 	pub fn do_teleport_assets(
 		origin: OriginFor<T>,
-		dest: Box<VersionedLocation>,
-		beneficiary: Box<VersionedLocation>,
-		assets: Box<VersionedAssets>,
+		dest: Location,
+		beneficiary: Location,
+		assets: Assets,
 		_fee_asset_item: u32,
 	) -> DispatchResult {
-		let dest: Location = (*dest).try_into().map_err(|()| Error::<T>::BadVersion)?;
-		let beneficiary: Location =
-			(*beneficiary).try_into().map_err(|()| Error::<T>::BadVersion)?;
-		let assets: Assets = (*assets).try_into().map_err(|()| Error::<T>::BadVersion)?;
-
 		let context = T::UniversalLocation::get();
 		let mut reanchored_assets = assets.clone();
 		reanchored_assets
@@ -166,13 +161,10 @@ impl<T: Config> Pallet<T> {
 			DepositAsset { assets: Wild(All), beneficiary },
 		]);
 
-		// TODO: Clean up API somehow
-		Self::do_execute(origin.clone(), Box::new(VersionedXcm::V4(local_execute_xcm)))?;
-		Self::do_send(
-			origin,
-			Box::new(VersionedLocation::V4(dest)),
-			Box::new(VersionedXcm::V4(xcm_on_dest)),
-		)?;
+		// Execute the local XCM instructions.
+		Self::do_execute(origin.clone(), local_execute_xcm)?;
+		// Send the destination XCM instructions.
+		Self::do_send(origin, dest, xcm_on_dest)?;
 
 		Ok(())
 	}
