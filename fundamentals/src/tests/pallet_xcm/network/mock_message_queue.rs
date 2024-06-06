@@ -28,7 +28,7 @@ use sp_std::prelude::*;
 use xcm::{latest::prelude::*, VersionedXcm};
 
 // We use the custom executor trait.
-use crate::xcm_executor::{ExecuteXcm, Outcome};
+use crate::xcm_executor::ExecuteXcm;
 
 pub use pallet::*;
 
@@ -107,13 +107,8 @@ pub mod pallet {
 				Ok(xcm) => {
 					let location = (Parent, Parachain(sender.into()));
 					match T::XcmExecutor::execute(location, xcm) {
-						Outcome::Error { error } =>
-							(Err(error), Event::Fail { message_id: Some(hash), error }),
-						Outcome::Complete => (Ok(()), Event::Success { message_id: Some(hash) }),
-						// As far as the caller is concerned, this was dispatched without error, so
-						// we just report the weight used.
-						Outcome::Incomplete { error } =>
-							(Ok(()), Event::Fail { message_id: Some(hash), error }),
+						Err(error) => (Err(error), Event::Fail { message_id: Some(hash), error }),
+						Ok(()) => (Ok(()), Event::Success { message_id: Some(hash) }),
 					}
 				},
 				Err(()) => (

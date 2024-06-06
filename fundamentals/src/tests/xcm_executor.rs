@@ -180,18 +180,16 @@ fn barrier_works() {
 	// Alice Works
 	let alice_origin: Location = AccountId32 { id: ALICE.into(), network: None }.into();
 	let message = Xcm::<RuntimeCall>::builder_unsafe().clear_origin().build();
-	assert_ok!(XcmExecutor::<OnlyAliceConfig>::execute(alice_origin.clone(), message.clone())
-		.ensure_complete());
+	assert_ok!(XcmExecutor::<OnlyAliceConfig>::execute(alice_origin.clone(), message.clone()));
 
 	// Bob does not
 	const BOB: sp_runtime::AccountId32 = sp_runtime::AccountId32::new([2u8; 32]);
 	let bob_origin: Location = AccountId32 { id: BOB.into(), network: None }.into();
 	assert_err!(
-		XcmExecutor::<OnlyAliceConfig>::execute(bob_origin.clone(), message.clone())
-			.ensure_complete(),
+		XcmExecutor::<OnlyAliceConfig>::execute(bob_origin.clone(), message.clone()),
 		XcmError::Barrier
 	);
 
 	// Bob does work with regular config
-	assert_ok!(XcmExecutor::<Config>::execute(bob_origin.clone(), message).ensure_complete());
+	assert_ok!(XcmExecutor::<Config>::execute(bob_origin.clone(), message));
 }

@@ -12,12 +12,10 @@
 
 use super::holding::*;
 
-use codec::{Decode, Encode};
 use frame_support::{
 	dispatch::{GetDispatchInfo, PostDispatchInfo},
 	Parameter,
 };
-use scale_info::TypeInfo;
 use sp_runtime::traits::Dispatchable;
 use sp_std::{marker::PhantomData, prelude::*};
 use xcm::latest::prelude::*;
@@ -165,32 +163,11 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 }
 
 pub trait ExecuteXcm<RuntimeCall> {
-	fn execute(origin: impl Into<Location>, xcm: Xcm<RuntimeCall>) -> Outcome;
-}
-
-/// Outcome of an XCM execution.
-#[derive(Clone, Encode, Decode, Eq, PartialEq, Debug, TypeInfo)]
-pub enum Outcome {
-	/// Execution completed successfully.
-	Complete,
-	/// Execution started, but did not complete successfully due to the given error.
-	Incomplete { error: XcmError },
-	/// Execution did not start due to the given error.
-	Error { error: XcmError },
-}
-
-impl Outcome {
-	pub fn ensure_complete(self) -> Result<(), XcmError> {
-		match self {
-			Outcome::Complete { .. } => Ok(()),
-			Outcome::Incomplete { error, .. } => Err(error),
-			Outcome::Error { error, .. } => Err(error),
-		}
-	}
+	fn execute(origin: impl Into<Location>, xcm: Xcm<RuntimeCall>) -> XcmResult;
 }
 
 impl<Config: XcmConfig> ExecuteXcm<Config::RuntimeCall> for XcmExecutor<Config> {
-	fn execute(origin: impl Into<Location>, mut xcm: Xcm<Config::RuntimeCall>) -> Outcome {
+	fn execute(origin: impl Into<Location>, mut xcm: Xcm<Config::RuntimeCall>) -> XcmResult {
 		let origin = origin.into();
 		log::trace!(target: "xcm::execute", "xcm: {:?}", xcm);
 		let mut properties = Properties { weight_credit: Weight::default(), message_id: None };
@@ -201,16 +178,10 @@ impl<Config: XcmConfig> ExecuteXcm<Config::RuntimeCall> for XcmExecutor<Config> 
 			&mut properties,
 		) {
 			log::trace!(target: "xcm::execute", "Barrier Error: {e:?}");
-			return Outcome::Error { error: XcmError::Barrier }
+			return Err(XcmError::Barrier)
 		};
 
 		let mut vm = Self::new(origin);
-		match vm.process(xcm) {
-			Err(error) => {
-				log::trace!(target: "xcm::execute", "xcm_executor error: {:?}", error);
-				Outcome::Error { error }
-			},
-			Ok(()) => Outcome::Complete,
-		}
+		vm.process(xcm)
 	}
 }

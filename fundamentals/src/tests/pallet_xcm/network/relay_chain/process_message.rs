@@ -8,7 +8,7 @@ use sp_std::{fmt::Debug, marker::PhantomData};
 use sp_weights::WeightMeter;
 use xcm::prelude::*;
 
-use crate::xcm_executor::{ExecuteXcm, Outcome};
+use crate::xcm_executor::ExecuteXcm;
 
 /// A message processor that delegates execution to an `XcmExecutor`.
 pub struct ProcessXcmMessage<MessageOrigin, XcmExecutor, Call>(
@@ -47,22 +47,15 @@ impl<
 		})?;
 
 		let result = match XcmExecutor::execute(origin.into(), message) {
-			Outcome::Complete => {
+			Ok(()) => {
 				log::trace!(
 					target: LOG_TARGET,
 					"XCM message execution complete",
 				);
 				Ok(true)
 			},
-			Outcome::Incomplete { error } => {
-				log::trace!(
-					target: LOG_TARGET,
-					"XCM message execution incomplete, error: {error:?}",
-				);
-				Ok(false)
-			},
 			// In the error-case we assume the worst case and consume all possible weight.
-			Outcome::Error { error } => {
+			Err(error) => {
 				log::trace!(
 					target: LOG_TARGET,
 					"XCM message execution error: {error:?}",
