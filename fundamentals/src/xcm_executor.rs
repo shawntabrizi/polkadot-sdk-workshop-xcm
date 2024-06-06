@@ -124,7 +124,6 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 						// be in error, there would need to be an accounting violation by one of the
 						// trusted chains, so it's unlikely, but we don't want to punish a possibly
 						// innocent chain/user).
-						println!("{:?}", asset);
 						Config::AssetTransactor::can_check_in(origin, asset, &self.context)?;
 						Config::AssetTransactor::check_in(origin, asset, &self.context);
 					}

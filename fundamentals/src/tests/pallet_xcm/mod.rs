@@ -40,7 +40,6 @@ fn execute_works() {
 
 #[test]
 fn send_works() {
-	sp_tracing::init_for_tests();
 	MockNet::reset();
 	pub const BOB: sp_runtime::AccountId32 = sp_runtime::AccountId32::new([2u8; 32]);
 
