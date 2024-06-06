@@ -5,10 +5,10 @@ use frame_support::{
 };
 use scale_info::TypeInfo;
 use sp_std::{fmt::Debug, marker::PhantomData};
-use sp_weights::{Weight, WeightMeter};
+use sp_weights::WeightMeter;
 use xcm::prelude::*;
 
-use crate::xcm_executor::{ExecuteXcm, Outcome};
+use crate::xcm_executor::ExecuteXcm;
 
 /// A message processor that delegates execution to an `XcmExecutor`.
 pub struct ProcessXcmMessage<MessageOrigin, XcmExecutor, Call>(
@@ -26,8 +26,8 @@ impl<
 	fn process_message(
 		message: &[u8],
 		origin: Self::Origin,
-		meter: &mut WeightMeter,
-		id: &mut XcmHash,
+		_meter: &mut WeightMeter,
+		_id: &mut XcmHash,
 	) -> Result<bool, ProcessMessageError> {
 		let versioned_message = VersionedXcm::<Call>::decode(&mut &message[..]).map_err(|e| {
 			log::trace!(
@@ -46,23 +46,16 @@ impl<
 			ProcessMessageError::Unsupported
 		})?;
 
-		let (_consumed, result) = match XcmExecutor::execute(origin.into(), message) {
-			Outcome::Complete { used } => {
+		let result = match XcmExecutor::execute(origin.into(), message) {
+			Ok(()) => {
 				log::trace!(
 					target: LOG_TARGET,
-					"XCM message execution complete, used weight: {used}",
+					"XCM message execution complete",
 				);
-				(used, Ok(true))
-			},
-			Outcome::Incomplete { used, error } => {
-				log::trace!(
-					target: LOG_TARGET,
-					"XCM message execution incomplete, used weight: {used}, error: {error:?}",
-				);
-				(used, Ok(false))
+				Ok(true)
 			},
 			// In the error-case we assume the worst case and consume all possible weight.
-			Outcome::Error { error } => {
+			Err(error) => {
 				log::trace!(
 					target: LOG_TARGET,
 					"XCM message execution error: {error:?}",
@@ -72,7 +65,7 @@ impl<
 					_ => ProcessMessageError::Unsupported,
 				};
 
-				(Weight::zero(), Err(error)) // We never weigh messages.
+				Err(error)
 			},
 		};
 		result

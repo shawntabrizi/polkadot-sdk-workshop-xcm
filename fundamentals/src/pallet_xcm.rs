@@ -21,6 +21,7 @@ pub mod pallet {
 	#[pallet::error]
 	pub enum Error<T> {
 		BadVersion,
+		// TODO: Add XCM Error suberror
 		ExecutorError,
 		InvalidOrigin,
 		RouterError,
@@ -106,8 +107,7 @@ impl<T: Config> Pallet<T> {
 	) -> DispatchResult {
 		let execute_origin = T::ExecuteXcmOrigin::ensure_origin(origin)?;
 		let message = (*message).try_into().map_err(|()| Error::<T>::BadVersion)?;
-		let outcome = T::XcmExecutor::execute(execute_origin, message);
-		outcome.ensure_complete().map_err(|_| Error::<T>::ExecutorError)?;
+		T::XcmExecutor::execute(execute_origin, message).map_err(|_| Error::<T>::ExecutorError)?;
 		Ok(())
 	}
 

@@ -28,7 +28,7 @@ use sp_std::prelude::*;
 use xcm::{latest::prelude::*, VersionedXcm};
 
 // We use the custom executor trait.
-use crate::xcm_executor::{ExecuteXcm, Outcome};
+use crate::xcm_executor::ExecuteXcm;
 
 pub use pallet::*;
 
@@ -101,20 +101,14 @@ pub mod pallet {
 			_sent_at: RelayBlockNumber,
 			xcm: VersionedXcm<T::RuntimeCall>,
 			_max_weight: xcm::latest::Weight,
-		) -> Result<xcm::latest::Weight, XcmError> {
+		) -> Result<(), XcmError> {
 			let hash = Encode::using_encoded(&xcm, T::Hashing::hash);
 			let (result, event) = match Xcm::<T::RuntimeCall>::try_from(xcm) {
 				Ok(xcm) => {
 					let location = (Parent, Parachain(sender.into()));
 					match T::XcmExecutor::execute(location, xcm) {
-						Outcome::Error { error } =>
-							(Err(error), Event::Fail { message_id: Some(hash), error }),
-						Outcome::Complete { used } =>
-							(Ok(used), Event::Success { message_id: Some(hash) }),
-						// As far as the caller is concerned, this was dispatched without error, so
-						// we just report the weight used.
-						Outcome::Incomplete { used, error } =>
-							(Ok(used), Event::Fail { message_id: Some(hash), error }),
+						Err(error) => (Err(error), Event::Fail { message_id: Some(hash), error }),
+						Ok(()) => (Ok(()), Event::Success { message_id: Some(hash) }),
 					}
 				},
 				Err(()) => (
