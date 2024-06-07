@@ -1,3 +1,5 @@
+//! # XCM Simulator Workshop
+//!
 //! Mock network using `xcm_executor::XcmExecutor`.
 
 use sp_runtime::BuildStorage;
