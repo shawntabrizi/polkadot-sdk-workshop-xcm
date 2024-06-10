@@ -5,7 +5,7 @@ mod sandbox {
 	pub type OriginConverter = ();
 }
 
-#[cfg(feature = "example")]
+#[cfg(any(feature = "example", feature = "relay-token"))]
 mod sandbox {
 	use crate::parachain::{
 		constants::RelayNetwork, location_converter::LocationConverter, RuntimeOrigin,

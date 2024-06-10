@@ -5,7 +5,7 @@ mod sandbox {
 	pub type TrustedReserves = ();
 }
 
-#[cfg(feature = "example")]
+#[cfg(any(feature = "example", feature = "relay-token"))]
 mod sandbox {
 	use crate::parachain::teleporter::TrustedTeleporters;
 	use frame_support::traits::EverythingBut;

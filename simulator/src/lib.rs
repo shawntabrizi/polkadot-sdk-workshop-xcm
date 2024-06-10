@@ -11,6 +11,9 @@ pub mod mock_message_queue;
 pub mod parachain;
 pub mod relay_chain;
 
+#[cfg(test)]
+mod tests;
+
 use constants::{ALICE, INITIAL_BALANCE};
 
 decl_test_parachain! {
@@ -106,8 +109,6 @@ pub fn relay_ext() -> sp_io::TestExternalities {
 	pallet_balances::GenesisConfig::<Runtime> {
 		balances: vec![
 			(ALICE, INITIAL_BALANCE),
-			(child_account_id(1), INITIAL_BALANCE),
-			(child_account_id(2), INITIAL_BALANCE),
 		],
 	}
 	.assimilate_storage(&mut t)
