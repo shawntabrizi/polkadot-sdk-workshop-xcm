@@ -77,7 +77,10 @@ fn extract_last_account_id_works() {
 
 	let tests: Vec<(Location, Option<AccountId32>)> = vec![
 		(Here.into(), None),
-		(Location::new(0, [GlobalConsensus(Polkadot), Parachain(1337), ALICE_BYTES.into()]), Some(ALICE_ACCOUNT)),
+		(
+			Location::new(0, [GlobalConsensus(Polkadot), Parachain(1337), ALICE_BYTES.into()]),
+			Some(ALICE_ACCOUNT),
+		),
 	];
 
 	for (loc, res) in tests {

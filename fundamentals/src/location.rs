@@ -183,7 +183,8 @@ pub mod manipulation {
 		}
 	}
 
-	// From the perspective of a parachain, check if another location is a sibling parachain, and return the id.
+	// From the perspective of a parachain, check if another location is a sibling parachain, and
+	// return the id.
 	pub fn check_sibling_parachains(maybe_sibling: Location) -> Option<u32> {
 		match maybe_sibling.unpack() {
 			(1, [Parachain(id)]) => Some(*id),
@@ -191,9 +192,9 @@ pub mod manipulation {
 		}
 	}
 
-	// // Given a location, convert it to a universal location, given the const `UNIVERSAL_LOCATION` which describes your relative location to the universal location.
-	// const UNIVERSAL_LOCATION: NetworkId = NetworkId::Kusama;
-	// pub fn convert_to_universal_location(mut location: Location) -> Result<Location, ()>{
-	// 	location.reanchored(&location, &UNIVERSAL_LOCATION.into()).map_err(|_| ())
-	// }
+	// // Given a location, convert it to a universal location, given the const `UNIVERSAL_LOCATION`
+	// which describes your relative location to the universal location. const UNIVERSAL_LOCATION:
+	// NetworkId = NetworkId::Kusama; pub fn convert_to_universal_location(mut location: Location)
+	// -> Result<Location, ()>{ 	location.reanchored(&location,
+	// &UNIVERSAL_LOCATION.into()).map_err(|_| ()) }
 }

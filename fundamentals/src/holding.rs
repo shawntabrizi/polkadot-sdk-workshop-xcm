@@ -17,8 +17,6 @@ pub struct AssetsInHolding {
 	pub fungible: BTreeMap<AssetId, u128>,
 
 	/// The non-fungible assets.
-	// TODO: Consider BTreeMap<AssetId, BTreeSet<AssetInstance>>
-	//   or even BTreeMap<AssetId, SortedVec<AssetInstance>>
 	pub non_fungible: BTreeSet<(AssetId, AssetInstance)>,
 }
 
