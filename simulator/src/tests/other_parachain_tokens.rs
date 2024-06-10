@@ -41,6 +41,9 @@ fn reserve_asset_transfer_works() {
         // Note how we're using `Here` to reference the local native token.
         // This will be referenced differently by BOB on Parachain A.
         let assets: Assets = (Here, 50u128 * CENTS).into();
+		let parachain_a_sovereign_account =
+			parachain::LocationConverter::convert_location(&destination).unwrap();
+        let old_sov_account_balance = parachain::Balances::balance(&parachain_a_sovereign_account);
 		assert_ok!(parachain::PolkadotXcm::transfer_assets(
 			parachain::RuntimeOrigin::signed(BOB),
 			Box::new(VersionedLocation::V4(destination.clone())),
@@ -59,9 +62,8 @@ fn reserve_asset_transfer_works() {
 		// If the parachain wants to send those assets somewhere else they have to go
 		// via the reserve, and this balance is updated accordingly.
 		// This is why the derivatives are backed one-to-one.
-		let parachain_a_sovereign_account =
-			parachain::LocationConverter::convert_location(&destination).unwrap();
-		assert_eq!(parachain::Balances::balance(&parachain_a_sovereign_account), 50 * CENTS);
+        let new_sov_account_balance = parachain::Balances::balance(&parachain_a_sovereign_account);
+		assert_eq!(new_sov_account_balance, old_sov_account_balance + 50 * CENTS);
     });
 
     ParaA::execute_with(|| {

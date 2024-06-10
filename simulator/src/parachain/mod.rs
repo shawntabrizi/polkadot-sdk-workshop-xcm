@@ -86,6 +86,36 @@ impl pallet_assets::Config<pallet_assets::Instance1> for Runtime {
 	type Freezer = ();
 }
 
+#[cfg(not(feature = "register-assets"))]
+pub type ForeignCreators = AsEnsureOriginWithArg<EnsureSigned<AccountId>>;
+
+#[cfg(feature = "register-assets")]
+pub struct ForeignCreators;
+
+// `EnsureOriginWithArg` impl for `CreateOrigin` which allows only XCM origins
+// which are locations containing the class location.
+#[cfg(feature = "register-assets")]
+impl EnsureOriginWithArg<RuntimeOrigin, Location> for ForeignCreators {
+	type Success = AccountId;
+
+	fn try_origin(
+		o: RuntimeOrigin,
+		a: &Location,
+	) -> sp_std::result::Result<Self::Success, RuntimeOrigin> {
+		let origin_location = pallet_xcm::EnsureXcm::<Everything>::try_origin(o.clone())?;
+		if !a.starts_with(&origin_location) {
+			return Err(o);
+		}
+		xcm_config::location_converter::LocationConverter::convert_location(&origin_location)
+			.ok_or(o)
+	}
+
+	#[cfg(feature = "runtime-benchmarks")]
+	fn try_successful_origin(a: &Location) -> Result<RuntimeOrigin, ()> {
+		Ok(pallet_xcm::Origin::Xcm(a.clone()).into())
+	}
+}
+
 #[derive_impl(pallet_assets::config_preludes::TestDefaultConfig)]
 impl pallet_assets::Config<pallet_assets::Instance2> for Runtime {
 	type AssetId = xcm::v4::Location;
@@ -94,7 +124,7 @@ impl pallet_assets::Config<pallet_assets::Instance2> for Runtime {
 	type Balance = Balance;
 	// In tests, we already create foreign assets for other parachains.
 	// TODO: In reality, we would want them to create their own assets with their XCM origin.
-	type CreateOrigin = AsEnsureOriginWithArg<EnsureSigned<AccountId>>;
+	type CreateOrigin = ForeignCreators;
 	type ForceOrigin = EnsureRoot<AccountId>;
 	type AssetDeposit = AssetDeposit;
 	type ApprovalDeposit = ApprovalDeposit;
@@ -156,30 +186,6 @@ impl pallet_uniques::Config<pallet_uniques::Instance2> for Runtime {
 	type WeightInfo = ();
 	#[cfg(feature = "runtime-benchmarks")]
 	type Helper = UniquesHelper;
-}
-
-// `EnsureOriginWithArg` impl for `CreateOrigin` which allows only XCM origins
-// which are locations containing the class location.
-pub struct ForeignCreators;
-impl EnsureOriginWithArg<RuntimeOrigin, Location> for ForeignCreators {
-	type Success = AccountId;
-
-	fn try_origin(
-		o: RuntimeOrigin,
-		a: &Location,
-	) -> sp_std::result::Result<Self::Success, RuntimeOrigin> {
-		let origin_location = pallet_xcm::EnsureXcm::<Everything>::try_origin(o.clone())?;
-		if !a.starts_with(&origin_location) {
-			return Err(o);
-		}
-		xcm_config::location_converter::LocationConverter::convert_location(&origin_location)
-			.ok_or(o)
-	}
-
-	#[cfg(feature = "runtime-benchmarks")]
-	fn try_successful_origin(a: &Location) -> Result<RuntimeOrigin, ()> {
-		Ok(pallet_xcm::Origin::Xcm(a.clone()).into())
-	}
 }
 
 parameter_types! {

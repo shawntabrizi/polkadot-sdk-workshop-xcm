@@ -81,6 +81,11 @@ pub fn child_account_account_id(para: u32, who: sp_runtime::AccountId32) -> rela
 	relay_chain::LocationConverter::convert_location(&location.into()).unwrap()
 }
 
+pub fn sibling_account_id(para: u32) -> parachain::AccountId {
+	let location = (Parent, Parachain(para));
+	parachain::LocationConverter::convert_location(&location.into()).unwrap()
+}
+
 pub fn sibling_account_account_id(para: u32, who: sp_runtime::AccountId32) -> parachain::AccountId {
 	let location = (Parent, Parachain(para), AccountId32 { network: None, id: who.into() });
 	parachain::LocationConverter::convert_location(&location.into()).unwrap()
@@ -105,6 +110,9 @@ pub fn para_ext(para_id: u32) -> sp_io::TestExternalities {
 	pallet_balances::GenesisConfig::<Runtime> {
 		balances: vec![
 			(account_with_starting_balance, INITIAL_BALANCE),
+			(sibling_account_id(1), INITIAL_BALANCE),
+			(sibling_account_id(2), INITIAL_BALANCE),
+			(sibling_account_id(3), INITIAL_BALANCE),
 		],
 	}
 	.assimilate_storage(&mut t)

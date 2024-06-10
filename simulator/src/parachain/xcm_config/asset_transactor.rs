@@ -64,7 +64,7 @@ mod sandbox {
 	pub type AssetTransactor = FungibleTransactor;
 }
 
-#[cfg(feature = "other-parachain-tokens")]
+#[cfg(any(feature = "other-parachain-tokens", feature = "register-assets"))]
 mod sandbox {
 	use frame_support::{
 		parameter_types,

@@ -5,7 +5,7 @@ mod sandbox {
 	pub type TrustedTeleporters = ();
 }
 
-#[cfg(any(feature = "example", feature = "relay-token", feature = "other-parachain-tokens"))]
+#[cfg(not(feature = "start"))]
 mod sandbox {
 	use frame_support::parameter_types;
 	use xcm::latest::prelude::*;

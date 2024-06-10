@@ -5,7 +5,7 @@ mod sandbox {
 	pub type TrustedReserves = ();
 }
 
-#[cfg(any(feature = "example", feature = "relay-token", feature = "other-parachain-tokens"))]
+#[cfg(not(feature = "start"))]
 mod sandbox {
 	use xcm_builder::NativeAsset;
 
