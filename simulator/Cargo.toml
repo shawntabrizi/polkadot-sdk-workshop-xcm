@@ -36,3 +36,4 @@ polkadot-parachain-primitives = { git = "https://github.com/paritytech/polkadot-
 start = []
 example = []
 relay-token = []
+other-parachain-tokens = []

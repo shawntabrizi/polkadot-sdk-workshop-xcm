@@ -73,9 +73,27 @@ parameter_types! {
 }
 
 #[derive_impl(pallet_assets::config_preludes::TestDefaultConfig)]
-impl pallet_assets::Config for Runtime {
+impl pallet_assets::Config<pallet_assets::Instance1> for Runtime {
 	type Currency = Balances;
 	type Balance = Balance;
+	type CreateOrigin = AsEnsureOriginWithArg<EnsureSigned<AccountId>>;
+	type ForceOrigin = EnsureRoot<AccountId>;
+	type AssetDeposit = AssetDeposit;
+	type ApprovalDeposit = ApprovalDeposit;
+	type AssetAccountDeposit = AssetAccountDeposit;
+	type MetadataDepositBase = MetadataDepositBase;
+	type MetadataDepositPerByte = MetadataDepositPerByte;
+	type Freezer = ();
+}
+
+#[derive_impl(pallet_assets::config_preludes::TestDefaultConfig)]
+impl pallet_assets::Config<pallet_assets::Instance2> for Runtime {
+	type AssetId = xcm::v4::Location;
+	type AssetIdParameter = xcm::v4::Location;
+	type Currency = Balances;
+	type Balance = Balance;
+	// In tests, we already create foreign assets for other parachains.
+	// TODO: In reality, we would want them to create their own assets with their XCM origin.
 	type CreateOrigin = AsEnsureOriginWithArg<EnsureSigned<AccountId>>;
 	type ForceOrigin = EnsureRoot<AccountId>;
 	type AssetDeposit = AssetDeposit;
@@ -221,8 +239,8 @@ type Block = frame_system::mocking::MockBlock<Runtime>;
 
 #[frame_support::runtime]
 mod runtime {
-	use pallet_uniques::{Instance1, Instance2};
-
+	use frame_support::{Instance1, Instance2};
+	
 	#[runtime::runtime]
 	#[runtime::derive(
 		RuntimeCall,
@@ -244,7 +262,7 @@ mod runtime {
 	pub type Balances = pallet_balances;
 
 	#[runtime::pallet_index(2)]
-	pub type Assets = pallet_assets;
+	pub type Assets = pallet_assets<Instance1>;
 
 	#[runtime::pallet_index(3)]
 	pub type MessageQueue = mock_message_queue;
@@ -257,4 +275,7 @@ mod runtime {
 
 	#[runtime::pallet_index(6)]
 	pub type ForeignUniques = pallet_uniques<Instance2>;
+
+	#[runtime::pallet_index(7)]
+	pub type ForeignAssets = pallet_assets<Instance2>;
 }

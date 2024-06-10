@@ -82,12 +82,16 @@ pub fn parent_account_account_id(who: sp_runtime::AccountId32) -> parachain::Acc
 }
 
 pub fn para_ext(para_id: u32) -> sp_io::TestExternalities {
-	use parachain::{MessageQueue, Runtime, System};
+	use frame_support::assert_ok;
+	use parachain::{MessageQueue, Runtime, RuntimeOrigin, System, ForeignAssets};
 
 	let mut t = frame_system::GenesisConfig::<Runtime>::default().build_storage().unwrap();
 
 	pallet_balances::GenesisConfig::<Runtime> {
-		balances: vec![(ALICE, INITIAL_BALANCE), (parent_account_id(), INITIAL_BALANCE)],
+		balances: vec![
+			(ALICE, INITIAL_BALANCE),
+			(parent_account_id(), INITIAL_BALANCE)
+		],
 	}
 	.assimilate_storage(&mut t)
 	.unwrap();
@@ -97,6 +101,17 @@ pub fn para_ext(para_id: u32) -> sp_io::TestExternalities {
 		sp_tracing::try_init_simple();
 		System::set_block_number(1);
 		MessageQueue::set_para_id(para_id.into());
+		let other_para_id = if para_id == 1 { 2 } else { 1 };
+		// We mark the asset as sufficient so tests are easier.
+		// Being sufficient means an account with only this asset can exist.
+		// In general, we should be careful with what is sufficient, as it can become an attack vector.
+		assert_ok!(ForeignAssets::force_create(
+			RuntimeOrigin::root(),
+			(Parent, Parachain(other_para_id)).into(),
+			ALICE, // Owner.
+			true, // Sufficient.
+			1, // Minimum balance, this is the ED.
+		));
 	});
 	ext
 }

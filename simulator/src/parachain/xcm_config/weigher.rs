@@ -15,7 +15,7 @@ mod sandbox {
 	}
 }
 
-#[cfg(any(feature = "example", feature = "relay-token"))]
+#[cfg(not(feature = "start"))]
 mod sandbox {
 	use super::*;
 
