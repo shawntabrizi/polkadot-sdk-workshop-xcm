@@ -170,3 +170,30 @@ pub mod absolute {
 		pub KusamaPara69: Location = [GlobalConsensus(Kusama), Parachain(69)].into();
 	}
 }
+
+pub mod manipulation {
+	use super::*;
+	use sp_runtime::AccountId32;
+
+	// Extract the account id from a Location, if it is the last junction in the Location.
+	pub fn extract_last_account_id(location: Location) -> Option<AccountId32> {
+		match location.last() {
+			Some(Junction::AccountId32 { id, .. }) => Some((*id).into()),
+			_ => None,
+		}
+	}
+
+	// From the perspective of a parachain, check if another location is a sibling parachain, and return the id.
+	pub fn check_sibling_parachains(maybe_sibling: Location) -> Option<u32> {
+		match maybe_sibling.unpack() {
+			(1, [Parachain(id)]) => Some(*id),
+			_ => None,
+		}
+	}
+
+	// // Given a location, convert it to a universal location, given the const `UNIVERSAL_LOCATION` which describes your relative location to the universal location.
+	// const UNIVERSAL_LOCATION: NetworkId = NetworkId::Kusama;
+	// pub fn convert_to_universal_location(mut location: Location) -> Result<Location, ()>{
+	// 	location.reanchored(&location, &UNIVERSAL_LOCATION.into()).map_err(|_| ())
+	// }
+}

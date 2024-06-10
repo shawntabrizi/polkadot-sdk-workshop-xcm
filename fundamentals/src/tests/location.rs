@@ -66,3 +66,38 @@ fn absolute_locations() {
 	);
 	assert_eq!(KusamaPara69::get(), Location::new(0, [GlobalConsensus(Kusama), Parachain(69)]));
 }
+
+use sp_runtime::AccountId32;
+const ALICE_BYTES: [u8; 32] = [1u8; 32];
+const ALICE_ACCOUNT: AccountId32 = AccountId32::new(ALICE_BYTES);
+
+#[test]
+fn extract_last_account_id_works() {
+	use manipulation::extract_last_account_id;
+
+	let tests: Vec<(Location, Option<AccountId32>)> = vec![
+		(Here.into(), None),
+		(Location::new(0, [GlobalConsensus(Polkadot), Parachain(1337), ALICE_BYTES.into()]), Some(ALICE_ACCOUNT)),
+	];
+
+	for (loc, res) in tests {
+		assert_eq!(extract_last_account_id(loc), res);
+	}
+}
+
+#[test]
+fn check_sibling_parachains_works() {
+	use manipulation::check_sibling_parachains;
+
+	let tests: Vec<(Location, Option<u32>)> = vec![
+		(Here.into(), None),
+		(Location::new(0, [Parachain(1337)]), None),
+		(Location::new(0, [Parachain(1337)]), None),
+		(Location::new(1, [Parachain(1337)]), Some(1337)),
+		(Location::new(0, [Parachain(1337), ALICE_BYTES.into()]), None),
+	];
+
+	for (loc, res) in tests {
+		assert_eq!(check_sibling_parachains(loc), res);
+	}
+}
