@@ -122,8 +122,6 @@ impl pallet_assets::Config<pallet_assets::Instance2> for Runtime {
 	type AssetIdParameter = xcm::v4::Location;
 	type Currency = Balances;
 	type Balance = Balance;
-	// In tests, we already create foreign assets for other parachains.
-	// TODO: In reality, we would want them to create their own assets with their XCM origin.
 	type CreateOrigin = ForeignCreators;
 	type ForceOrigin = EnsureRoot<AccountId>;
 	type AssetDeposit = AssetDeposit;
