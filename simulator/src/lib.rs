@@ -11,7 +11,10 @@ pub mod mock_message_queue;
 pub mod parachain;
 pub mod relay_chain;
 
-use constants::{ALICE, INITIAL_BALANCE};
+#[cfg(test)]
+mod tests;
+
+use constants::{INITIAL_BALANCE, ALICE, BOB, CHARLIE};
 
 decl_test_parachain! {
 	pub struct ParaA {
@@ -28,6 +31,15 @@ decl_test_parachain! {
 		XcmpMessageHandler = parachain::MessageQueue,
 		DmpMessageHandler = parachain::MessageQueue,
 		new_ext = para_ext(2),
+	}
+}
+
+decl_test_parachain! {
+	pub struct ParaC {
+		Runtime = parachain::Runtime,
+		XcmpMessageHandler = parachain::MessageQueue,
+		DmpMessageHandler = parachain::MessageQueue,
+		new_ext = para_ext(3),
 	}
 }
 
@@ -49,6 +61,7 @@ decl_test_network! {
 		parachains = vec![
 			(1, ParaA),
 			(2, ParaB),
+			(3, ParaC),
 		],
 	}
 }
@@ -68,6 +81,11 @@ pub fn child_account_account_id(para: u32, who: sp_runtime::AccountId32) -> rela
 	relay_chain::LocationConverter::convert_location(&location.into()).unwrap()
 }
 
+pub fn sibling_account_id(para: u32) -> parachain::AccountId {
+	let location = (Parent, Parachain(para));
+	parachain::LocationConverter::convert_location(&location.into()).unwrap()
+}
+
 pub fn sibling_account_account_id(para: u32, who: sp_runtime::AccountId32) -> parachain::AccountId {
 	let location = (Parent, Parachain(para), AccountId32 { network: None, id: who.into() });
 	parachain::LocationConverter::convert_location(&location.into()).unwrap()
@@ -80,11 +98,22 @@ pub fn parent_account_account_id(who: sp_runtime::AccountId32) -> parachain::Acc
 
 pub fn para_ext(para_id: u32) -> sp_io::TestExternalities {
 	use parachain::{MessageQueue, Runtime, System};
-
 	let mut t = frame_system::GenesisConfig::<Runtime>::default().build_storage().unwrap();
 
+	let account_with_starting_balance = match para_id {
+		1 => ALICE,
+		2 => BOB,
+		3 => CHARLIE,
+		_ => panic!("Not a valid para_id"),
+	};
+
 	pallet_balances::GenesisConfig::<Runtime> {
-		balances: vec![(ALICE, INITIAL_BALANCE), (parent_account_id(), INITIAL_BALANCE)],
+		balances: vec![
+			(account_with_starting_balance, INITIAL_BALANCE),
+			(sibling_account_id(1), INITIAL_BALANCE),
+			(sibling_account_id(2), INITIAL_BALANCE),
+			(sibling_account_id(3), INITIAL_BALANCE),
+		],
 	}
 	.assimilate_storage(&mut t)
 	.unwrap();
@@ -94,8 +123,31 @@ pub fn para_ext(para_id: u32) -> sp_io::TestExternalities {
 		sp_tracing::try_init_simple();
 		System::set_block_number(1);
 		MessageQueue::set_para_id(para_id.into());
+		#[cfg(feature = "other-parachain-tokens")]
+		force_create_foreign_asset(para_id);
 	});
 	ext
+}
+
+/// Will create a foreign asset on one parachain representing the asset
+/// of another.
+/// If para_id is 1, then it will create the asset in 1, referencing the asset in 2.
+/// If para_id is 2, then it will create the asset in 2, referencing the asset in 1.
+#[cfg(feature = "other-parachain-tokens")]
+fn force_create_foreign_asset(para_id: u32) {
+	use frame_support::assert_ok;
+	use parachain::{RuntimeOrigin, ForeignAssets};
+	let other_para_id = if para_id == 1 { 2 } else { 1 };
+		// We mark the asset as sufficient so tests are easier.
+		// Being sufficient means an account with only this asset can exist.
+		// In general, we should be careful with what is sufficient, as it can become an attack vector.
+	assert_ok!(ForeignAssets::force_create(
+		RuntimeOrigin::root(),
+		(Parent, Parachain(other_para_id)).into(),
+		ALICE, // Owner. You probably don't want this to be just an account.
+		true, // Sufficient.
+		1, // Minimum balance, this is the ED.
+	));
 }
 
 pub fn relay_ext() -> sp_io::TestExternalities {
@@ -106,8 +158,6 @@ pub fn relay_ext() -> sp_io::TestExternalities {
 	pallet_balances::GenesisConfig::<Runtime> {
 		balances: vec![
 			(ALICE, INITIAL_BALANCE),
-			(child_account_id(1), INITIAL_BALANCE),
-			(child_account_id(2), INITIAL_BALANCE),
 		],
 	}
 	.assimilate_storage(&mut t)

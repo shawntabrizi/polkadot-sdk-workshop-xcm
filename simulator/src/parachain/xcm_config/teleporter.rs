@@ -5,7 +5,7 @@ mod sandbox {
 	pub type TrustedTeleporters = ();
 }
 
-#[cfg(feature = "example")]
+#[cfg(not(feature = "start"))]
 mod sandbox {
 	use frame_support::parameter_types;
 	use xcm::latest::prelude::*;
@@ -17,5 +17,6 @@ mod sandbox {
 			= (NftCollectionOne::get(), (Parent,).into());
 	}
 
+	// TODO: Should revisit.
 	pub type TrustedTeleporters = xcm_builder::Case<NftCollectionOneForRelay>;
 }

@@ -5,11 +5,10 @@ mod sandbox {
 	pub type TrustedReserves = ();
 }
 
-#[cfg(feature = "example")]
+#[cfg(not(feature = "start"))]
 mod sandbox {
-	use crate::parachain::teleporter::TrustedTeleporters;
-	use frame_support::traits::EverythingBut;
 	use xcm_builder::NativeAsset;
 
-	pub type TrustedReserves = (NativeAsset, EverythingBut<TrustedTeleporters>);
+	/// We only trust other chains as reserves of their own asset.
+	pub type TrustedReserves = NativeAsset;
 }

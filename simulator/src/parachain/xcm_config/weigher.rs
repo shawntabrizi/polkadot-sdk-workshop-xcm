@@ -15,7 +15,7 @@ mod sandbox {
 	}
 }
 
-#[cfg(feature = "example")]
+#[cfg(not(feature = "start"))]
 mod sandbox {
 	use super::*;
 

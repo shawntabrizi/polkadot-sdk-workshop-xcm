@@ -73,10 +73,56 @@ parameter_types! {
 }
 
 #[derive_impl(pallet_assets::config_preludes::TestDefaultConfig)]
-impl pallet_assets::Config for Runtime {
+impl pallet_assets::Config<pallet_assets::Instance1> for Runtime {
 	type Currency = Balances;
 	type Balance = Balance;
 	type CreateOrigin = AsEnsureOriginWithArg<EnsureSigned<AccountId>>;
+	type ForceOrigin = EnsureRoot<AccountId>;
+	type AssetDeposit = AssetDeposit;
+	type ApprovalDeposit = ApprovalDeposit;
+	type AssetAccountDeposit = AssetAccountDeposit;
+	type MetadataDepositBase = MetadataDepositBase;
+	type MetadataDepositPerByte = MetadataDepositPerByte;
+	type Freezer = ();
+}
+
+#[cfg(not(feature = "register-assets"))]
+pub type ForeignCreators = AsEnsureOriginWithArg<EnsureSigned<AccountId>>;
+
+#[cfg(feature = "register-assets")]
+pub struct ForeignCreators;
+
+// `EnsureOriginWithArg` impl for `CreateOrigin` which allows only XCM origins
+// which are locations containing the class location.
+#[cfg(feature = "register-assets")]
+impl EnsureOriginWithArg<RuntimeOrigin, Location> for ForeignCreators {
+	type Success = AccountId;
+
+	fn try_origin(
+		o: RuntimeOrigin,
+		a: &Location,
+	) -> sp_std::result::Result<Self::Success, RuntimeOrigin> {
+		let origin_location = pallet_xcm::EnsureXcm::<Everything>::try_origin(o.clone())?;
+		if !a.starts_with(&origin_location) {
+			return Err(o);
+		}
+		xcm_config::location_converter::LocationConverter::convert_location(&origin_location)
+			.ok_or(o)
+	}
+
+	#[cfg(feature = "runtime-benchmarks")]
+	fn try_successful_origin(a: &Location) -> Result<RuntimeOrigin, ()> {
+		Ok(pallet_xcm::Origin::Xcm(a.clone()).into())
+	}
+}
+
+#[derive_impl(pallet_assets::config_preludes::TestDefaultConfig)]
+impl pallet_assets::Config<pallet_assets::Instance2> for Runtime {
+	type AssetId = xcm::v4::Location;
+	type AssetIdParameter = xcm::v4::Location;
+	type Currency = Balances;
+	type Balance = Balance;
+	type CreateOrigin = ForeignCreators;
 	type ForceOrigin = EnsureRoot<AccountId>;
 	type AssetDeposit = AssetDeposit;
 	type ApprovalDeposit = ApprovalDeposit;
@@ -140,30 +186,6 @@ impl pallet_uniques::Config<pallet_uniques::Instance2> for Runtime {
 	type Helper = UniquesHelper;
 }
 
-// `EnsureOriginWithArg` impl for `CreateOrigin` which allows only XCM origins
-// which are locations containing the class location.
-pub struct ForeignCreators;
-impl EnsureOriginWithArg<RuntimeOrigin, Location> for ForeignCreators {
-	type Success = AccountId;
-
-	fn try_origin(
-		o: RuntimeOrigin,
-		a: &Location,
-	) -> sp_std::result::Result<Self::Success, RuntimeOrigin> {
-		let origin_location = pallet_xcm::EnsureXcm::<Everything>::try_origin(o.clone())?;
-		if !a.starts_with(&origin_location) {
-			return Err(o);
-		}
-		xcm_config::location_converter::LocationConverter::convert_location(&origin_location)
-			.ok_or(o)
-	}
-
-	#[cfg(feature = "runtime-benchmarks")]
-	fn try_successful_origin(a: &Location) -> Result<RuntimeOrigin, ()> {
-		Ok(pallet_xcm::Origin::Xcm(a.clone()).into())
-	}
-}
-
 parameter_types! {
 	pub const ReservedXcmpWeight: Weight = Weight::from_parts(WEIGHT_REF_TIME_PER_SECOND.saturating_div(4), 0);
 	pub const ReservedDmpWeight: Weight = Weight::from_parts(WEIGHT_REF_TIME_PER_SECOND.saturating_div(4), 0);
@@ -221,8 +243,8 @@ type Block = frame_system::mocking::MockBlock<Runtime>;
 
 #[frame_support::runtime]
 mod runtime {
-	use pallet_uniques::{Instance1, Instance2};
-
+	use frame_support::{Instance1, Instance2};
+	
 	#[runtime::runtime]
 	#[runtime::derive(
 		RuntimeCall,
@@ -244,7 +266,7 @@ mod runtime {
 	pub type Balances = pallet_balances;
 
 	#[runtime::pallet_index(2)]
-	pub type Assets = pallet_assets;
+	pub type Assets = pallet_assets<Instance1>;
 
 	#[runtime::pallet_index(3)]
 	pub type MessageQueue = mock_message_queue;
@@ -257,4 +279,7 @@ mod runtime {
 
 	#[runtime::pallet_index(6)]
 	pub type ForeignUniques = pallet_uniques<Instance2>;
+
+	#[runtime::pallet_index(7)]
+	pub type ForeignAssets = pallet_assets<Instance2>;
 }

@@ -1,23 +1,13 @@
-pub use sandbox::*;
+use crate::parachain::{
+	constants::RelayNetwork, location_converter::LocationConverter, RuntimeOrigin,
+};
+use pallet_xcm::XcmPassthrough;
+use xcm_builder::{SignedAccountId32AsNative, SovereignSignedViaLocation};
 
-#[cfg(feature = "start")]
-mod sandbox {
-	pub type OriginConverter = ();
-}
+type XcmOriginToCallOrigin = (
+	SovereignSignedViaLocation<LocationConverter, RuntimeOrigin>,
+	SignedAccountId32AsNative<RelayNetwork, RuntimeOrigin>,
+	XcmPassthrough<RuntimeOrigin>,
+);
 
-#[cfg(feature = "example")]
-mod sandbox {
-	use crate::parachain::{
-		constants::RelayNetwork, location_converter::LocationConverter, RuntimeOrigin,
-	};
-	use pallet_xcm::XcmPassthrough;
-	use xcm_builder::{SignedAccountId32AsNative, SovereignSignedViaLocation};
-
-	type XcmOriginToCallOrigin = (
-		SovereignSignedViaLocation<LocationConverter, RuntimeOrigin>,
-		SignedAccountId32AsNative<RelayNetwork, RuntimeOrigin>,
-		XcmPassthrough<RuntimeOrigin>,
-	);
-
-	pub type OriginConverter = XcmOriginToCallOrigin;
-}
+pub type OriginConverter = XcmOriginToCallOrigin;
