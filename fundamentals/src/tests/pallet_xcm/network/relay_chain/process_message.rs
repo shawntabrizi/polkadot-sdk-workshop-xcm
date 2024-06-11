@@ -16,7 +16,7 @@ pub struct ProcessXcmMessage<MessageOrigin, XcmExecutor, Call>(
 );
 impl<
 		MessageOrigin: Into<Location> + FullCodec + MaxEncodedLen + Clone + Eq + PartialEq + TypeInfo + Debug,
-		XcmExecutor: ExecuteXcm<Call>,
+		XcmExecutor: ExecuteXcm,
 		Call,
 	> ProcessMessage for ProcessXcmMessage<MessageOrigin, XcmExecutor, Call>
 {
@@ -29,7 +29,7 @@ impl<
 		_meter: &mut WeightMeter,
 		_id: &mut XcmHash,
 	) -> Result<bool, ProcessMessageError> {
-		let versioned_message = VersionedXcm::<Call>::decode(&mut &message[..]).map_err(|e| {
+		let versioned_message = VersionedXcm::<()>::decode(&mut &message[..]).map_err(|e| {
 			log::trace!(
 				target: LOG_TARGET,
 				"`VersionedXcm` failed to decode: {e:?}",
@@ -37,7 +37,7 @@ impl<
 
 			ProcessMessageError::Corrupt
 		})?;
-		let message = Xcm::<Call>::try_from(versioned_message).map_err(|_| {
+		let message = Xcm::<()>::try_from(versioned_message).map_err(|_| {
 			log::trace!(
 				target: LOG_TARGET,
 				"Failed to convert `VersionedXcm` into `XcmV3`.",

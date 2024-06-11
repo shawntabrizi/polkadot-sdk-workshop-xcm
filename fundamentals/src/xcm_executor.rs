@@ -12,18 +12,11 @@
 
 use super::holding::*;
 
-use frame_support::{
-	dispatch::{GetDispatchInfo, PostDispatchInfo},
-	Parameter,
-};
-use sp_runtime::traits::Dispatchable;
 use sp_std::{marker::PhantomData, prelude::*};
 use xcm::latest::prelude::*;
 use xcm_executor::traits::{ProcessTransaction, Properties, ShouldExecute, TransactAsset};
 
 pub trait XcmConfig {
-	type RuntimeCall: Parameter + Dispatchable<PostInfo = PostDispatchInfo> + GetDispatchInfo;
-
 	/// How to withdraw and deposit an asset.
 	type AssetTransactor: TransactAsset;
 
@@ -54,7 +47,7 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 	}
 
 	/// Process an entire XCM program.
-	pub fn process(&mut self, xcm: Xcm<Config::RuntimeCall>) -> Result<(), XcmError> {
+	pub fn process(&mut self, xcm: Xcm<()>) -> Result<(), XcmError> {
 		log::trace!(target: "xcm::process", "xcm: {:?}", xcm);
 
 		for instruction in xcm.0.into_iter() {
@@ -64,10 +57,7 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 	}
 
 	/// Process a single XCM instruction, mutating the state of the XCM virtual machine.
-	fn process_instruction(
-		&mut self,
-		instr: Instruction<Config::RuntimeCall>,
-	) -> Result<(), XcmError> {
+	fn process_instruction(&mut self, instr: Instruction<()>) -> Result<(), XcmError> {
 		log::trace!(target: "xcm::process_instruction", "=== {:?}", instr);
 		match instr {
 			ClearOrigin => {
@@ -161,12 +151,12 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 	}
 }
 
-pub trait ExecuteXcm<RuntimeCall> {
-	fn execute(origin: impl Into<Location>, xcm: Xcm<RuntimeCall>) -> XcmResult;
+pub trait ExecuteXcm {
+	fn execute(origin: impl Into<Location>, xcm: Xcm<()>) -> XcmResult;
 }
 
-impl<Config: XcmConfig> ExecuteXcm<Config::RuntimeCall> for XcmExecutor<Config> {
-	fn execute(origin: impl Into<Location>, mut xcm: Xcm<Config::RuntimeCall>) -> XcmResult {
+impl<Config: XcmConfig> ExecuteXcm for XcmExecutor<Config> {
+	fn execute(origin: impl Into<Location>, mut xcm: Xcm<()>) -> XcmResult {
 		let origin = origin.into();
 		log::trace!(target: "xcm::execute", "xcm: {:?}", xcm);
 		let mut properties = Properties { weight_credit: Weight::default(), message_id: None };

@@ -6,7 +6,7 @@ use xcm_simulator::TestExt;
 
 mod network;
 use network::{
-	parachain::{self, Balances, Runtime, RuntimeOrigin},
+	parachain::{Balances, Runtime, RuntimeOrigin},
 	MockNet, ParaA, ParaB,
 };
 
@@ -22,9 +22,7 @@ fn execute_works() {
 		let alice_origin: RuntimeOrigin = frame_system::RawOrigin::Signed(ALICE).into();
 
 		let asset: Asset = (Parent, 100u128).into();
-		let message = Xcm::<parachain::RuntimeCall>::builder_unsafe()
-			.transfer_asset(asset, bob_location)
-			.build();
+		let message = Xcm::<()>::builder_unsafe().transfer_asset(asset, bob_location).build();
 		let versioned_message = Box::new(VersionedXcm::V4(message));
 		assert_ok!(PalletXcm::<Runtime>::execute(
 			alice_origin,

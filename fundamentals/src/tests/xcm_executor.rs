@@ -67,7 +67,6 @@ type TestAssetTransactor =
 
 struct Config;
 impl XcmConfig for Config {
-	type RuntimeCall = RuntimeCall;
 	type AssetTransactor = TestAssetTransactor;
 	type TransactionalProcessor = FrameTransactionalProcessor;
 	type Barrier = AllowUnpaidExecutionFrom<Everything>;
@@ -78,7 +77,7 @@ fn clear_origin_works() {
 	let starting_origin: Location = AccountId32 { id: ALICE.into(), network: None }.into();
 	let mut executor = XcmExecutor::<Config>::new(starting_origin.clone());
 
-	let message = Xcm::<RuntimeCall>::builder_unsafe().clear_origin().build();
+	let message = Xcm::<()>::builder_unsafe().clear_origin().build();
 
 	assert_eq!(executor.context.origin, Some(starting_origin));
 	assert_ok!(executor.process(message));
@@ -91,8 +90,7 @@ fn withdraw_works() {
 		// Alice should have some non-zero starting balance.
 		let alice_original_balance = Balances::balance(&ALICE);
 
-		let message =
-			Xcm::<RuntimeCall>::builder_unsafe().withdraw_asset((Parent, 100u128)).build();
+		let message = Xcm::<()>::builder_unsafe().withdraw_asset((Parent, 100u128)).build();
 		let origin: Location = AccountId32 { id: ALICE.into(), network: None }.into();
 
 		let mut executor = XcmExecutor::<Config>::new(origin);
@@ -112,9 +110,7 @@ fn deposit_asset_works() {
 		let asset: Asset = (Parent, 100u128).into();
 		let filter: AssetFilter = asset.into();
 		let alice_location: Location = AccountId32 { id: ALICE.into(), network: None }.into();
-		let message = Xcm::<RuntimeCall>::builder_unsafe()
-			.deposit_asset(filter, alice_location)
-			.build();
+		let message = Xcm::<()>::builder_unsafe().deposit_asset(filter, alice_location).build();
 
 		let mut executor = XcmExecutor::<Config>::new(Parent);
 
@@ -144,8 +140,7 @@ fn transfer_asset_works() {
 		let alice_location: Location = AccountId32 { id: ALICE.into(), network: None }.into();
 		let bob_location: Location = AccountId32 { id: BOB.into(), network: None }.into();
 
-		let message =
-			Xcm::<RuntimeCall>::builder_unsafe().transfer_asset(asset, bob_location).build();
+		let message = Xcm::<()>::builder_unsafe().transfer_asset(asset, bob_location).build();
 
 		let mut executor = XcmExecutor::<Config>::new(alice_location);
 
@@ -169,7 +164,6 @@ impl Contains<Location> for OnlyAlice {
 
 struct OnlyAliceConfig;
 impl XcmConfig for OnlyAliceConfig {
-	type RuntimeCall = RuntimeCall;
 	type AssetTransactor = TestAssetTransactor;
 	type TransactionalProcessor = FrameTransactionalProcessor;
 	type Barrier = AllowUnpaidExecutionFrom<OnlyAlice>;
@@ -179,7 +173,7 @@ impl XcmConfig for OnlyAliceConfig {
 fn barrier_works() {
 	// Alice Works
 	let alice_origin: Location = AccountId32 { id: ALICE.into(), network: None }.into();
-	let message = Xcm::<RuntimeCall>::builder_unsafe().clear_origin().build();
+	let message = Xcm::<()>::builder_unsafe().clear_origin().build();
 	assert_ok!(XcmExecutor::<OnlyAliceConfig>::execute(alice_origin.clone(), message.clone()));
 
 	// Bob does not

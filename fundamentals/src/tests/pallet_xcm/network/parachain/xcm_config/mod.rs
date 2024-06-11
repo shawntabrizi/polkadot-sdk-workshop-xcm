@@ -29,7 +29,6 @@ type TestAssetTransactor =
 
 pub struct Config;
 impl XcmConfig for Config {
-	type RuntimeCall = super::RuntimeCall;
 	type AssetTransactor = TestAssetTransactor;
 	type TransactionalProcessor = FrameTransactionalProcessor;
 	type Barrier = AllowUnpaidExecutionFrom<Everything>;

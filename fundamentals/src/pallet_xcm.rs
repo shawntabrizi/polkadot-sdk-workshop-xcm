@@ -30,7 +30,7 @@ pub mod pallet {
 
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
-		type XcmExecutor: ExecuteXcm<Self::RuntimeCall>;
+		type XcmExecutor: ExecuteXcm;
 		/// Required origin for executing XCM messages, including the teleport functionality. If
 		/// successful, then it resolves to `Location` which exists as an interior location
 		/// within this chain's XCM context.
@@ -58,7 +58,7 @@ pub mod pallet {
 		#[pallet::weight(Weight::default())]
 		pub fn execute(
 			origin: OriginFor<T>,
-			message: Box<VersionedXcm<T::RuntimeCall>>,
+			message: Box<VersionedXcm<()>>,
 			_max_weight: Weight,
 		) -> DispatchResult {
 			let message = (*message).try_into().map_err(|()| Error::<T>::BadVersion)?;
@@ -111,7 +111,7 @@ pub mod pallet {
 }
 
 impl<T: Config> Pallet<T> {
-	pub fn do_execute(origin: OriginFor<T>, message: Xcm<T::RuntimeCall>) -> DispatchResult {
+	pub fn do_execute(origin: OriginFor<T>, message: Xcm<()>) -> DispatchResult {
 		let execute_origin: Location = T::ExecuteXcmOrigin::ensure_origin(origin)?;
 		T::XcmExecutor::execute(execute_origin, message).map_err(|_| Error::<T>::ExecutorError)?;
 		Ok(())
@@ -144,7 +144,7 @@ impl<T: Config> Pallet<T> {
 			.map_err(|_| Error::<T>::CannotReanchor)?;
 
 		// XCM instructions to be executed on local chain
-		let local_execute_xcm: Xcm<T::RuntimeCall> = Xcm(vec![
+		let local_execute_xcm: Xcm<()> = Xcm(vec![
 			// withdraw assets to be teleported
 			WithdrawAsset(assets.clone()),
 			// burn assets on local chain

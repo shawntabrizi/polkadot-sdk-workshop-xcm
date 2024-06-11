@@ -40,7 +40,7 @@ pub mod pallet {
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
-		type XcmExecutor: ExecuteXcm<Self::RuntimeCall>;
+		type XcmExecutor: ExecuteXcm;
 	}
 
 	#[pallet::call]
@@ -55,7 +55,7 @@ pub mod pallet {
 
 	#[pallet::storage]
 	/// A queue of received DMP messages
-	pub type ReceivedDmp<T: Config> = StorageValue<_, Vec<Xcm<T::RuntimeCall>>, ValueQuery>;
+	pub type ReceivedDmp<T: Config> = StorageValue<_, Vec<Xcm<()>>, ValueQuery>;
 
 	impl<T: Config> Get<ParaId> for Pallet<T> {
 		fn get() -> ParaId {
@@ -99,11 +99,11 @@ pub mod pallet {
 		fn handle_xcmp_message(
 			sender: ParaId,
 			_sent_at: RelayBlockNumber,
-			xcm: VersionedXcm<T::RuntimeCall>,
+			xcm: VersionedXcm<()>,
 			_max_weight: xcm::latest::Weight,
 		) -> Result<(), XcmError> {
 			let hash = Encode::using_encoded(&xcm, T::Hashing::hash);
-			let (result, event) = match Xcm::<T::RuntimeCall>::try_from(xcm) {
+			let (result, event) = match Xcm::<()>::try_from(xcm) {
 				Ok(xcm) => {
 					let location = (Parent, Parachain(sender.into()));
 					match T::XcmExecutor::execute(location, xcm) {
@@ -133,9 +133,7 @@ pub mod pallet {
 
 				let mut remaining_fragments = data_ref;
 				while !remaining_fragments.is_empty() {
-					if let Ok(xcm) =
-						VersionedXcm::<T::RuntimeCall>::decode(&mut remaining_fragments)
-					{
+					if let Ok(xcm) = VersionedXcm::<()>::decode(&mut remaining_fragments) {
 						let _ = Self::handle_xcmp_message(sender, sent_at, xcm, max_weight);
 					} else {
 						debug_assert!(false, "Invalid incoming XCMP message data");
@@ -153,7 +151,7 @@ pub mod pallet {
 		) -> Weight {
 			for (_sent_at, data) in iter {
 				let id = sp_io::hashing::blake2_256(&data[..]);
-				let maybe_versioned = VersionedXcm::<T::RuntimeCall>::decode(&mut &data[..]);
+				let maybe_versioned = VersionedXcm::<()>::decode(&mut &data[..]);
 				match maybe_versioned {
 					Err(_) => {
 						Self::deposit_event(Event::InvalidFormat { message_id: id });
