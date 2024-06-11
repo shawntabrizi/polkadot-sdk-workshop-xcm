@@ -244,7 +244,7 @@ type Block = frame_system::mocking::MockBlock<Runtime>;
 #[frame_support::runtime]
 mod runtime {
 	use frame_support::{Instance1, Instance2};
-	
+
 	#[runtime::runtime]
 	#[runtime::derive(
 		RuntimeCall,

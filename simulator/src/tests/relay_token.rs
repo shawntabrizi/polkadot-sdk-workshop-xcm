@@ -1,14 +1,11 @@
-use frame_support::{
-	assert_ok,
-	traits::fungible::Inspect,
-};
+use frame_support::{assert_ok, traits::fungible::Inspect};
 use xcm::prelude::*;
 use xcm_executor::traits::ConvertLocation;
 use xcm_simulator::TestExt;
 
 use crate::{
-	Relay, ParaA, MockNet, parachain, relay_chain,
-	constants::{INITIAL_BALANCE, ALICE, BOB, CENTS},
+	constants::{ALICE, BOB, CENTS, INITIAL_BALANCE},
+	parachain, relay_chain, MockNet, ParaA, Relay,
 };
 
 #[test]
@@ -104,7 +101,8 @@ fn reserve_asset_transfer_works() {
 		// The funds in the parachain's sovereign account decrease.
 		let parachain: Location = Parachain(1).into();
 		let parachains_sovereign_account =
-			relay_chain::location_converter::LocationConverter::convert_location(&parachain).unwrap();
+			relay_chain::location_converter::LocationConverter::convert_location(&parachain)
+				.unwrap();
 		assert_eq!(relay_chain::Balances::balance(&parachains_sovereign_account), 25 * CENTS);
 	});
 }

@@ -37,9 +37,7 @@ mod sandbox {
 	use crate::parachain::{
 		constants::KsmLocation, location_converter::LocationConverter, AccountId, Balances,
 	};
-	use xcm_builder::{
-		IsConcrete, FungibleAdapter,
-	};
+	use xcm_builder::{FungibleAdapter, IsConcrete};
 
 	/// AssetTransactor for handling the relay chain token
 	pub type FungibleTransactor = FungibleAdapter<
@@ -66,20 +64,17 @@ mod sandbox {
 
 #[cfg(any(feature = "other-parachain-tokens", feature = "register-assets"))]
 mod sandbox {
-	use frame_support::{
-		parameter_types,
-		traits::{EverythingBut},
-	};
+	use frame_support::{parameter_types, traits::EverythingBut};
 	use xcm::prelude::*;
 	use xcm_builder::{
-		IsConcrete, FungibleAdapter, FungiblesAdapter, MatchedConvertedConcreteId,
-		StartsWith, NoChecking,
+		FungibleAdapter, FungiblesAdapter, IsConcrete, MatchedConvertedConcreteId, NoChecking,
+		StartsWith,
 	};
 	use xcm_executor::traits::JustTry;
 
 	use crate::parachain::{
-		location_converter::LocationConverter, AccountId, Balances,
-		ForeignAssets, Balance, PolkadotXcm,
+		location_converter::LocationConverter, AccountId, Balance, Balances, ForeignAssets,
+		PolkadotXcm,
 	};
 
 	/// AssetTransactor for handling the chain's native token.
@@ -111,11 +106,11 @@ mod sandbox {
 	/// We do this by matching on all possible Locations and excluding the ones
 	/// inside our local chain.
 	pub type ForeignAssetsMatcher = MatchedConvertedConcreteId<
-		xcm::v4::Location, // Asset id.
-		Balance, // Balance type.
+		xcm::v4::Location,                      // Asset id.
+		Balance,                                // Balance type.
 		EverythingBut<StartsWith<LocalPrefix>>, // Location matcher.
-		JustTry, // How to convert from Location to AssetId.
-		JustTry, // How to convert from u128 to Balance.
+		JustTry,                                // How to convert from Location to AssetId.
+		JustTry,                                // How to convert from u128 to Balance.
 	>;
 
 	/// AssetTransactor for handling other parachains' native tokens.

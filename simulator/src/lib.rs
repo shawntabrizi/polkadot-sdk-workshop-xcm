@@ -14,7 +14,7 @@ pub mod relay_chain;
 #[cfg(test)]
 mod tests;
 
-use constants::{INITIAL_BALANCE, ALICE, BOB, CHARLIE};
+use constants::{ALICE, BOB, CHARLIE, INITIAL_BALANCE};
 
 decl_test_parachain! {
 	pub struct ParaA {
@@ -136,17 +136,17 @@ pub fn para_ext(para_id: u32) -> sp_io::TestExternalities {
 #[cfg(feature = "other-parachain-tokens")]
 fn force_create_foreign_asset(para_id: u32) {
 	use frame_support::assert_ok;
-	use parachain::{RuntimeOrigin, ForeignAssets};
+	use parachain::{ForeignAssets, RuntimeOrigin};
 	let other_para_id = if para_id == 1 { 2 } else { 1 };
-		// We mark the asset as sufficient so tests are easier.
-		// Being sufficient means an account with only this asset can exist.
-		// In general, we should be careful with what is sufficient, as it can become an attack vector.
+	// We mark the asset as sufficient so tests are easier.
+	// Being sufficient means an account with only this asset can exist.
+	// In general, we should be careful with what is sufficient, as it can become an attack vector.
 	assert_ok!(ForeignAssets::force_create(
 		RuntimeOrigin::root(),
 		(Parent, Parachain(other_para_id)).into(),
 		ALICE, // Owner. You probably don't want this to be just an account.
-		true, // Sufficient.
-		1, // Minimum balance, this is the ED.
+		true,  // Sufficient.
+		1,     // Minimum balance, this is the ED.
 	));
 }
 
@@ -155,13 +155,9 @@ pub fn relay_ext() -> sp_io::TestExternalities {
 
 	let mut t = frame_system::GenesisConfig::<Runtime>::default().build_storage().unwrap();
 
-	pallet_balances::GenesisConfig::<Runtime> {
-		balances: vec![
-			(ALICE, INITIAL_BALANCE),
-		],
-	}
-	.assimilate_storage(&mut t)
-	.unwrap();
+	pallet_balances::GenesisConfig::<Runtime> { balances: vec![(ALICE, INITIAL_BALANCE)] }
+		.assimilate_storage(&mut t)
+		.unwrap();
 
 	let mut ext = sp_io::TestExternalities::new(t);
 	ext.execute_with(|| {
