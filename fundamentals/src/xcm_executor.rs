@@ -35,6 +35,7 @@ pub struct XcmExecutor<Config: XcmConfig> {
 
 // TODO: Have students implement the logic for a few basic instructions.
 impl<Config: XcmConfig> XcmExecutor<Config> {
+	/// Crete an initialize a new XCM Executor.
 	pub fn new(origin: impl Into<Location>) -> Self {
 		let origin = origin.into();
 		let context =
@@ -42,11 +43,7 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 		Self { holding: Default::default(), context, _config: PhantomData }
 	}
 
-	fn origin_ref(&self) -> Option<&Location> {
-		self.context.origin.as_ref()
-	}
-
-	/// Process an entire XCM program.
+	/// Process an entire XCM program, instruction by instruction.
 	pub fn process(&mut self, xcm: Xcm<()>) -> Result<(), XcmError> {
 		log::trace!(target: "xcm::process", "xcm: {:?}", xcm);
 
@@ -56,6 +53,11 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 		Ok(())
 	}
 
+	/// Simple helper function to access the `origin` from the XCM Executor `context`.
+	fn origin_ref(&self) -> Option<&Location> {
+		self.context.origin.as_ref()
+	}
+
 	/// Process a single XCM instruction, mutating the state of the XCM virtual machine.
 	fn process_instruction(&mut self, instr: Instruction<()>) -> Result<(), XcmError> {
 		log::trace!(target: "xcm::process_instruction", "=== {:?}", instr);
@@ -63,6 +65,28 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 			ClearOrigin => {
 				self.context.origin = None;
 				Ok(())
+			},
+			DescendOrigin(who) => self
+				.context
+				.origin
+				.as_mut()
+				.ok_or(XcmError::BadOrigin)?
+				.append_with(who)
+				.map_err(|_| XcmError::LocationFull),
+			TransferAsset { assets, beneficiary } => {
+				Config::TransactionalProcessor::process(|| {
+					// Take `assets` from the origin account (on-chain) and place into dest account.
+					let origin = self.origin_ref().ok_or(XcmError::BadOrigin)?;
+					for asset in assets.inner() {
+						Config::AssetTransactor::transfer_asset(
+							&asset,
+							origin,
+							&beneficiary,
+							&self.context,
+						)?;
+					}
+					Ok(())
+				})
 			},
 			WithdrawAsset(assets) => {
 				let origin = self.origin_ref().ok_or(XcmError::BadOrigin)?;
@@ -124,28 +148,6 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 					Ok(())
 				})
 			},
-			TransferAsset { assets, beneficiary } => {
-				Config::TransactionalProcessor::process(|| {
-					// Take `assets` from the origin account (on-chain) and place into dest account.
-					let origin = self.origin_ref().ok_or(XcmError::BadOrigin)?;
-					for asset in assets.inner() {
-						Config::AssetTransactor::transfer_asset(
-							&asset,
-							origin,
-							&beneficiary,
-							&self.context,
-						)?;
-					}
-					Ok(())
-				})
-			},
-			DescendOrigin(who) => self
-				.context
-				.origin
-				.as_mut()
-				.ok_or(XcmError::BadOrigin)?
-				.append_with(who)
-				.map_err(|_| XcmError::LocationFull),
 			_ => unimplemented!(),
 		}
 	}

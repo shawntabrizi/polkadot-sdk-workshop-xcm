@@ -43,3 +43,31 @@ pub trait XcmConfig {
 	type TransactionalProcessor: ProcessTransaction;
 }
 ```
+
+The main idea behind these types is that we can program the XCM Executor to behave in "configurable" ways behind the use of traits.
+
+- Should funds be manipulated using `pallet_balances` or `orml_balances`?
+- Should we limit XCM calls coming from certain places?
+- etc...
+
+We will see how these different types are used and get a better idea how they can be used to re-program the XCM Executor.
+
+## Implementation of the XCM Executor
+
+We have included for you a few simple functions for the `XcmExecutor`:
+
+- `new`
+- `process`
+- `origin_ref`
+
+The `process` function is the main entrypoint for the `XcmExecutor` to process an XCM.
+
+The logic in there is quite simple: take each instruction from the XCM and process that instruction.
+
+### Process Instruction
+
+All of the "real" logic for the `XcmExecutor` lives in `process_instruction`, and it shows a simple example of how you might design a VM system using Rust.
+
+We have a `match` statement over the possible instructions. Each instruction contains the parameters needed for that instruction in the form of fields. On top of all that, remember that we can keep track of additional state in the `XcmExecutor` state.
+
+Next we will go through and implement a few XCM Instructions to learn more about how it all works.
