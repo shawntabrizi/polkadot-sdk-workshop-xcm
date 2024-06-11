@@ -21,11 +21,17 @@ Before we can even start teaching the low level concepts of XCM, we need to prov
 
 ## Parachains
 
-TODO
+Truthfully, we cannot in fine detail go over Polkadot and Parachains in this workshop. That would be its own educational endeavour.
+
+However, for the context of understanding common end to end scenarios that we will try to cover in this XCM Workshop, you will need to have a basic understanding of Parachains in the Polkadot Ecosystem.
 
 ### System Parachains
 
-TODO
+Polkadot uses parachains to scale itself through the creation of "system parachains".
+
+System parachains use the same parachain technology stack used to create and secure self-sovereign parachains. But in this case, rather than these parachains being their own sovereign entity,
+
+A very relevant example of this is the Asset Hub. This is a System Parachain for
 
 ## Transfers
 
