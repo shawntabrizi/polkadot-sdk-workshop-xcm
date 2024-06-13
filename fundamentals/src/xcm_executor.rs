@@ -65,7 +65,7 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 				self.context.origin = None;
 				Ok(())
 			},
-			// Mutate the origin to some interior location.
+			// Appends `who` to the current XCM Executor `origin` location.
 			DescendOrigin(who) => self
 				.context
 				.origin
@@ -82,6 +82,7 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 				Config::TransactionalProcessor::process(|| {
 					// Take `assets` from the origin account (on-chain) and place into dest account.
 					let origin = self.origin_ref().ok_or(XcmError::BadOrigin)?;
+					// Transfer each asset using the `AssetTransactor`.
 					for asset in assets.inner() {
 						Config::AssetTransactor::transfer_asset(
 							&asset,
@@ -98,8 +99,8 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 			//
 			// - `assets`: The asset(s) to be withdrawn into holding.
 			WithdrawAsset(assets) => {
-				let origin = self.origin_ref().ok_or(XcmError::BadOrigin)?;
 				Config::TransactionalProcessor::process(|| {
+					let origin = self.origin_ref().ok_or(XcmError::BadOrigin)?;
 					// Take `assets` from the origin account (on-chain)...
 					for asset in assets.inner() {
 						Config::AssetTransactor::withdraw_asset(
@@ -133,7 +134,9 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 			DepositAsset { assets, beneficiary } => {
 				let old_holding = self.holding.clone();
 				let result = Config::TransactionalProcessor::process(|| {
+					// Take assets from the holding registrar...
 					let deposited = self.holding.saturating_take(assets);
+					// ... and deposit them to the `beneficiary`.
 					for asset in deposited.into_assets_iter() {
 						Config::AssetTransactor::deposit_asset(
 							&asset,
@@ -143,6 +146,8 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 					}
 					Ok(())
 				});
+				// If we were unable to execute `deposit_asset` in the `AssetTransactor`, we reset
+				// the XCM Executor holding registrar since no operations took place.
 				if Config::TransactionalProcessor::IS_TRANSACTIONAL && result.is_err() {
 					self.holding = old_holding;
 				}
@@ -167,6 +172,7 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 					Ok(())
 				})
 				.and_then(|_| {
+					// ...and place into holding.
 					self.holding.subsume_assets(assets.into());
 					Ok(())
 				})
