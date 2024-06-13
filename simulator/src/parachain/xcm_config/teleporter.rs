@@ -11,12 +11,10 @@ mod sandbox {
 	use xcm::latest::prelude::*;
 
 	parameter_types! {
-		pub NftCollectionOne: AssetFilter
-			= Wild(AllOf { fun: WildNonFungible, id: AssetId((Parent, GeneralIndex(1)).into()) });
-		pub NftCollectionOneForRelay: (AssetFilter, Location)
-			= (NftCollectionOne::get(), (Parent,).into());
+		pub NativeToken: AssetFilter = Wild(AllOf { fun: WildFungible, id: AssetId(Here.into()) });
+		pub AssetHubLocation: Location = Location::new(1, [Parachain(1000)]);
+		pub AssetHubTrustedTeleporter: (AssetFilter, Location) = (NativeToken::get(), AssetHubLocation::get());
 	}
 
-	// TODO: Should revisit.
-	pub type TrustedTeleporters = xcm_builder::Case<NftCollectionOneForRelay>;
+	pub type TrustedTeleporters = xcm_builder::Case<AssetHubTrustedTeleporter>;
 }

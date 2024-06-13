@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Polkadot.  If not, see <http://www.gnu.org/licenses/>.
 
-//! Parachain runtime mock.
+//! AssetHub Parachain runtime mock.
 
 mod xcm_config;
 pub use xcm_config::*;
@@ -86,15 +86,9 @@ impl pallet_assets::Config<pallet_assets::Instance1> for Runtime {
 	type Freezer = ();
 }
 
-#[cfg(not(feature = "register-assets"))]
-pub type ForeignCreators = AsEnsureOriginWithArg<EnsureSigned<AccountId>>;
-
-#[cfg(feature = "register-assets")]
-pub struct ForeignCreators;
-
 // `EnsureOriginWithArg` impl for `CreateOrigin` which allows only XCM origins
 // which are locations containing the class location.
-#[cfg(feature = "register-assets")]
+pub struct ForeignCreators;
 impl EnsureOriginWithArg<RuntimeOrigin, Location> for ForeignCreators {
 	type Success = AccountId;
 
