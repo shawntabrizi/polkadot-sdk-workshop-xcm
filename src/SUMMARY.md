@@ -10,3 +10,6 @@
     - [9. Deposit Asset](9/README.md)
     - [10. Execute XCM](10/README.md)
     - [11. Pallet XCM](11/README.md)
+    - [12. Pallet XCM](12/README.md)
+    - [13. Pallet XCM](13/README.md)
+    - [14. Pallet XCM](14/README.md)

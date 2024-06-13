@@ -1,0 +1,12 @@
+diff --git a/fundamentals/src/pallet_xcm.rs b/fundamentals/src/pallet_xcm.rs
+index 7be7118..0959888 100644
+--- a/fundamentals/src/pallet_xcm.rs
++++ b/fundamentals/src/pallet_xcm.rs
+@@ -122,6 +122,7 @@ pub mod pallet {
+ }
+ 
+ impl<T: Config> Pallet<T> {
++	/// Execute an XCM locally on this chain on behalf of `origin`.
+ 	pub fn do_execute(origin: OriginFor<T>, message: Xcm<()>) -> DispatchResult {
+ 		todo!("{:?}", message)
+ 	}
