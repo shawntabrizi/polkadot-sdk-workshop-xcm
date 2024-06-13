@@ -1,33 +1,68 @@
-# polkadot-sdk-workshop-xcm
+# Instructions
 
-This project is a workshop for learning about Polkadot SDK's XCM.
+We are familiar at this point that Cross-Consensus Messages are used to allow different consensus systems to communicate and interoperate with one another.
 
-## Overview
+So now let's take a look at how those XCM messages are composed.
 
-This workshop aims to teach students about XCM following the philosophy of "discovery through experience".
+## Composition of an XCM
 
-Students will first go through, learn, and use all the fundamental building blocks for XCM:
+Let's start by looking at the definition of an XCM:
 
-- Location / Topography
-	- Learn how to construct relative and absolute locations for common objects and types used in XCM.
-- Assets and Filters
-	- Learn how to represent various types of assets like fungible tokens and non-fungible tokens.
-	- Constructing asset filters to target pools of assets.
-- Asset Holding
-	- Learn how we can manage multiple assets in memory using the `AssetsInHolding` abstraction.
-- Instructions
-	- Construct common XCM messages through individual XCM instructions.
-- The XCM Executor
-	- Learn how the XCM Executor actually functions, and loosely implement a few common instructions needed to complete end to end scenarios.
-- Pallet XCM
-	- Learn how Pallet XCM provides a simple to access wrapper to the underlying XCM Executor to perform common tasks like send, execute, and teleport transfers.
+```rust
+pub struct Xcm<Call>(pub Vec<Instruction<Call>>);
+```
 
-After learning the fundamentals, students should feel confident they have strong understanding of how these underlying XCM primitives function and are constructed. With this knowledge, they will be able to investigate the real implementations of XCM to learn more deeply if needed.
+So an XCM is just a wrapper for a vector of `Instructions`. It is generic over `Call` which is the callable functions exposed by your consensus system. For example, on a Substrate chain, these would be the Pallet Calls.
 
-The next step after fundamentals is using the XCM Simulator an investigating the different ways we can configure XCM for various common scenarios. This workshop will not be comprehensive to all possible interactions, but will focus on a few key scenarios that we commonly expect to see in the Polkadot Ecosystem.
+We will take a high level look at this generic `Call` type and how it is used later.
 
-As a parachain:
+## XCM Instructions
 
-1. Accepting and using the native asset of your relay chain.
-2. Accepting and using the native asset of other parachains.
-3. Accessing pallets of the relay chain or other parachains.
+So XCM messages are just a vector of instructions... but what is an `Instruction`.
+
+At the time of writing, there are nearly 50 different instructions exposed by the XCM format.
+
+At a high level, instructions are specific actions used to manipulate either or both of the underlying blockchain state and the XCM in-memory state.
+
+Let's take a look at just a few examples of instructions to get an idea for what they do:
+
+- `WithdrawAsset`: Moves assets from the ownership of `origin` to the holding registrar.
+- `DepositAsset`: Moves assets from the holding registrar to a `beneficiary`.
+- `BurnAsset`: Reduce assets in the holding by up to some amount.
+- `ClearOrigin`: An instruction to reset the state of `origin` in the XCM Executor state.
+- `ReceiveTeleportedAsset`: Add assets that have been destroyed on the `origin` system into the current system's holding registrar.
+- `TransferAsset`: Withdraw assets from the ownership of `origin` and deposit them into the ownership of a `beneficiary`.
+
+To see the full list of available instructions, check ou the [XCM Format repo](https://github.com/paritytech/xcm-format).
+
+### RFCs
+
+You might be interested to know how new instructions get added to XCM. For this we have the [XCM Format repo](https://github.com/paritytech/xcm-format) and an [RFC process](https://github.com/paritytech/xcm-format/blob/master/proposals/0000-template.md).
+
+We won't go into details about this in this guide, but feel free to browse around there.
+
+## Composition
+
+Composing a new XCM from `Instruction`s is really simple. Let's look for a single instruction:
+
+```rust
+use xcm::latest::prelude::*;
+
+let my_message: Xcm<()> = Xcm(vec![ClearOrigin]);
+```
+
+And for multiple instructions, you just increase add more items to the vector:
+
+```rust
+use xcm::latest::prelude::*;
+let assets: Assets = (Parent, 100u128).into();
+
+let message = Xcm(vec![
+	WithdrawAsset(assets.clone()),
+	BurnAsset(assets),
+]);
+```
+
+While you can really put whatever instructions you want into a message, not every combination of instructions will be sensible or even valid. The XCM Executor will return an error when the instruction set does not make sense.
+
+### Builder Pattern
