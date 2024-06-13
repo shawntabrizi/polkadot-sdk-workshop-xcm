@@ -1,3 +1,3 @@
-# Pallet XCM
+# Teleport
 
 Teleport
