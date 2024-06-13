@@ -1,3 +1,5 @@
+# XCM Workshop
+
 Students will first go through, learn, and use all the fundamental building blocks for XCM:
 
 1. [Location / Topography](location.md)
