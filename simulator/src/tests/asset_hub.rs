@@ -39,7 +39,7 @@ fn reserve_asset_transfer_works() {
 			                                                                               * be from
 			                                                                               * the other
 			                                                                               * side.
-			                                                                               * */
+			                                                                               */
 			min_balance: 1,
 		});
 		let estimated_weight = Weight::from_parts(276_838_000, 3_675);

@@ -39,7 +39,8 @@ mod sandbox {
 	};
 	use xcm_builder::{FungibleAdapter, IsConcrete};
 
-	/// AssetTransactor for handling the relay chain token
+	/// AssetTransactor for handling the relay chain token.
+	/// In this case, we don't have a native token, we only use the relay chain token.
 	pub type FungibleTransactor = FungibleAdapter<
 		// Use this implementation of the `fungible::*` traits.
 		// `Balances` is the name given to the balances pallet in this particular recipe.

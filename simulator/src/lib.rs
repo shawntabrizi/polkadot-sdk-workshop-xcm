@@ -1,4 +1,4 @@
-//! Mock network using `xcm_executor::XcmExecutor`.
+//! Mock network for configuring different XCM scenarios.
 
 use sp_runtime::BuildStorage;
 use sp_tracing;
