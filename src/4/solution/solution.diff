@@ -1,0 +1,50 @@
+diff --git a/fundamentals/src/instruction.rs b/fundamentals/src/instruction.rs
+index 4a8bbfd..c4c5ab5 100644
+--- a/fundamentals/src/instruction.rs
++++ b/fundamentals/src/instruction.rs
+@@ -11,7 +11,7 @@ use crate::constants::ALICE;
+ /// This instruction clears the origin of the sender, meaning after this point,
+ /// no special privileges are granted.
+ pub fn clear_origin_message() -> Xcm<()> {
+-	let message = todo!();
++	let message = Xcm(vec![ClearOrigin]);
+ 
+ 	message
+ }
+@@ -23,7 +23,7 @@ pub fn clear_origin_message() -> Xcm<()> {
+ /// This program won't do anything with the funds.
+ pub fn withdraw_asset() -> Xcm<()> {
+ 	let assets: Assets = (Parent, 100u128).into();
+-	let message = todo!("{:?}", assets);
++	let message = Xcm(vec![WithdrawAsset(assets)]);
+ 
+ 	message
+ }
+@@ -36,7 +36,13 @@ pub fn withdraw_asset() -> Xcm<()> {
+ /// Remember how to use wildcards.
+ pub fn withdraw_and_deposit() -> Xcm<()> {
+ 	let assets: Assets = (Parent, 100u128).into();
+-	let message = todo!("{:?}", assets);
++	let message = Xcm(vec![
++		WithdrawAsset(assets),
++		DepositAsset {
++			assets: All.into(),
++			beneficiary: AccountId32 { id: ALICE.into(), network: None }.into(),
++		},
++	]);
+ 
+ 	message
+ }
+@@ -49,7 +55,11 @@ pub fn withdraw_and_deposit() -> Xcm<()> {
+ /// Bonus points: Use the builder pattern.
+ pub fn withdraw_and_deposit_paying_fees() -> Xcm<()> {
+ 	let alice_bytes: [u8; 32] = ALICE.into();
+-	let message = todo!("{:?}", alice_bytes);
++	let message = Xcm::builder()
++		.withdraw_asset((Parent, 100u128))
++		.buy_execution((Parent, 10u128), Unlimited)
++		.deposit_asset(All, alice_bytes)
++		.build();
+ 
+ 	message
+ }

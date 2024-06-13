@@ -2,3 +2,7 @@
     - [1. Locations](1/README.md)
     - [2. Assets](2/README.md)
     - [3. Holding](3/README.md)
+    - [4. Instructions](4/README.md)
+    - [5. The XCM Executor](5/README.md)
+    - [6. Origin](6/README.md)
+    - [7. Transfer Asset](7/README.md)
