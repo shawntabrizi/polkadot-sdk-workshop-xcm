@@ -16,9 +16,7 @@ mod sandbox {
 		}
 	}
 
-	pub struct FromSiblingParachain<SelfParaId>(
-		sp_std::marker::PhantomData<SelfParaId>,
-	);
+	pub struct FromSiblingParachain<SelfParaId>(sp_std::marker::PhantomData<SelfParaId>);
 	impl<SelfParaId: Get<ParaId>> ContainsPair<Location, Location>
 		for FromSiblingParachain<SelfParaId>
 	{

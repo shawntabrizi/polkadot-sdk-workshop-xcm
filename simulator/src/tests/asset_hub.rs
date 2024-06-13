@@ -5,8 +5,9 @@ use xcm_executor::traits::ConvertLocation;
 use xcm_simulator::TestExt;
 
 use crate::{
+	asset_hub,
 	constants::{ALICE, CENTS, CHARLIE, INITIAL_BALANCE},
-	parachain, MockNet, AssetHub, ParaC, asset_hub,
+	parachain, AssetHub, MockNet, ParaC,
 };
 
 #[test]
@@ -33,7 +34,12 @@ fn reserve_asset_transfer_works() {
 			pallet_assets::Instance2,
 		>::create {
 			id: (Parent, Parachain(3)).into(),
-			admin: asset_hub::LocationConverter::convert_location(&destination).unwrap(), // This should be from the other side.
+			admin: asset_hub::LocationConverter::convert_location(&destination).unwrap(), /* This
+			                                                                               * should
+			                                                                               * be from
+			                                                                               * the other
+			                                                                               * side.
+			                                                                               * */
 			min_balance: 1,
 		});
 		let estimated_weight = Weight::from_parts(276_838_000, 3_675);

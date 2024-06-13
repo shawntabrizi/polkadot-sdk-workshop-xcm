@@ -9,6 +9,6 @@ mod sandbox {
 mod sandbox {
 	use xcm_builder::NativeAsset;
 
-    /// We don't trust any chain as a reserve.
+	/// We don't trust any chain as a reserve.
 	pub type TrustedReserves = ();
 }

@@ -238,7 +238,7 @@ type Block = frame_system::mocking::MockBlock<Runtime>;
 #[frame_support::runtime]
 mod runtime {
 	use frame_support::{Instance1, Instance2};
-	
+
 	#[runtime::runtime]
 	#[runtime::derive(
 		RuntimeCall,
@@ -277,4 +277,3 @@ mod runtime {
 	#[runtime::pallet_index(7)]
 	pub type ForeignAssets = pallet_assets<Instance2>;
 }
-
