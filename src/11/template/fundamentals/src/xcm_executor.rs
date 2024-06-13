@@ -194,6 +194,11 @@ impl<Config: XcmConfig> ExecuteXcm for XcmExecutor<Config> {
 	/// Execute an XCM from a given `origin`.
 	fn execute(origin: impl Into<Location>, xcm: Xcm<()>) -> XcmResult {
 		log::trace!(target: "xcm::execute", "xcm: {:?}", xcm);
+		/* TODO:
+			- Convert the `origin` `into` a `Location`.
+			- Create a new mutable instance of the XCM Executor as `vm`.
+			- Use the `vm` to `process` the `xcm`.
+		*/
 		todo!("{:?}", origin.into())
 	}
 }
