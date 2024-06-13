@@ -5,36 +5,36 @@ use xcm::latest::prelude::*;
 fn relative_to_polkadot_para_1000_locations() {
 	use relative_to_polkadot_para_1000::*;
 	assert_eq!(PolkadotPara1000::get(), Here.into());
-	assert_eq!(PolkadotPara1337::get(), (Parent, Parachain(1337)).into());
+	assert_eq!(PolkadotPara2004::get(), (Parent, Parachain(2004)).into());
 	assert_eq!(PolkadotRelay::get(), Parent.into());
 	assert_eq!(
-		PolkadotPara1337Alice::get(),
-		Location::new(1, [Parachain(1337), AliceBytes::get().into()])
+		PolkadotPara1000Alice::get(),
+		Location::new(1, [Parachain(1000), AliceBytes::get().into()])
 	);
-	assert_eq!(PolkadotRelayBalancesPallet::get(), Location::new(1, [PalletInstance(1)]));
+	assert_eq!(PolkadotRelayBalancesPallet::get(), Location::new(1, [PalletInstance(5)]));
 	assert_eq!(
 		PolkadotPara1000Asset1984::get(),
-		Location::new(0, [PalletInstance(2), GeneralIndex(1984)])
+		Location::new(0, [PalletInstance(50), GeneralIndex(1984)])
 	);
-	assert_eq!(KusamaPara69::get(), Location::new(2, [GlobalConsensus(Kusama), Parachain(69)]));
+	assert_eq!(KusamaPara1000::get(), Location::new(2, [GlobalConsensus(Kusama), Parachain(1000)]));
 }
 
 #[test]
 fn relative_to_polkadot_relay_locations() {
 	use relative_to_polkadot_relay::*;
 	assert_eq!(PolkadotPara1000::get(), Location::new(0, [Parachain(1000)]));
-	assert_eq!(PolkadotPara1337::get(), Location::new(0, [Parachain(1337)]));
+	assert_eq!(PolkadotPara2004::get(), Location::new(0, [Parachain(2004)]));
 	assert_eq!(PolkadotRelay::get(), Location::new(0, []));
 	assert_eq!(
-		PolkadotPara1337Alice::get(),
-		Location::new(0, [Parachain(1337), AliceBytes::get().into()])
+		PolkadotPara1000Alice::get(),
+		Location::new(0, [Parachain(1000), AliceBytes::get().into()])
 	);
-	assert_eq!(PolkadotRelayBalancesPallet::get(), Location::new(0, [PalletInstance(2)]));
+	assert_eq!(PolkadotRelayBalancesPallet::get(), Location::new(0, [PalletInstance(5)]));
 	assert_eq!(
-		PolkadotPara1000Asset21::get(),
-		Location::new(0, [Parachain(1000), PalletInstance(2), GeneralIndex(21)])
+		PolkadotPara1000Asset1984::get(),
+		Location::new(0, [Parachain(1000), PalletInstance(50), GeneralIndex(1984)])
 	);
-	assert_eq!(KusamaPara69::get(), Location::new(1, [GlobalConsensus(Kusama), Parachain(69)]));
+	assert_eq!(KusamaPara1000::get(), Location::new(1, [GlobalConsensus(Kusama), Parachain(1000)]));
 }
 
 #[test]
@@ -45,26 +45,26 @@ fn absolute_locations() {
 		Location::new(0, [GlobalConsensus(Polkadot), Parachain(1000)])
 	);
 	assert_eq!(
-		PolkadotPara1337::get(),
-		Location::new(0, [GlobalConsensus(Polkadot), Parachain(1337)])
+		PolkadotPara2004::get(),
+		Location::new(0, [GlobalConsensus(Polkadot), Parachain(2004)])
 	);
 	assert_eq!(PolkadotRelay::get(), Location::new(0, [GlobalConsensus(Polkadot)]));
 	assert_eq!(
-		PolkadotPara1337Alice::get(),
-		Location::new(0, [GlobalConsensus(Polkadot), Parachain(1337), AliceBytes::get().into()])
+		PolkadotPara1000Alice::get(),
+		Location::new(0, [GlobalConsensus(Polkadot), Parachain(1000), AliceBytes::get().into()])
 	);
 	assert_eq!(
 		PolkadotRelayBalancesPallet::get(),
-		Location::new(0, [GlobalConsensus(Polkadot), PalletInstance(1)])
+		Location::new(0, [GlobalConsensus(Polkadot), PalletInstance(5)])
 	);
 	assert_eq!(
 		PolkadotPara1000Asset1984::get(),
 		Location::new(
 			0,
-			[GlobalConsensus(Polkadot), Parachain(1000), PalletInstance(2), GeneralIndex(1984)]
+			[GlobalConsensus(Polkadot), Parachain(1000), PalletInstance(50), GeneralIndex(1984)]
 		)
 	);
-	assert_eq!(KusamaPara69::get(), Location::new(0, [GlobalConsensus(Kusama), Parachain(69)]));
+	assert_eq!(KusamaPara1000::get(), Location::new(0, [GlobalConsensus(Kusama), Parachain(1000)]));
 }
 
 use sp_runtime::AccountId32;
@@ -78,7 +78,7 @@ fn extract_last_account_id_works() {
 	let tests: Vec<(Location, Option<AccountId32>)> = vec![
 		(Here.into(), None),
 		(
-			Location::new(0, [GlobalConsensus(Polkadot), Parachain(1337), ALICE_BYTES.into()]),
+			Location::new(0, [GlobalConsensus(Polkadot), Parachain(1000), ALICE_BYTES.into()]),
 			Some(ALICE_ACCOUNT),
 		),
 	];
@@ -94,10 +94,10 @@ fn check_sibling_parachains_works() {
 
 	let tests: Vec<(Location, Option<u32>)> = vec![
 		(Here.into(), None),
-		(Location::new(0, [Parachain(1337)]), None),
-		(Location::new(0, [Parachain(1337)]), None),
-		(Location::new(1, [Parachain(1337)]), Some(1337)),
-		(Location::new(0, [Parachain(1337), ALICE_BYTES.into()]), None),
+		(Location::new(0, [Parachain(1000)]), None),
+		(Location::new(0, [Parachain(1000)]), None),
+		(Location::new(1, [Parachain(1000)]), Some(1000)),
+		(Location::new(0, [Parachain(1000), ALICE_BYTES.into()]), None),
 	];
 
 	for (loc, res) in tests {
