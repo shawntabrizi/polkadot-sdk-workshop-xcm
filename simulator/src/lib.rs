@@ -10,6 +10,7 @@ pub mod constants;
 pub mod mock_message_queue;
 pub mod parachain;
 pub mod relay_chain;
+pub mod asset_hub;
 
 #[cfg(test)]
 mod tests;
@@ -43,6 +44,15 @@ decl_test_parachain! {
 	}
 }
 
+decl_test_parachain! {
+	pub struct AssetHub {
+		Runtime = asset_hub::Runtime,
+		XcmpMessageHandler = asset_hub::MessageQueue,
+		DmpMessageHandler = asset_hub::MessageQueue,
+		new_ext = para_ext(1000),
+	}
+}
+
 decl_test_relay_chain! {
 	pub struct Relay {
 		Runtime = relay_chain::Runtime,
@@ -62,6 +72,7 @@ decl_test_network! {
 			(1, ParaA),
 			(2, ParaB),
 			(3, ParaC),
+			(1000, AssetHub),
 		],
 	}
 }
@@ -101,7 +112,7 @@ pub fn para_ext(para_id: u32) -> sp_io::TestExternalities {
 	let mut t = frame_system::GenesisConfig::<Runtime>::default().build_storage().unwrap();
 
 	let account_with_starting_balance = match para_id {
-		1 => ALICE,
+		1 | 1000 => ALICE,
 		2 => BOB,
 		3 => CHARLIE,
 		_ => panic!("Not a valid para_id"),
