@@ -1,9 +1,6 @@
-use frame_support::{parameter_types, traits::Everything};
+use frame_support::parameter_types;
 use xcm::prelude::*;
-use xcm_builder::{
-	AllowUnpaidExecutionFrom, FrameTransactionalProcessor, FungibleAdapter, IsConcrete,
-	SignedToAccountId32,
-};
+use xcm_builder::{FrameTransactionalProcessor, FungibleAdapter, IsConcrete, SignedToAccountId32};
 
 // We use the custom xcm config trait.
 use super::AccountId;
@@ -31,5 +28,4 @@ pub struct Config;
 impl XcmConfig for Config {
 	type AssetTransactor = TestAssetTransactor;
 	type TransactionalProcessor = FrameTransactionalProcessor;
-	type Barrier = AllowUnpaidExecutionFrom<Everything>;
 }

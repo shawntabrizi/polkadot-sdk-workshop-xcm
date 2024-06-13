@@ -35,10 +35,6 @@ The real `XcmConfig` has MANY associated types and configurations. Ours just foc
 pub trait XcmConfig {
 	/// How to withdraw and deposit an asset.
 	type AssetTransactor: TransactAsset;
-
-	/// Whether we should execute the given XCM at all.
-	type Barrier: ShouldExecute;
-
 	/// Transactional processor for XCM instructions.
 	type TransactionalProcessor: ProcessTransaction;
 }

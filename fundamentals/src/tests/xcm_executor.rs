@@ -1,13 +1,10 @@
 use frame_support::{
-	assert_err, assert_ok, construct_runtime, derive_impl, parameter_types,
-	traits::{fungible::Inspect, ConstU128, Contains, Everything},
+	assert_ok, construct_runtime, derive_impl, parameter_types,
+	traits::{fungible::Inspect, ConstU128},
 };
 use sp_runtime::{traits::IdentityLookup, BuildStorage};
 use xcm::latest::prelude::*;
-use xcm_builder::{
-	AccountId32Aliases, AllowUnpaidExecutionFrom, FrameTransactionalProcessor, FungibleAdapter,
-	IsConcrete,
-};
+use xcm_builder::{AccountId32Aliases, FrameTransactionalProcessor, FungibleAdapter, IsConcrete};
 
 construct_runtime! {
 	pub struct Runtime {
@@ -18,7 +15,7 @@ construct_runtime! {
 
 use crate::{
 	constants::{ALICE, INITIAL_BALANCE},
-	xcm_executor::{ExecuteXcm, XcmConfig, XcmExecutor},
+	xcm_executor::{XcmConfig, XcmExecutor},
 };
 
 type AccountId = sp_runtime::AccountId32;
@@ -69,7 +66,6 @@ struct Config;
 impl XcmConfig for Config {
 	type AssetTransactor = TestAssetTransactor;
 	type TransactionalProcessor = FrameTransactionalProcessor;
-	type Barrier = AllowUnpaidExecutionFrom<Everything>;
 }
 
 #[test]
@@ -152,38 +148,4 @@ fn transfer_asset_works() {
 		assert_eq!(Balances::balance(&ALICE), alice_original_balance - 100u128);
 		assert_eq!(Balances::balance(&BOB), bob_original_balance + 100u128);
 	});
-}
-
-pub struct OnlyAlice;
-impl Contains<Location> for OnlyAlice {
-	fn contains(location: &Location) -> bool {
-		let alice_location: Location = AccountId32 { id: ALICE.into(), network: None }.into();
-		location == &alice_location
-	}
-}
-
-struct OnlyAliceConfig;
-impl XcmConfig for OnlyAliceConfig {
-	type AssetTransactor = TestAssetTransactor;
-	type TransactionalProcessor = FrameTransactionalProcessor;
-	type Barrier = AllowUnpaidExecutionFrom<OnlyAlice>;
-}
-
-#[test]
-fn barrier_works() {
-	// Alice Works
-	let alice_origin: Location = AccountId32 { id: ALICE.into(), network: None }.into();
-	let message = Xcm::<()>::builder_unsafe().clear_origin().build();
-	assert_ok!(XcmExecutor::<OnlyAliceConfig>::execute(alice_origin.clone(), message.clone()));
-
-	// Bob does not
-	const BOB: sp_runtime::AccountId32 = sp_runtime::AccountId32::new([2u8; 32]);
-	let bob_origin: Location = AccountId32 { id: BOB.into(), network: None }.into();
-	assert_err!(
-		XcmExecutor::<OnlyAliceConfig>::execute(bob_origin.clone(), message.clone()),
-		XcmError::Barrier
-	);
-
-	// Bob does work with regular config
-	assert_ok!(XcmExecutor::<Config>::execute(bob_origin.clone(), message));
 }

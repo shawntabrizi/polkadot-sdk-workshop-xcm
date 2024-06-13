@@ -26,5 +26,4 @@ pub struct Config;
 impl XcmConfig for Config {
 	type AssetTransactor = TestAssetTransactor;
 	type TransactionalProcessor = FrameTransactionalProcessor;
-	type Barrier = ();
 }
