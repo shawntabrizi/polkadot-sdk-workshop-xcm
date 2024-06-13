@@ -6,3 +6,7 @@
     - [5. The XCM Executor](5/README.md)
     - [6. Origin](6/README.md)
     - [7. Transfer Asset](7/README.md)
+    - [8. Withdraw Assets](8/README.md)
+    - [9. Deposit Asset](9/README.md)
+    - [10. Execute XCM](10/README.md)
+    - [11. Pallet XCM](11/README.md)

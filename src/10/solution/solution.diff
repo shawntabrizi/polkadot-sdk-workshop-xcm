@@ -1,0 +1,14 @@
+diff --git a/fundamentals/src/xcm_executor.rs b/fundamentals/src/xcm_executor.rs
+index f03d79b..f7e8d2e 100644
+--- a/fundamentals/src/xcm_executor.rs
++++ b/fundamentals/src/xcm_executor.rs
+@@ -194,6 +194,8 @@ impl<Config: XcmConfig> ExecuteXcm for XcmExecutor<Config> {
+ 	/// Execute an XCM from a given `origin`.
+ 	fn execute(origin: impl Into<Location>, xcm: Xcm<()>) -> XcmResult {
+ 		log::trace!(target: "xcm::execute", "xcm: {:?}", xcm);
+-		todo!("{:?}", origin.into())
++		let origin: Location = origin.into();
++		let mut vm = Self::new(origin);
++		vm.process(xcm)
+ 	}
+ }

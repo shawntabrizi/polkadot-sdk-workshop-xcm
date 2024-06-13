@@ -1,0 +1,3 @@
+- [ ] how to allow account on relay chain control the same account on parachain
+- [ ] how to allow an account on parachain to control the same account on another parachain
+- [ ] make note of `Xcm<()>` vs `Xcm<T::RuntimeCall>`
