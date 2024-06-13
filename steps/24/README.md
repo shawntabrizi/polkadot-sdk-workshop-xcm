@@ -1,3 +1,3 @@
 # Send
 
-Send Solution
+Send

@@ -1,3 +1,3 @@
 # Execute
 
-Execute Solution
+Execute
