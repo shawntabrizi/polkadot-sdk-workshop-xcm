@@ -132,6 +132,15 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 			// - `assets`: The asset(s) to remove from holding.
 			// - `beneficiary`: The new owner for the assets.
 			DepositAsset { assets, beneficiary } => {
+				/* TODO:
+					- Make a clone of `self.holding` into a variable `old_holding`.
+					- Start a new `TransactionalProcessor`, storing the `result`.
+						- `saturating_take` the `assets` into a variable `deposited.
+						- For `asset` in `deposited`
+							- Use `AssetTransactor` to `deposit_asset` to the `beneficiary`.
+					- If anything goes wrong, we should reset `self.holding` to `old_holding`.
+					- Return the `result`
+				*/
 				todo!("{:?} {:?}", assets, beneficiary)
 			},
 			// Asset(s) (`assets`) have been destroyed on the `origin` system and equivalent assets
@@ -139,6 +148,15 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 			//
 			// - `assets`: The asset(s) that are minted into the Holding Register.
 			ReceiveTeleportedAsset(assets) => {
+				/* TODO:
+					- Process everything inside `TransactionalProcessor`.
+						- Get the `origin` or return `XcmError::BadOrigin`.
+						- For `asset` in `assets`:
+							- Use `AssetTransactor` to see if we `can_check_in`.
+							- Then actually `check_in` those assets.
+					- `and_then`, if everything goes okay...
+					- `subsume_assets` into the `self.holding`.
+				*/
 				todo!("{:?}", assets)
 			},
 			// In this workshop, we won't be implementing every instruction, just the ones above...

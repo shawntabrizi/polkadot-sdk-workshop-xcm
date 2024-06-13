@@ -1,0 +1,27 @@
+diff --git a/fundamentals/src/xcm_executor.rs b/fundamentals/src/xcm_executor.rs
+index f84c243..f97757d 100644
+--- a/fundamentals/src/xcm_executor.rs
++++ b/fundamentals/src/xcm_executor.rs
+@@ -99,6 +99,14 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
+ 			//
+ 			// - `assets`: The asset(s) to be withdrawn into holding.
+ 			WithdrawAsset(assets) => {
++				/* TODO:
++					- Process everything inside a `TransactionalProcessor`.
++					- Get the `origin` or return `XcmError::BadOrigin`.
++					- For each `asset` in `assets`
++						- Use the `AssetTransactor` to `withdraw_asset`.
++					- `and_then`, if everything goes okay...
++					- `subsume_assets` into the `self.holding`
++				*/
+ 				todo!("{:?}", assets)
+ 			},
+ 			// Reduce Holding by up to the given assets.
+@@ -107,6 +115,7 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
+ 			// not an error if the Holding does not contain the assets (to make this an error, use
+ 			// `ExpectAsset` prior).
+ 			BurnAsset(assets) => {
++				/* TODO: Simply `saturating_take` `assets` from the `self.holding`. */
+ 				todo!("{:?}", assets)
+ 			},
+ 			// Remove the asset(s) (`assets`) from the Holding Register and place equivalent assets

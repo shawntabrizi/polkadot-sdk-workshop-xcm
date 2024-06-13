@@ -1,11 +1,20 @@
 diff --git a/fundamentals/src/xcm_executor.rs b/fundamentals/src/xcm_executor.rs
-index d50d85a..f03d79b 100644
+index 540086f..f03d79b 100644
 --- a/fundamentals/src/xcm_executor.rs
 +++ b/fundamentals/src/xcm_executor.rs
-@@ -132,14 +132,50 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
+@@ -132,32 +132,50 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
  			// - `assets`: The asset(s) to remove from holding.
  			// - `beneficiary`: The new owner for the assets.
  			DepositAsset { assets, beneficiary } => {
+-				/* TODO:
+-					- Make a clone of `self.holding` into a variable `old_holding`.
+-					- Start a new `TransactionalProcessor`, storing the `result`.
+-						- `saturating_take` the `assets` into a variable `deposited.
+-						- For `asset` in `deposited`
+-							- Use `AssetTransactor` to `deposit_asset` to the `beneficiary`.
+-					- If anything goes wrong, we should reset `self.holding` to `old_holding`.
+-					- Return the `result`
+-				*/
 -				todo!("{:?} {:?}", assets, beneficiary)
 +				let old_holding = self.holding.clone();
 +				let result = Config::TransactionalProcessor::process(|| {
@@ -33,6 +42,15 @@ index d50d85a..f03d79b 100644
  			//
  			// - `assets`: The asset(s) that are minted into the Holding Register.
  			ReceiveTeleportedAsset(assets) => {
+-				/* TODO:
+-					- Process everything inside `TransactionalProcessor`.
+-						- Get the `origin` or return `XcmError::BadOrigin`.
+-						- For `asset` in `assets`:
+-							- Use `AssetTransactor` to see if we `can_check_in`.
+-							- Then actually `check_in` those assets.
+-					- `and_then`, if everything goes okay...
+-					- `subsume_assets` into the `self.holding`.
+-				*/
 -				todo!("{:?}", assets)
 +				Config::TransactionalProcessor::process(|| {
 +					let origin = self.origin_ref().ok_or(XcmError::BadOrigin)?;

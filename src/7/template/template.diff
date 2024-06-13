@@ -1,0 +1,23 @@
+diff --git a/fundamentals/src/xcm_executor.rs b/fundamentals/src/xcm_executor.rs
+index 9e0647a..08884c9 100644
+--- a/fundamentals/src/xcm_executor.rs
++++ b/fundamentals/src/xcm_executor.rs
+@@ -62,10 +62,18 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
+ 			// the authority of the origin (e.g. if they are being relayed from an untrusted
+ 			// source, as often the case with `ReserveAssetDeposited`).
+ 			ClearOrigin => {
++				/* TODO: Simply set `self.context.origin` to `None` */
+ 				todo!()
+ 			},
+ 			// Appends `who` to the current XCM Executor `origin` location.
+ 			DescendOrigin(who) => {
++				/* TODO:
++					- Get the `self.context.origin`.
++					- Access it `as_mut()`.
++					- If `origin` is `None`, return `XcmError::BadOrigin`.
++					- Then `append_with` `who`
++					- If the append fails, return `XcmError::LocationFull`.
++				*/
+ 				todo!("{:?}", who)
+ 			}
+ 			// Withdraw asset(s) (`assets`) from the ownership of `origin` and place equivalent

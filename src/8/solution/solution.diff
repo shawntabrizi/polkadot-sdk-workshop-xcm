@@ -1,11 +1,18 @@
 diff --git a/fundamentals/src/xcm_executor.rs b/fundamentals/src/xcm_executor.rs
-index 57e1bd4..f84c243 100644
+index 97ba170..f84c243 100644
 --- a/fundamentals/src/xcm_executor.rs
 +++ b/fundamentals/src/xcm_executor.rs
-@@ -79,7 +79,20 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
+@@ -79,14 +79,20 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
  			// - `assets`: The asset(s) to be withdrawn.
  			// - `beneficiary`: The new owner for the assets.
  			TransferAsset { assets, beneficiary } => {
+-				/* TODO:
+-					- Process everything inside a `TransactionalProcessor`.
+-					- Get the `origin` from `self.origin_ref()`.
+-					- For each `asset` in `assets`
+-						- Use `AssetTransactor` and `transfer_asset` to the `beneficiary`.
+-					- If everything works well, return `Ok(())`
+-				*/
 -				todo!("{:?} {:?}", assets, beneficiary)
 +				Config::TransactionalProcessor::process(|| {
 +					// Take `assets` from the origin account (on-chain) and place into dest account.
