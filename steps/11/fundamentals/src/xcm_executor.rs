@@ -62,17 +62,12 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 			// the authority of the origin (e.g. if they are being relayed from an untrusted
 			// source, as often the case with `ReserveAssetDeposited`).
 			ClearOrigin => {
-				self.context.origin = None;
-				Ok(())
+				todo!()
 			},
 			// Appends `who` to the current XCM Executor `origin` location.
-			DescendOrigin(who) => self
-				.context
-				.origin
-				.as_mut()
-				.ok_or(XcmError::BadOrigin)?
-				.append_with(who)
-				.map_err(|_| XcmError::LocationFull),
+			DescendOrigin(who) => {
+				todo!("{:?}", who)
+			}
 			// Withdraw asset(s) (`assets`) from the ownership of `origin` and place equivalent
 			// assets under the ownership of `beneficiary`.
 			//

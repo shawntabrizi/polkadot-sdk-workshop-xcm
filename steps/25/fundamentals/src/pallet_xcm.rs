@@ -132,16 +132,14 @@ impl<T: Config> Pallet<T> {
 	/// Relay an XCM `message` from a given `interior` location in this context to a given `dest`
 	/// location.
 	pub fn do_send(origin: OriginFor<T>, dest: Location, mut message: Xcm<()>) -> DispatchResult {
-		let origin_location = T::SendXcmOrigin::ensure_origin(origin)?;
-		let interior: Junctions =
-			origin_location.try_into().map_err(|_| Error::<T>::InvalidOrigin)?;
-		if interior != Junctions::Here {
-			message.0.insert(0, DescendOrigin(interior));
-		}
-		let (ticket, _) = T::XcmRouter::validate(&mut Some(dest), &mut Some(message))
-			.map_err(|_| Error::<T>::RouterError)?;
-		let _message_id = T::XcmRouter::deliver(ticket).map_err(|_| Error::<T>::RouterError)?;
-		Ok(())
+		// Use `SendXcmOrigin` to "ensure" that `origin` is valid to send XCM, and assign the
+		// resulting location to `origin_location`.
+		// Convert `origin_location` to `interior: Junctions`, else return `InvalidOrigin`.
+		// If `interior` is not equal to `Junctions::Here`, insert into the XCM `DescendOrigin(interior)`.
+		// Use `XcmRouter` to `validate` the `dest` and `message` is valid, and create a `ticket`,
+		// else you should return a `RouterError`.
+		// Finally, use the `XcmRouter` to `deliver` the `ticket`, else return `RouterError`.
+		todo!("{:?} {:?}", dest, message)
 	}
 
 	pub fn do_teleport_assets(
