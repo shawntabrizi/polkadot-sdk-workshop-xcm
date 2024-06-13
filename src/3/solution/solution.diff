@@ -1,0 +1,116 @@
+diff --git a/fundamentals/src/holding.rs b/fundamentals/src/holding.rs
+index 8b9c09b..2bce52c 100644
+--- a/fundamentals/src/holding.rs
++++ b/fundamentals/src/holding.rs
+@@ -44,30 +44,40 @@ impl AssetsInHolding {
+ 
+ 	/// Mutate `self` to contain the given `asset`, saturating if necessary.
+ 	pub fn subsume(&mut self, asset: Asset) {
+-		/* TODO:
+-			- For fungible assets:
+-				- Check if we already have some existing assets in the holding.
+-				- If we do, `saturating_add` to the existing amount.
+-				- If we don't, `insert` the asset into the `BTreeMap`.
+-			- For non-fungible assets:
+-				- Simply insert the `asset.id` and `instance` into the `BTreeSet`.
+-
+-		*/
+-		todo!("{:?}", asset)
++		match asset.fun {
++			Fungible(amount) =>
++				if let Some(existing_amount) = self.fungible.get_mut(&asset.id) {
++					*existing_amount = existing_amount.saturating_add(amount);
++				} else {
++					self.fungible.insert(asset.id, amount);
++				},
++			NonFungible(instance) => {
++				self.non_fungible.insert((asset.id, instance));
++			},
++		}
+ 	}
+ 
+ 	/// Mutate `self` to contain all given `assets`, saturating if necessary.
+ 	/// NOTE: This function can be written more optimally given the fact that assets in the holding
+ 	/// are always in order.
+ 	pub fn subsume_assets(&mut self, mut assets: AssetsInHolding) {
+-		/* TODO:
+-			- For each `(key, value)` in `assets.fungible`.
+-				- If the asset already exists `self.fungible`, `saturating_accrue` the new `value`.
+-				- If it is new, `insert` the new asset.
+-			- For non-fungible assets, take `self.non_fungible` and `append` the `assets.non_fungible`.
+-			- Then clear `assets.fungible` and `assets.non_fungible`.
+-		*/
+-		todo!("{:?}", assets)
++		// Loop through all fungible assets in `assets` and add them to `self`
++		for (key, value) in assets.fungible.iter_mut() {
++			if let Some(existing_value) = self.fungible.get_mut(key) {
++				// If the asset already exists in `self`, add the values, saturating if necessary
++				existing_value.saturating_accrue(*value);
++			} else {
++				// Otherwise, insert the new asset into `self`
++				self.fungible.insert(key.clone(), *value);
++			}
++		}
++
++		// Append all non-fungible assets from `assets` to `self`
++		self.non_fungible.append(&mut assets.non_fungible);
++
++		// Clear the original `assets` collections as they are now part of `self`
++		assets.fungible.clear();
++		assets.non_fungible.clear();
+ 	}
+ 
+ 	/// Mutates `self` to its original value less `mask` and returns `true` iff it contains at least
+@@ -80,32 +90,33 @@ impl AssetsInHolding {
+ 
+ 		match asset {
+ 			AssetFilter::Wild(All) => {
+-				/* TODO: Match on and return all assets.
+-					- Create a new `AssetsInHolding` called `new_holding`
+-					- use `mem::swap` to swap this with `self`
+-					- return the `new_holding`
+-				*/
+-				todo!()
++				let mut new_holding = AssetsInHolding::new();
++				mem::swap(&mut *self, &mut new_holding);
++				return new_holding
+ 			},
+ 			AssetFilter::Definite(assets) =>
+ 				for asset in assets.into_inner() {
+ 					match asset {
+ 						Asset { fun: Fungible(amount), id } => {
+-							/* TODO:
+-								- Check if there is any of this asset in the holding.
+-								- Get the `min` amount between the filter and what is in holding.
+-								- Reduce the holding by that amount.
+-								- Check if we should `remove` the asset from the holding when it's value goes to zero.
+-								- Finally, `subsume` these assets into `taken`.
+-							*/
+-							todo!("{:?} {:?}", amount, id)
++							let amount = if let Some(self_amount) = self.fungible.get_mut(&id) {
++								let amount = amount.min(*self_amount);
++								*self_amount -= amount;
++								if *self_amount == 0 {
++									self.fungible.remove(&id);
++								}
++								amount
++							} else {
++								0
++							};
++							if amount > 0 {
++								taken.subsume(Asset::from((id, amount)).into());
++							}
+ 						},
+ 						Asset { fun: NonFungible(instance), id } => {
+-							/* TODO:
+-								- Try to `remove` the asset from `self.non_fungible`
+-								- If the asset was there, move it to `taken`
+-							*/
+-							todo!("{:?} {:?}", instance, id)
++							let id_instance = (id, instance);
++							if self.non_fungible.remove(&id_instance) {
++								taken.subsume(id_instance.into());
++							}
+ 						},
+ 					}
+ 				},
