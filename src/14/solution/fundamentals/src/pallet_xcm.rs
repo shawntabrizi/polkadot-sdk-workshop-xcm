@@ -134,9 +134,9 @@ impl<T: Config> Pallet<T> {
 	pub fn do_send(origin: OriginFor<T>, dest: Location, mut message: Xcm<()>) -> DispatchResult {
 		let origin_location = T::SendXcmOrigin::ensure_origin(origin)?;
 		let interior: Junctions =
-			origin_location.clone().try_into().map_err(|_| Error::<T>::InvalidOrigin)?;
+			origin_location.try_into().map_err(|_| Error::<T>::InvalidOrigin)?;
 		if interior != Junctions::Here {
-			message.0.insert(0, DescendOrigin(interior.clone()));
+			message.0.insert(0, DescendOrigin(interior));
 		}
 		let (ticket, _) = T::XcmRouter::validate(&mut Some(dest), &mut Some(message))
 			.map_err(|_| Error::<T>::RouterError)?;
@@ -153,37 +153,7 @@ impl<T: Config> Pallet<T> {
 		// We don't use this in our naive implementation.
 		_fee_asset_item: u32,
 	) -> DispatchResult {
-		// XCM instructions to be executed on local chain
-		let local_execute_xcm: Xcm<()> = Xcm(vec![
-			// withdraw assets to be teleported
-			WithdrawAsset(assets.clone()),
-			// burn assets on local chain
-			BurnAsset(assets.clone()),
-		]);
-
-		// Changing the asset location to be in the context of the destination chain.
-		let context = T::UniversalLocation::get();
-		let mut reanchored_assets = assets;
-		reanchored_assets
-			.reanchor(&dest, &context)
-			.map_err(|_| Error::<T>::CannotReanchor)?;
-
-		// XCM instructions to be executed on destination chain
-		let xcm_on_dest: Xcm<()> = Xcm(vec![
-			// teleport `assets` in from origin chain
-			ReceiveTeleportedAsset(reanchored_assets),
-			// following instructions are not exec'ed on behalf of origin chain anymore
-			ClearOrigin,
-			// deposit all remaining assets in holding to `beneficiary` location
-			DepositAsset { assets: Wild(All), beneficiary },
-		]);
-
-		// Execute the local XCM instructions.
-		Self::do_execute(origin.clone(), local_execute_xcm)?;
-		// Send the destination XCM instructions.
-		Self::do_send(origin, dest, xcm_on_dest)?;
-
-		Ok(())
+		todo!("{:?} {:?} {:?}", dest, beneficiary, assets)
 	}
 
 	pub fn do_reserve_transfer_assets(

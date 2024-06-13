@@ -16,7 +16,18 @@
 
 <div id="Template" class="maintab tabcontent active">
 
-No files edited in this step.
+<div class="tab">
+<button class="subtab tablinks file-template file-modified active" onclick="switchSubTab(event, 'fundamentals/src/pallet_xcm.rs')" data-id="fundamentals/src/pallet_xcm.rs">fundamentals/src/pallet_xcm.rs</button>
+</div>
+<div id="template/fundamentals/src/pallet_xcm.rs" class="subtab tabcontent active" data-id="fundamentals/src/pallet_xcm.rs">
+
+```rust
+{{#include ./template/fundamentals/src/pallet_xcm.rs}}
+```
+
+</div>
+
+
 
 </div>
 

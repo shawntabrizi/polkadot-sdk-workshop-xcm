@@ -1,3 +1,3 @@
-# Pallet XCM
+# Execute
 
-Send Solution
+Execute Solution

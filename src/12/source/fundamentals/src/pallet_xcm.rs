@@ -122,11 +122,8 @@ pub mod pallet {
 }
 
 impl<T: Config> Pallet<T> {
-	/// Execute an XCM locally on this chain on behalf of `origin`.
 	pub fn do_execute(origin: OriginFor<T>, message: Xcm<()>) -> DispatchResult {
-		let execute_origin: Location = T::ExecuteXcmOrigin::ensure_origin(origin)?;
-		T::XcmExecutor::execute(execute_origin, message).map_err(|_| Error::<T>::ExecutorError)?;
-		Ok(())
+		todo!("{:?}", message)
 	}
 
 	/// Relay an XCM `message` from a given `interior` location in this context to a given `dest`

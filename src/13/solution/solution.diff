@@ -1,22 +1,18 @@
 diff --git a/fundamentals/src/pallet_xcm.rs b/fundamentals/src/pallet_xcm.rs
-index baec7b7..2040b85 100644
+index d68e582..baec7b7 100644
 --- a/fundamentals/src/pallet_xcm.rs
 +++ b/fundamentals/src/pallet_xcm.rs
-@@ -132,7 +132,16 @@ impl<T: Config> Pallet<T> {
- 	/// Relay an XCM `message` from a given `interior` location in this context to a given `dest`
- 	/// location.
- 	pub fn do_send(origin: OriginFor<T>, dest: Location, mut message: Xcm<()>) -> DispatchResult {
--		todo!("{:?} {:?}", dest, message)
-+		let origin_location = T::SendXcmOrigin::ensure_origin(origin)?;
-+		let interior: Junctions =
-+			origin_location.clone().try_into().map_err(|_| Error::<T>::InvalidOrigin)?;
-+		if interior != Junctions::Here {
-+			message.0.insert(0, DescendOrigin(interior.clone()));
-+		}
-+		let (ticket, _) = T::XcmRouter::validate(&mut Some(dest), &mut Some(message))
-+			.map_err(|_| Error::<T>::RouterError)?;
-+		let _message_id = T::XcmRouter::deliver(ticket).map_err(|_| Error::<T>::RouterError)?;
+@@ -124,10 +124,9 @@ pub mod pallet {
+ impl<T: Config> Pallet<T> {
+ 	/// Execute an XCM locally on this chain on behalf of `origin`.
+ 	pub fn do_execute(origin: OriginFor<T>, message: Xcm<()>) -> DispatchResult {
+-		// Use `ExecuteXcmOrigin` to "ensure" that `origin` is able to execute a local XCM
+-		// and assign the resulting location to `execute_origin`.
+-		// Use `XcmExecutor` to `execute` the call, and if an error occurs, return `ExecuteError`.
+-		todo!("{:?}", message)
++		let execute_origin: Location = T::ExecuteXcmOrigin::ensure_origin(origin)?;
++		T::XcmExecutor::execute(execute_origin, message).map_err(|_| Error::<T>::ExecutorError)?;
 +		Ok(())
  	}
  
- 	pub fn do_teleport_assets(
+ 	/// Relay an XCM `message` from a given `interior` location in this context to a given `dest`
