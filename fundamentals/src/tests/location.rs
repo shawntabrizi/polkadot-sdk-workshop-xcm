@@ -104,3 +104,16 @@ fn check_sibling_parachains_works() {
 		assert_eq!(check_sibling_parachains(loc), res);
 	}
 }
+
+#[test]
+fn descend_origin_works() {
+	use manipulation::descend_origin;
+
+	let acc: Junction = AccountIndex64 { network: None, index: 23 };
+	let mut m = Location { parents: 1, interior: [Parachain(42), PalletInstance(3)].into() };
+	assert_eq!(descend_origin(&mut m, acc.into()), Ok(()));
+	assert_eq!(
+		m,
+		Location { parents: 1, interior: [Parachain(42), PalletInstance(3), acc.clone()].into() }
+	);
+}

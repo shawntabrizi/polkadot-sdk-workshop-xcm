@@ -192,9 +192,8 @@ pub mod manipulation {
 		}
 	}
 
-	// // Given a location, convert it to a universal location, given the const `UNIVERSAL_LOCATION`
-	// which describes your relative location to the universal location. const UNIVERSAL_LOCATION:
-	// NetworkId = NetworkId::Kusama; pub fn convert_to_universal_location(mut location: Location)
-	// -> Result<Location, ()>{ 	location.reanchored(&location,
-	// &UNIVERSAL_LOCATION.into()).map_err(|_| ()) }
+	// Append `who` to the current `origin`.
+	pub fn descend_origin(origin: &mut Location, who: Location) -> Result<(), XcmError> {
+		(*origin).append_with(who).map_err(|_| XcmError::LocationFull)
+	}
 }
