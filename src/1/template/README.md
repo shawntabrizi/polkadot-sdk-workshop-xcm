@@ -1,33 +1,80 @@
-# polkadot-sdk-workshop-xcm
+# Locations
 
-This project is a workshop for learning about Polkadot SDK's XCM.
+In the world of XCM, the first fundamental primitive you need to learn about is Locations.
 
-## Overview
+As a software developer, Locations are most similar to filepaths in a filesystem.
 
-This workshop aims to teach students about XCM following the philosophy of "discovery through experience".
+When writing a program, filepaths can help you locate folders, which contain many items, and the items themselves.
 
-Students will first go through, learn, and use all the fundamental building blocks for XCM:
+This is very similar to Locations in XCM, which can be used to locate consensus systems, like Relay Chains, Parachains, Smart Contracts, etc... and also specific users, assets, applications, and groups.
 
-- Location / Topography
-	- Learn how to construct relative and absolute locations for common objects and types used in XCM.
-- Assets and Filters
-	- Learn how to represent various types of assets like fungible tokens and non-fungible tokens.
-	- Constructing asset filters to target pools of assets.
-- Asset Holding
-	- Learn how we can manage multiple assets in memory using the `AssetsInHolding` abstraction.
-- Instructions
-	- Construct common XCM messages through individual XCM instructions.
-- The XCM Executor
-	- Learn how the XCM Executor actually functions, and loosely implement a few common instructions needed to complete end to end scenarios.
-- Pallet XCM
-	- Learn how Pallet XCM provides a simple to access wrapper to the underlying XCM Executor to perform common tasks like send, execute, and teleport transfers.
+Let's explore how Locations work inside of XCM.
 
-After learning the fundamentals, students should feel confident they have strong understanding of how these underlying XCM primitives function and are constructed. With this knowledge, they will be able to investigate the real implementations of XCM to learn more deeply if needed.
+## Relative Locations
 
-The next step after fundamentals is using the XCM Simulator an investigating the different ways we can configure XCM for various common scenarios. This workshop will not be comprehensive to all possible interactions, but will focus on a few key scenarios that we commonly expect to see in the Polkadot Ecosystem.
+By default, locations in XCM are always relative.
 
-As a parachain:
+This means, when considering how to construct a location, you must first establish your relative perspective.
 
-1. Accepting and using the native asset of your relay chain.
-2. Accepting and using the native asset of other parachains.
-3. Accessing pallets of the relay chain or other parachains.
+For example, take the following topography:
+
+```text
+                  ┌───────────┐
+                  │  Relay A  │
+                  │  Polkadot │
+                  └─────┬─────┘
+                        │
+             ┌──────────┴──────────┐
+             │                     │
+       ┌─────┴─────┐         ┌─────┴─────┐
+       │  Para A   │         │  Para B   │
+       │  Id 1000  │         │  Id 1337  │
+       └─────┬─────┘         └─────┬─────┘
+             │                     │
+      ┌──────┴──────┐              ├───────────┐
+      │             │              │           │
+┌─────┴─────┐ ┌─────┴─────┐ ┌──────┴────┐ ┌────┴──────┐
+│   Alice   │ │  Pallet   │ │    Bob    │ │  Pallet   │
+│ AcctKey32 │ │  Assets   │ │ AcctKey20 │ │   EVM     │
+│           │ │           │ │           │ │           │
+│ 0x11111...│ │ Pallet #2 │ │ 0x22222...│ │ Pallet #5 │
+└───────────┘ └─────┬─────┘ └───────────┘ └─────┬─────┘
+                    │                           │
+              ┌─────┴─────┐               ┌─────┴─────┐
+              │   Asset   │               │   Smart   │
+              │   wBTC    │               │ Contract  │
+              │           │               │           │
+              │   Id 21   │               │ 0x55555...│
+              └───────────┘               └───────────┘
+```
+
+Let's treat this like a file system, and say we want to locate `Asset wBTC - ID 21`.
+
+From the perspective of the Polkadot relay chain:
+
+```text
+./{Para A}/{Pallet Assets}/{Asset wBTC}
+```
+
+But from the perspective of Smart Contract `0x555...`, which might be a DEX used to trade `wBTC`:
+
+```text
+../../../{Para A}/{Pallet Assets}/{Asset wBTC}
+```
+
+## The Location Format
+
+So nothing new to learn about with locations, we just need to break down how they are represented in the XCM system.
+
+### Junction
+
+The building blocks of a location are Junctions.
+
+```rust
+pub enum Junction {
+	Parachain(#[codec(compact)] u32),
+	PalletInstance(u8),
+	GeneralIndex(#[codec(compact)] u128),
+	// ... there are more junctions
+}
+```

@@ -1,4 +1,4 @@
-- [0. polkadot-sdk-workshop-xcm](0/README.md)
-    - [1. polkadot-sdk-workshop-xcm](1/README.md)
-    - [2. polkadot-sdk-workshop-xcm](2/README.md)
-    - [3. polkadot-sdk-workshop-xcm](3/README.md)
+- [0. XCM Workshop](0/README.md)
+    - [1. Locations](1/README.md)
+    - [2. Assets](2/README.md)
+    - [3. Holding](3/README.md)
