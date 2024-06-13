@@ -79,6 +79,13 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 			// - `assets`: The asset(s) to be withdrawn.
 			// - `beneficiary`: The new owner for the assets.
 			TransferAsset { assets, beneficiary } => {
+				/* TODO:
+					- Process everything inside a `TransactionalProcessor`.
+					- Get the `origin` from `self.origin_ref()`.
+					- For each `asset` in `assets`
+						- Use `AssetTransactor` and `transfer_asset` to the `beneficiary`.
+					- If everything works well, return `Ok(())`
+				*/
 				todo!("{:?} {:?}", assets, beneficiary)
 			},
 			// Withdraw asset(s) (`assets`) from the ownership of `origin` and place them into the
