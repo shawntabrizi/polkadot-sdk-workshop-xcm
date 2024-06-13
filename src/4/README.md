@@ -1,10 +1,6 @@
 
 <div class="content-row">
-<div class="content-col">
 
-{{#include ./template/README.md}}
-
-</div>
 
 <div class="content-col">
 
