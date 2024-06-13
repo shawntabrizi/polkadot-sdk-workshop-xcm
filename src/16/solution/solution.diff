@@ -1,0 +1,65 @@
+diff --git a/fundamentals/src/pallet_xcm.rs b/fundamentals/src/pallet_xcm.rs
+index ccf515a..1a88020 100644
+--- a/fundamentals/src/pallet_xcm.rs
++++ b/fundamentals/src/pallet_xcm.rs
+@@ -153,29 +153,37 @@ impl<T: Config> Pallet<T> {
+ 		// We don't use this in our naive implementation.
+ 		_fee_asset_item: u32,
+ 	) -> DispatchResult {
+-		/* The Teleport Instruction is broken up into a local and destination XCM. */
+-		/* Create a `local_execute_xcm` which does:
+-			- `WithdrawAsset`
+-			- `BurnAsset`
+-		*/
+-
+-		/* For the XCM on the destination:
+-			- We need to adjust the location of the assets to match the destination
+-			- For this, we need to `reanchor` the assets using the `dest` and local `context`
+-			- For `context`, you should use the `UniversalLocation`.
+-		*/
+-
+-		/* Then prepare a `xcm_on_dest` which is composed of:
+-			- `ReceiveTeleportedAsset` - using `reanchored_assets`
+-			- `ClearOrigin`
+-			- `DepositAsset` - using the asset filter `Wild(All)`
+-		*/
+-
+-		/* Finally, we just need to:
+-			- `do_execute` our `local_execute_xcm`
+-			- `do_send` our `xcm_on_dest` to `dest`
+-		*/
+-		todo!("{:?} {:?} {:?}", dest, beneficiary, assets)
++		// XCM instructions to be executed on local chain
++		let local_execute_xcm: Xcm<()> = Xcm(vec![
++			// withdraw assets to be teleported
++			WithdrawAsset(assets.clone()),
++			// burn assets on local chain
++			BurnAsset(assets.clone()),
++		]);
++
++		// Changing the asset location to be in the context of the destination chain.
++		let context = T::UniversalLocation::get();
++		let mut reanchored_assets = assets;
++		reanchored_assets
++			.reanchor(&dest, &context)
++			.map_err(|_| Error::<T>::CannotReanchor)?;
++
++		// XCM instructions to be executed on destination chain
++		let xcm_on_dest: Xcm<()> = Xcm(vec![
++			// teleport `assets` in from origin chain
++			ReceiveTeleportedAsset(reanchored_assets),
++			// following instructions are not exec'ed on behalf of origin chain anymore
++			ClearOrigin,
++			// deposit all remaining assets in holding to `beneficiary` location
++			DepositAsset { assets: Wild(All), beneficiary },
++		]);
++
++		// Execute the local XCM instructions.
++		Self::do_execute(origin.clone(), local_execute_xcm)?;
++		// Send the destination XCM instructions.
++		Self::do_send(origin, dest, xcm_on_dest)?;
++
++		Ok(())
+ 	}
+ 
+ 	pub fn do_reserve_transfer_assets(

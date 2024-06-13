@@ -1,49 +1,21 @@
 diff --git a/fundamentals/src/xcm_executor.rs b/fundamentals/src/xcm_executor.rs
-index d50d85a..f03d79b 100644
+index f84c243..d50d85a 100644
 --- a/fundamentals/src/xcm_executor.rs
 +++ b/fundamentals/src/xcm_executor.rs
-@@ -132,14 +132,50 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
- 			// - `assets`: The asset(s) to remove from holding.
- 			// - `beneficiary`: The new owner for the assets.
- 			DepositAsset { assets, beneficiary } => {
--				todo!("{:?} {:?}", assets, beneficiary)
-+				let old_holding = self.holding.clone();
-+				let result = Config::TransactionalProcessor::process(|| {
-+					// Take assets from the holding registrar...
-+					let deposited = self.holding.saturating_take(assets);
-+					// ... and deposit them to the `beneficiary`.
-+					for asset in deposited.into_assets_iter() {
-+						Config::AssetTransactor::deposit_asset(
-+							&asset,
-+							&beneficiary,
-+							Some(&self.context),
-+						)?;
-+					}
-+					Ok(())
-+				});
-+				// If we were unable to execute `deposit_asset` in the `AssetTransactor`, we reset
-+				// the XCM Executor holding registrar since no operations took place.
-+				if Config::TransactionalProcessor::IS_TRANSACTIONAL && result.is_err() {
-+					self.holding = old_holding;
-+				}
-+				result
- 			},
- 			// Asset(s) (`assets`) have been destroyed on the `origin` system and equivalent assets
- 			// should be created and placed into the Holding Register.
+@@ -99,7 +99,23 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
  			//
- 			// - `assets`: The asset(s) that are minted into the Holding Register.
- 			ReceiveTeleportedAsset(assets) => {
+ 			// - `assets`: The asset(s) to be withdrawn into holding.
+ 			WithdrawAsset(assets) => {
 -				todo!("{:?}", assets)
 +				Config::TransactionalProcessor::process(|| {
 +					let origin = self.origin_ref().ok_or(XcmError::BadOrigin)?;
-+					// check whether we trust origin to teleport this asset to us via config trait.
++					// Take `assets` from the origin account (on-chain)...
 +					for asset in assets.inner() {
-+						// We should check that the asset can actually be teleported in (for this to
-+						// be in error, there would need to be an accounting violation by one of the
-+						// trusted chains, so it's unlikely, but we don't want to punish a possibly
-+						// innocent chain/user).
-+						Config::AssetTransactor::can_check_in(origin, asset, &self.context)?;
-+						Config::AssetTransactor::check_in(origin, asset, &self.context);
++						Config::AssetTransactor::withdraw_asset(
++							asset,
++							origin,
++							Some(&self.context),
++						)?;
 +					}
 +					Ok(())
 +				})
@@ -53,5 +25,15 @@ index d50d85a..f03d79b 100644
 +					Ok(())
 +				})
  			},
- 			// In this workshop, we won't be implementing every instruction, just the ones above...
- 			// Our executor will simply panic if you try to execute other instructions.
+ 			// Reduce Holding by up to the given assets.
+ 			//
+@@ -107,7 +123,8 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
+ 			// not an error if the Holding does not contain the assets (to make this an error, use
+ 			// `ExpectAsset` prior).
+ 			BurnAsset(assets) => {
+-				todo!("{:?}", assets)
++				self.holding.saturating_take(assets.into());
++				Ok(())
+ 			},
+ 			// Remove the asset(s) (`assets`) from the Holding Register and place equivalent assets
+ 			// under the ownership of `beneficiary` within this consensus system.

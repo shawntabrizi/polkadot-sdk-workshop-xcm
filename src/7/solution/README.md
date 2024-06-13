@@ -1,3 +1,3 @@
-# Transfer Asset
+# XCM Workshop
 
-Solution
+Solution for XCM Executor Origin

@@ -1,34 +1,19 @@
-# Withdraw Assets
-
-## Withdraw Assets
+# Transfer Asset
 
 ```rust
-WithdrawAsset(assets) => {
-	let origin = self.origin_ref().ok_or(XcmError::BadOrigin)?;
+TransferAsset { assets, beneficiary } => {
 	Config::TransactionalProcessor::process(|| {
-		// Take `assets` from the origin account (on-chain)...
+		// Take `assets` from the origin account (on-chain) and place into dest account.
+		let origin = self.origin_ref().ok_or(XcmError::BadOrigin)?;
 		for asset in assets.inner() {
-			Config::AssetTransactor::withdraw_asset(
-				asset,
+			Config::AssetTransactor::transfer_asset(
+				&asset,
 				origin,
-				Some(&self.context),
+				&beneficiary,
+				&self.context,
 			)?;
 		}
 		Ok(())
 	})
-	.and_then(|_| {
-		// ...and place into holding.
-		self.holding.subsume_assets(assets.into());
-		Ok(())
-	})
-},
-```
-
-## Burn Assets
-
-```rust
-BurnAsset(assets) => {
-	self.holding.saturating_take(assets.into());
-	Ok(())
 },
 ```

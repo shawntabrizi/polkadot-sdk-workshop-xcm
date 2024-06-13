@@ -99,23 +99,7 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 			//
 			// - `assets`: The asset(s) to be withdrawn into holding.
 			WithdrawAsset(assets) => {
-				Config::TransactionalProcessor::process(|| {
-					let origin = self.origin_ref().ok_or(XcmError::BadOrigin)?;
-					// Take `assets` from the origin account (on-chain)...
-					for asset in assets.inner() {
-						Config::AssetTransactor::withdraw_asset(
-							asset,
-							origin,
-							Some(&self.context),
-						)?;
-					}
-					Ok(())
-				})
-				.and_then(|_| {
-					// ...and place into holding.
-					self.holding.subsume_assets(assets.into());
-					Ok(())
-				})
+				todo!("{:?}", assets)
 			},
 			// Reduce Holding by up to the given assets.
 			//
@@ -123,8 +107,7 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 			// not an error if the Holding does not contain the assets (to make this an error, use
 			// `ExpectAsset` prior).
 			BurnAsset(assets) => {
-				self.holding.saturating_take(assets.into());
-				Ok(())
+				todo!("{:?}", assets)
 			},
 			// Remove the asset(s) (`assets`) from the Holding Register and place equivalent assets
 			// under the ownership of `beneficiary` within this consensus system.

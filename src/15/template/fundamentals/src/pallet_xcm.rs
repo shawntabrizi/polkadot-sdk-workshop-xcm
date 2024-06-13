@@ -132,16 +132,14 @@ impl<T: Config> Pallet<T> {
 	/// Relay an XCM `message` from a given `interior` location in this context to a given `dest`
 	/// location.
 	pub fn do_send(origin: OriginFor<T>, dest: Location, mut message: Xcm<()>) -> DispatchResult {
-		let origin_location = T::SendXcmOrigin::ensure_origin(origin)?;
-		let interior: Junctions =
-			origin_location.try_into().map_err(|_| Error::<T>::InvalidOrigin)?;
-		if interior != Junctions::Here {
-			message.0.insert(0, DescendOrigin(interior));
-		}
-		let (ticket, _) = T::XcmRouter::validate(&mut Some(dest), &mut Some(message))
-			.map_err(|_| Error::<T>::RouterError)?;
-		let _message_id = T::XcmRouter::deliver(ticket).map_err(|_| Error::<T>::RouterError)?;
-		Ok(())
+		// Use `SendXcmOrigin` to "ensure" that `origin` is valid to send XCM, and assign the
+		// resulting location to `origin_location`.
+		// Convert `origin_location` to `interior: Junctions`, else return `InvalidOrigin`.
+		// If `interior` is not equal to `Junctions::Here`, insert into the XCM `DescendOrigin(interior)`.
+		// Use `XcmRouter` to `validate` the `dest` and `message` is valid, and create a `ticket`,
+		// else you should return a `RouterError`.
+		// Finally, use the `XcmRouter` to `deliver` the `ticket`, else return `RouterError`.
+		todo!("{:?} {:?}", dest, message)
 	}
 
 	pub fn do_teleport_assets(
@@ -153,28 +151,6 @@ impl<T: Config> Pallet<T> {
 		// We don't use this in our naive implementation.
 		_fee_asset_item: u32,
 	) -> DispatchResult {
-		/* The Teleport Instruction is broken up into a local and destination XCM. */
-		/* Create a `local_execute_xcm` which does:
-			- `WithdrawAsset`
-			- `BurnAsset`
-		*/
-
-		/* For the XCM on the destination:
-			- We need to adjust the location of the assets to match the destination
-			- For this, we need to `reanchor` the assets using the `dest` and local `context`
-			- For `context`, you should use the `UniversalLocation`.
-		*/
-
-		/* Then prepare a `xcm_on_dest` which is composed of:
-			- `ReceiveTeleportedAsset` - using `reanchored_assets`
-			- `ClearOrigin`
-			- `DepositAsset` - using the asset filter `Wild(All)`
-		*/
-
-		/* Finally, we just need to:
-			- `do_execute` our `local_execute_xcm`
-			- `do_send` our `xcm_on_dest` to `dest`
-		*/
 		todo!("{:?} {:?} {:?}", dest, beneficiary, assets)
 	}
 
