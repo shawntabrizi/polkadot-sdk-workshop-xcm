@@ -122,6 +122,7 @@ pub mod pallet {
 }
 
 impl<T: Config> Pallet<T> {
+	/// Execute an XCM locally on this chain on behalf of `origin`.
 	pub fn do_execute(origin: OriginFor<T>, message: Xcm<()>) -> DispatchResult {
 		let execute_origin: Location = T::ExecuteXcmOrigin::ensure_origin(origin)?;
 		T::XcmExecutor::execute(execute_origin, message).map_err(|_| Error::<T>::ExecutorError)?;
@@ -133,9 +134,9 @@ impl<T: Config> Pallet<T> {
 	pub fn do_send(origin: OriginFor<T>, dest: Location, mut message: Xcm<()>) -> DispatchResult {
 		let origin_location = T::SendXcmOrigin::ensure_origin(origin)?;
 		let interior: Junctions =
-			origin_location.clone().try_into().map_err(|_| Error::<T>::InvalidOrigin)?;
+			origin_location.try_into().map_err(|_| Error::<T>::InvalidOrigin)?;
 		if interior != Junctions::Here {
-			message.0.insert(0, DescendOrigin(interior.clone()));
+			message.0.insert(0, DescendOrigin(interior));
 		}
 		let (ticket, _) = T::XcmRouter::validate(&mut Some(dest), &mut Some(message))
 			.map_err(|_| Error::<T>::RouterError)?;
