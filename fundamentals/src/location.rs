@@ -11,26 +11,26 @@ use xcm::latest::prelude::*;
 //                         │
 //              ┌──────────┴──────────┐
 //              │                     │
-//        ┌─────┴─────┐         ┌─────┴─────┐
-//        │  Para A   │         │  Para B   │
-//        │  Id 1000  │         │  Id 1337  │
-//        └─────┬─────┘         └─────┬─────┘
-//              │                     │
-//       ┌──────┴──────┐              ├───────────┐
-//       │             │              │           │
-// ┌─────┴─────┐ ┌─────┴─────┐ ┌──────┴────┐ ┌────┴──────┐
-// │   Alice   │ │  Pallet   │ │    Bob    │ │  Pallet   │
-// │ AcctKey32 │ │  Assets   │ │ AcctKey20 │ │   EVM     │
-// │           │ │           │ │           │ │           │
-// │ 0x11111...│ │ Pallet #2 │ │ 0x22222...│ │ Pallet #5 │
-// └───────────┘ └─────┬─────┘ └───────────┘ └─────┬─────┘
-//                     │                           │
-//               ┌─────┴─────┐               ┌─────┴─────┐
-//               │   Asset   │               │   Smart   │
-//               │   wBTC    │               │ Contract  │
-//               │           │               │           │
-//               │   Id 21   │               │ 0x55555...│
-//               └───────────┘               └───────────┘
+//        ┌─────┴─────┐         ┌─────┴──────┐
+//        │ AssetHub  │         │  Moonbeam  │
+//        │  Id 1000  │         │  Id 2004   │
+//        └─────┬─────┘         └──────┬─────┘
+//              │                      │
+//       ┌──────┴──────┐               ├───────────┐
+//       │             │               │           │
+// ┌─────┴─────┐ ┌─────┴──────┐ ┌──────┴────┐ ┌────┴───────┐
+// │   Alice   │ │  Pallet    │ │    Bob    │ │  Pallet    │
+// │ AcctKey32 │ │  Assets    │ │ AcctKey20 │ │   EVM      │
+// │           │ │            │ │           │ │            │
+// │ 0x11111...│ │ Pallet #50 │ │ 0x22222...│ │ Pallet #51 │
+// └───────────┘ └─────┬──────┘ └───────────┘ └─────┬──────┘
+//                     │                            │
+//               ┌─────┴─────┐               ┌──────┴─────┐
+//               │   Asset   │               │   Smart    │
+//               │   wBTC    │               │ Contract   │
+//               │           │               │            │
+//               │   Id 21   │               │ 0x55555... │
+//               └───────────┘               └────────────┘
 
 /// All these locations are relative to the Polkadot Relay Chain.
 pub mod relative_to_polkadot_relay {
@@ -39,19 +39,19 @@ pub mod relative_to_polkadot_relay {
 	parameter_types! {
 		// The Polkadot parachain A with id 1000.
 		pub PolkadotPara1000: Location = Parachain(1000).into();
-		// The Polkadot parachain B with id 1337.
-		pub PolkadotPara1337: Location = Parachain(1337).into();
+		// The Polkadot parachain B with id 2004.
+		pub PolkadotPara2004: Location = Parachain(2004).into();
 		// The Polkadot relay chain.
 		pub PolkadotRelay: Location = Here.into();
 		// A 32 byte account on para 1000 with all bytes equal to 1 (Alice).
 		pub AliceBytes: [u8; 32] = ALICE.into();
-		pub PolkadotPara1337Alice: Location = Location::new(0, [Parachain(1337), AliceBytes::get().into()]);
+		pub PolkadotPara1000Alice: Location = Location::new(0, [Parachain(1000), AliceBytes::get().into()]);
 		// The location of the `Assets` pallet on the relay chain.
-		pub PolkadotRelayBalancesPallet: Location = PalletInstance(2).into();
+		pub PolkadotRelayBalancesPallet: Location = PalletInstance(5).into();
 		// The asset with index `21` of the Assets pallet on parachain A with id 1000.
-		pub PolkadotPara1000Asset21: Location = (Parachain(1000), PalletInstance(2), GeneralIndex(21)).into();
-		// The Kusama parachain with id 69.
-		pub KusamaPara69: Location = (Parent, GlobalConsensus(Kusama), Parachain(69)).into();
+		pub PolkadotPara1000Asset1984: Location = (Parachain(1000), PalletInstance(50), GeneralIndex(1984)).into();
+		// The Kusama parachain with id 1000.
+		pub KusamaPara1000: Location = (Parent, GlobalConsensus(Kusama), Parachain(1000)).into();
 	}
 }
 
@@ -62,19 +62,19 @@ pub mod relative_to_polkadot_para_1000 {
 	parameter_types! {
 		// The Polkadot parachain with id 1000.
 		pub PolkadotPara1000: Location = Here.into();
-		// The Polkadot parachain with id 1337.
-		pub PolkadotPara1337: Location = (Parent, Parachain(1337)).into();
+		// The Polkadot parachain with id 2004.
+		pub PolkadotPara2004: Location = (Parent, Parachain(2004)).into();
 		// The Polkadot relay chain.
 		pub PolkadotRelay: Location = Parent.into();
-		// A 32 byte account on para 1337.
+		// A 32 byte account on para 1000.
 		pub AliceBytes: [u8; 32] = ALICE.into();
-		pub PolkadotPara1337Alice: Location = Location::new(1, [Parachain(1337), AliceBytes::get().into()]);
+		pub PolkadotPara1000Alice: Location = Location::new(1, [Parachain(1000), AliceBytes::get().into()]);
 		// The location of the `Balances` pallet on the relay chain.
-		pub PolkadotRelayBalancesPallet: Location = (Parent, PalletInstance(1)).into();
+		pub PolkadotRelayBalancesPallet: Location = (Parent, PalletInstance(5)).into();
 		// The asset with index `1984` of the Assets pallet on the Polkadot parachain with id 1000.
-		pub PolkadotPara1000Asset1984: Location = (PalletInstance(2), GeneralIndex(1984)).into();
-		// The Kusama parachain with id 69.
-		pub KusamaPara69: Location = (Parent, Parent, GlobalConsensus(Kusama), Parachain(69)).into();
+		pub PolkadotPara1000Asset1984: Location = (PalletInstance(50), GeneralIndex(1984)).into();
+		// The Kusama parachain with id 1000.
+		pub KusamaPara1000: Location = (Parent, Parent, GlobalConsensus(Kusama), Parachain(1000)).into();
 	}
 }
 
@@ -96,16 +96,16 @@ pub mod relative_to_polkadot_para_2000_sc {
 //       ┌──────────────┼──────────────┐
 //       │              │              │
 // ┌─────┴─────┐  ┌─────┴─────┐  ┌─────┴─────┐
-// │  Para C   │  │  User 1   │  │           │
+// │ AssetHub  │  │  User 1   │  │           │
 // │  Id 1000  │  │ AcctKey32 │  │ Plurality │
 // └─────┬─────┘  │           │  │           │
 //       │        │ 0x11111...│  │           │
-// ┌─────┴─────┐  └───────────┘  └───────────┘
-// │  Pallet   │
-// │    NFT    │
-// │           │
-// │ Pallet #3 │
-// └─────┬─────┘
+// ┌─────┴──────┐ └───────────┘  └───────────┘
+// │  Pallet    │
+// │    NFT     │
+// │            │
+// │ Pallet #52 │
+// └─────┬──────┘
 //       │
 // ┌─────┴─────┐
 // │    NFT    │
@@ -135,7 +135,7 @@ pub mod relative_to_kusama_para_1000 {
 // Absolute Topography
 //                    ┌ ─ ─ ─ ─ ─┐
 //                      Absolute
-//                      Position
+//                      Location
 //                    └ ─ ─ ┬ ─ ─┘
 //                          │
 //      ┌─────────────┬─────┴─────┬────────────┐
@@ -156,18 +156,18 @@ pub mod absolute {
 		// The Polkadot parachain with id 1000.
 		pub PolkadotPara1000: Location = [GlobalConsensus(Polkadot), Parachain(1000)].into();
 		// The Polkadot parachain with id 1337.
-		pub PolkadotPara1337: Location = [GlobalConsensus(Polkadot), Parachain(1337)].into();
+		pub PolkadotPara2004: Location = [GlobalConsensus(Polkadot), Parachain(2004)].into();
 		// The Polkadot relay chain.
 		pub PolkadotRelay: Location = [GlobalConsensus(Polkadot)].into();
-		// A 32 byte account on para 1337.
+		// A 32 byte account on para 1000.
 		pub AliceBytes: [u8; 32] = ALICE.into();
-		pub PolkadotPara1337Alice: Location = [GlobalConsensus(Polkadot), Parachain(1337), AliceBytes::get().into()].into();
+		pub PolkadotPara1000Alice: Location = [GlobalConsensus(Polkadot), Parachain(1000), AliceBytes::get().into()].into();
 		// The location of the `Balances` pallet on the relay chain.
-		pub PolkadotRelayBalancesPallet: Location = [GlobalConsensus(Polkadot), PalletInstance(1)].into();
+		pub PolkadotRelayBalancesPallet: Location = [GlobalConsensus(Polkadot), PalletInstance(5)].into();
 		// The asset with index `1984` of the Assets pallet on the Polkadot parachain with id 1000.
-		pub PolkadotPara1000Asset1984: Location = [GlobalConsensus(Polkadot), Parachain(1000), PalletInstance(2), GeneralIndex(1984)].into();
+		pub PolkadotPara1000Asset1984: Location = [GlobalConsensus(Polkadot), Parachain(1000), PalletInstance(50), GeneralIndex(1984)].into();
 		// The Kusama parachain with id 69.
-		pub KusamaPara69: Location = [GlobalConsensus(Kusama), Parachain(69)].into();
+		pub KusamaPara1000: Location = [GlobalConsensus(Kusama), Parachain(1000)].into();
 	}
 }
 

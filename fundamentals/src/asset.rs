@@ -21,36 +21,36 @@ use xcm::latest::prelude::*;
 //                        │
 //                 ┌──────┴──────┐
 //                 │             │
-//           ┌─────┴─────┐ ┌─────┴─────┐
-//           │  Pallet   │ │  Pallet   │
-//           │  Assets   │ │    NFT    │
-//           │           │ │           │
-//           │ Pallet #2 │ │ Pallet #3 │
-//           └─────┬─────┘ └─────┬─────┘
+//           ┌─────┴─────┐ ┌─────┴──────┐
+//           │  Pallet   │ │  Pallet    │
+//           │  Assets   │ │    NFT     │
+//           │           │ │            │
+//           │Pallet #50 │ │ Pallet #52 │
+//           └─────┬─────┘ └─────┬──────┘
 //                 │             │
 //       ┌─────────┴───┐         └───┬─────────────┐
 //       │             │             │             │
 // ┌─────┴─────┐ ┌─────┴─────┐ ┌─────┴─────┐ ┌─────┴─────┐
 // │   Asset   │ │   Asset   │ │Collection │ │Collection │
-// │   wBTC    │ │   wDOT    │ │  Kitties  │ │  Zombies  │
+// │   USDC    │ │   USDT    │ │  Kitties  │ │  Zombies  │
 // │           │ │           │ │           │ │           │
-// │   Id 21   │ │   Id 100  │ │   Id 3    │ │   Id 66   │
+// │ Id 1337   │ │  Id 1984  │ │   Id 3    │ │   Id 66   │
 // └───────────┘ └───────────┘ └───────────┘ └───────────┘
 
 const HDX_DECIMALS: u32 = 12;
 const DOT_DECIMALS: u32 = 10;
 
 // Fungible Tokens
-// Construct these assets from the perspective of Parachain A (1000).
+// Construct these assets from the perspective of AssetHub (1000).
 parameter_types! {
 	// `Assets` instance that contains no assets.
 	pub EmptyAssets: Assets = vec![].into();
-	// Native token of Polkadot Parachain A (1000).
-	pub NativeToken: AssetId = Here.into();
+	// USDT.
+	pub Usdt: AssetId = (PalletInstance(50), GeneralIndex(1984)).into();
 	// The native token of the relay chain, i.e. DOT.
 	pub DotToken: AssetId = Parent.into();
 	// 100 of the parachain's native token
-	pub OneHundredNative: Asset = (NativeToken::get(), 100u128 * 10u128.pow(HDX_DECIMALS)).into();
+	pub OneHundredUsdt: Asset = (Usdt::get(), 100u128 * 10u128.pow(HDX_DECIMALS)).into();
 	// Some amount of the native token of the relay chain.
 	pub OneHundredDot: Asset = (DotToken::get(), 100u128 * 10u128.pow(DOT_DECIMALS)).into();
 }
@@ -58,7 +58,7 @@ parameter_types! {
 // Non-Fungible Tokens
 parameter_types! {
 	// Location of NFT collection with id 42 inside of the uniques pallet in Polkadot parachain 1000.
-	pub NftLocation: Location = Location::new(1, [Parachain(1000), PalletInstance(5), GeneralIndex(42)]);
+	pub NftLocation: Location = Location::new(1, [Parachain(1000), PalletInstance(52), GeneralIndex(3)]);
 	// The NFT with id 69 inside of that collection.
 	pub Nft: Asset = (NftLocation::get(), 69u64).into();
 }
@@ -70,5 +70,5 @@ parameter_types! {
 	// A filter specific for the DOT Token
 	pub DotFilter: AssetFilter = OneHundredDot::get().into();
 	// A filter specific for the Native Token
-	pub NativeFilter: AssetFilter = OneHundredNative::get().into();
+	pub UsdtFilter: AssetFilter = OneHundredUsdt::get().into();
 }
