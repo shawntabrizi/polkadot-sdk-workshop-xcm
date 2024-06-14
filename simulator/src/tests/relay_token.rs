@@ -38,9 +38,9 @@ fn reserve_asset_transfer_works() {
 		let destination: Location = Parachain(1).into();
 		let beneficiary: Location =
 			AccountId32 { id: BOB.clone().into(), network: Some(NetworkId::Kusama) }.into();
-		// We need to use `u128` here for the conversion to work properly.
-		// If we don't specify anything, it will be a `u64`, which the conversion
-		// will turn into a non-fungible token instead of a fungible one.
+		// We can specify `u128` or nothing here for the conversion to work properly.
+		// If we specify `u64`, the conversion will turn into a non-fungible token
+		// instead of a fungible one.
 		let assets: Assets = (Here, 50u128 * CENTS).into();
 		assert_ok!(relay_chain::XcmPallet::transfer_assets(
 			relay_chain::RuntimeOrigin::signed(ALICE),

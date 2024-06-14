@@ -5,33 +5,6 @@ mod sandbox {
 	pub type AssetTransactor = ();
 }
 
-#[cfg(feature = "example")]
-mod sandbox {
-	use crate::parachain::{
-		constants::KsmLocation, location_converter::LocationConverter, AccountId, Balances,
-		ForeignUniques,
-	};
-	use xcm::latest::prelude::*;
-	use xcm_builder::{
-		ConvertedConcreteId, FungibleAdapter, IsConcrete, NoChecking, NonFungiblesAdapter,
-	};
-	use xcm_executor::traits::JustTry;
-
-	type LocalAssetTransactor = (
-		FungibleAdapter<Balances, IsConcrete<KsmLocation>, LocationConverter, AccountId, ()>,
-		NonFungiblesAdapter<
-			ForeignUniques,
-			ConvertedConcreteId<Location, AssetInstance, JustTry, JustTry>,
-			LocationConverter,
-			AccountId,
-			NoChecking,
-			(),
-		>,
-	);
-
-	pub type AssetTransactor = LocalAssetTransactor;
-}
-
 #[cfg(feature = "relay-token")]
 mod sandbox {
 	use crate::parachain::{
@@ -41,22 +14,19 @@ mod sandbox {
 
 	/// AssetTransactor for handling the relay chain token.
 	/// In this case, we don't have a native token, we only use the relay chain token.
+	// TODO: Finish type.
 	pub type FungibleTransactor = FungibleAdapter<
-		// Use this implementation of the `fungible::*` traits.
-		// `Balances` is the name given to the balances pallet in this particular recipe.
-		// Any implementation of the traits would suffice.
-		Balances,
-		// This transactor deals with the native token of the Relay Chain.
-		// This token is referenced by the Location of the Relay Chain relative to this chain
-		// -- Location::parent().
-		IsConcrete<KsmLocation>,
-		// How to convert an XCM Location into a local account id.
-		// This is also something that's configured in the XCM executor.
-		LocationConverter,
+		// What implementation of the `fungible::*` traits do we want to use?.
+		(),
+		// What tokens should be handled by this transactor?
+		(),
+		// How do we convert an XCM Location into a local account id?
+		(),
 		// The type for account ids, only needed because `fungible` is generic over it.
 		AccountId,
 		// Not tracking teleports.
 		// This recipe only uses reserve asset transfers to handle the Relay Chain token.
+		// This can actually be left as the unit type.
 		(),
 	>;
 
@@ -74,7 +44,7 @@ mod sandbox {
 	use xcm::prelude::*;
 	use xcm_builder::{
 		FungibleAdapter, FungiblesAdapter, IsConcrete, MatchedConvertedConcreteId, NoChecking,
-		StartsWith,
+		StartsWith, MintLocation,
 	};
 	use xcm_executor::traits::JustTry;
 
@@ -83,57 +53,55 @@ mod sandbox {
 		PolkadotXcm,
 	};
 
-	/// AssetTransactor for handling the chain's native token.
-	pub type FungibleTransactor = FungibleAdapter<
-		// Use this implementation of the `fungible::*` traits.
-		// `Balances` is the name given to the balances pallet in this particular example.
-		// Any implementation of the traits would suffice.
-		Balances,
-		// This transactor deals with the native token of the Relay Chain.
-		// This token is referenced by the Location of the Relay Chain relative to this chain
-		// -- Location::here().
-		IsConcrete<LocalPrefix>,
-		// How to convert an XCM Location into a local account id.
-		// This is also something that's configured in the XCM executor.
-		LocationConverter,
-		// The type for account ids, only needed because `fungible` is generic over it.
-		AccountId,
-		// Not tracking teleports.
-		// This recipe only uses reserve asset transfers to handle the Relay Chain token.
-		(),
-	>;
-
 	parameter_types! {
 		pub LocalPrefix: Location = Location::here();
 		pub CheckingAccount: AccountId = PolkadotXcm::check_account();
+		pub LocalCheckAccount: (AccountId, MintLocation) = (CheckingAccount::get(), MintLocation::Local);
 	}
+
+	/// AssetTransactor for handling the chain's native token.
+	// TODO: Finish type.
+	pub type FungibleTransactor = FungibleAdapter<
+		// What implementation of the `fungible::*` traits do we want to use?
+		(),
+		// What tokens should be handled by this transactor?
+		(),
+		// How do we convert an XCM Location into a local account id?
+		(),
+		// The type for account ids, only needed because `fungible` is generic over it.
+		AccountId,
+		// Tracking teleports.
+		(),
+	>;
 
 	/// Type that matches foreign assets.
 	/// We do this by matching on all possible Locations and excluding the ones
 	/// inside our local chain.
+	// TODO: Finish type.
 	pub type ForeignAssetsMatcher = MatchedConvertedConcreteId<
-		xcm::v4::Location,                      // Asset id.
-		Balance,                                // Balance type.
-		EverythingBut<StartsWith<LocalPrefix>>, // Location matcher.
-		JustTry,                                // How to convert from Location to AssetId.
-		JustTry,                                // How to convert from u128 to Balance.
+		(),                      // Asset id.
+		(),                                // Balance type.
+		(), // Location matcher.
+		(),                                // How to convert from Location to AssetId.
+		(),                                // How to convert from u128 to Balance.
 	>;
 
 	/// AssetTransactor for handling other parachains' native tokens.
+	// TODO: Finish type.
 	pub type ForeignFungiblesTransactor = FungiblesAdapter<
-		// Use this implementation of the `fungibles::*` traits.
-		// `Balances` is the name given to the balances pallet in this particular example.
-		ForeignAssets,
-		// This transactor deals with the native token of sibling parachains.
-		ForeignAssetsMatcher,
+		// What implementation of the `fungible::*` traits do we want to use?
+		(),
+		// What tokens should be handled by this transactor?
+		(),
 		// How we convert from a Location to an account id.
-		LocationConverter,
+		(),
 		// The `AccountId` type.
 		AccountId,
-		// Not tracking teleports since we only use reserve asset transfers.
-		NoChecking,
+		// Not tracking teleports since we only use reserve asset transfers for these types
+		// of assets.
+		(),
 		// The account for checking.
-		CheckingAccount,
+		(),
 	>;
 
 	pub type AssetTransactor = (FungibleTransactor, ForeignFungiblesTransactor);
