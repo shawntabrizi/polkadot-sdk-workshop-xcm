@@ -8,7 +8,7 @@ features=(
     "other-parachain-tokens"
     "register-assets"
     "asset-hub"
-    # "example"
+    "barrier"
 )
 
 # Run cargo test commands
