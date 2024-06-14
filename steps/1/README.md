@@ -42,9 +42,9 @@ For example, take the following topography:
                     │                           │
               ┌─────┴─────┐               ┌─────┴─────┐
               │   Asset   │               │   Smart   │
-              │   wBTC    │               │ Contract  │
+              │   USDT    │               │ Contract  │
               │           │               │           │
-              │   Id 21   │               │ 0x55555...│
+              │  Id 1984  │               │ 0x55555...│
               └───────────┘               └───────────┘
 ```
 

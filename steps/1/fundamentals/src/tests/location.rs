@@ -9,9 +9,9 @@ fn relative_to_polkadot_para_1000_locations() {
 	assert_eq!(PolkadotRelay::get(), Parent.into());
 	assert_eq!(
 		PolkadotPara1000Alice::get(),
-		Location::new(1, [Parachain(1000), AliceBytes::get().into()])
+		Location::new(0, [AliceBytes::get().into()])
 	);
-	assert_eq!(PolkadotRelayBalancesPallet::get(), Location::new(1, [PalletInstance(5)]));
+	assert_eq!(PolkadotPara1000AssetsPallet::get(), Location::new(0, [PalletInstance(50)]));
 	assert_eq!(
 		PolkadotPara1000Asset1984::get(),
 		Location::new(0, [PalletInstance(50), GeneralIndex(1984)])
@@ -29,7 +29,7 @@ fn relative_to_polkadot_relay_locations() {
 		PolkadotPara1000Alice::get(),
 		Location::new(0, [Parachain(1000), AliceBytes::get().into()])
 	);
-	assert_eq!(PolkadotRelayBalancesPallet::get(), Location::new(0, [PalletInstance(5)]));
+	assert_eq!(PolkadotPara1000AssetsPallet::get(), Location::new(0, [Parachain(1000), PalletInstance(50)]));
 	assert_eq!(
 		PolkadotPara1000Asset1984::get(),
 		Location::new(0, [Parachain(1000), PalletInstance(50), GeneralIndex(1984)])
@@ -54,8 +54,8 @@ fn absolute_locations() {
 		Location::new(0, [GlobalConsensus(Polkadot), Parachain(1000), AliceBytes::get().into()])
 	);
 	assert_eq!(
-		PolkadotRelayBalancesPallet::get(),
-		Location::new(0, [GlobalConsensus(Polkadot), PalletInstance(5)])
+		PolkadotPara1000AssetsPallet::get(),
+		Location::new(0, [GlobalConsensus(Polkadot), Parachain(1000), PalletInstance(50)])
 	);
 	assert_eq!(
 		PolkadotPara1000Asset1984::get(),
