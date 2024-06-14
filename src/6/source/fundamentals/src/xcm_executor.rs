@@ -67,7 +67,7 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 			// Appends `who` to the current XCM Executor `origin` location.
 			DescendOrigin(who) => {
 				todo!("{:?}", who)
-			}
+			},
 			// Withdraw asset(s) (`assets`) from the ownership of `origin` and place equivalent
 			// assets under the ownership of `beneficiary`.
 			//

@@ -1,5 +1,5 @@
 diff --git a/fundamentals/src/pallet_xcm.rs b/fundamentals/src/pallet_xcm.rs
-index d68e582..baec7b7 100644
+index c3ea023..baec7b7 100644
 --- a/fundamentals/src/pallet_xcm.rs
 +++ b/fundamentals/src/pallet_xcm.rs
 @@ -124,10 +124,9 @@ pub mod pallet {
@@ -8,7 +8,7 @@ index d68e582..baec7b7 100644
  	pub fn do_execute(origin: OriginFor<T>, message: Xcm<()>) -> DispatchResult {
 -		// Use `ExecuteXcmOrigin` to "ensure" that `origin` is able to execute a local XCM
 -		// and assign the resulting location to `execute_origin`.
--		// Use `XcmExecutor` to `execute` the call, and if an error occurs, return `ExecuteError`.
+-		// Use `XcmExecutor` to `execute` the call, and if an error occurs, return `ExecutorError`.
 -		todo!("{:?}", message)
 +		let execute_origin: Location = T::ExecuteXcmOrigin::ensure_origin(origin)?;
 +		T::XcmExecutor::execute(execute_origin, message).map_err(|_| Error::<T>::ExecutorError)?;

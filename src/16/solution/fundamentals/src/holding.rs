@@ -109,7 +109,7 @@ impl AssetsInHolding {
 								0
 							};
 							if amount > 0 {
-								taken.subsume(Asset::from((id, amount)).into());
+								taken.subsume(Asset::from((id, amount)));
 							}
 						},
 						Asset { fun: NonFungible(instance), id } => {

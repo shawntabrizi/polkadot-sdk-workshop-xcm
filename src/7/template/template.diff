@@ -1,5 +1,5 @@
 diff --git a/fundamentals/src/xcm_executor.rs b/fundamentals/src/xcm_executor.rs
-index 9e0647a..08884c9 100644
+index 9c6cb16..74d0c79 100644
 --- a/fundamentals/src/xcm_executor.rs
 +++ b/fundamentals/src/xcm_executor.rs
 @@ -62,10 +62,18 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
@@ -19,5 +19,5 @@ index 9e0647a..08884c9 100644
 +					- If the append fails, return `XcmError::LocationFull`.
 +				*/
  				todo!("{:?}", who)
- 			}
+ 			},
  			// Withdraw asset(s) (`assets`) from the ownership of `origin` and place equivalent

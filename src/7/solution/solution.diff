@@ -1,5 +1,5 @@
 diff --git a/fundamentals/src/xcm_executor.rs b/fundamentals/src/xcm_executor.rs
-index 08884c9..57e1bd4 100644
+index 74d0c79..57e1bd4 100644
 --- a/fundamentals/src/xcm_executor.rs
 +++ b/fundamentals/src/xcm_executor.rs
 @@ -62,20 +62,17 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
@@ -21,7 +21,7 @@ index 08884c9..57e1bd4 100644
 -					- If the append fails, return `XcmError::LocationFull`.
 -				*/
 -				todo!("{:?}", who)
--			}
+-			},
 +			DescendOrigin(who) => self
 +				.context
 +				.origin

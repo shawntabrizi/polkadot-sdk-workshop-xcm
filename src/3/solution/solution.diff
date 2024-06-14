@@ -1,5 +1,5 @@
 diff --git a/fundamentals/src/holding.rs b/fundamentals/src/holding.rs
-index 8b9c09b..2bce52c 100644
+index 8b9c09b..657ad56 100644
 --- a/fundamentals/src/holding.rs
 +++ b/fundamentals/src/holding.rs
 @@ -44,30 +44,40 @@ impl AssetsInHolding {
@@ -98,7 +98,7 @@ index 8b9c09b..2bce52c 100644
 +								0
 +							};
 +							if amount > 0 {
-+								taken.subsume(Asset::from((id, amount)).into());
++								taken.subsume(Asset::from((id, amount)));
 +							}
  						},
  						Asset { fun: NonFungible(instance), id } => {
