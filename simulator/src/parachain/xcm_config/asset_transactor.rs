@@ -63,7 +63,12 @@ mod sandbox {
 	pub type AssetTransactor = FungibleTransactor;
 }
 
-#[cfg(any(feature = "other-parachain-tokens", feature = "register-assets", feature = "asset-hub"))]
+#[cfg(any(
+	feature = "other-parachain-tokens",
+	feature = "register-assets",
+	feature = "asset-hub",
+	feature = "barrier"
+))]
 mod sandbox {
 	use frame_support::{parameter_types, traits::EverythingBut};
 	use xcm::prelude::*;

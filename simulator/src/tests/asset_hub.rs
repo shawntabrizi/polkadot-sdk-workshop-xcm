@@ -28,18 +28,14 @@ fn reserve_asset_transfer_works() {
 
 	ParaC::execute_with(|| {
 		// Parachain C registers its native token on AssetHub.
+		let para_c_asset_hub_pov: Location = (Parent, Parachain(3)).into();
 		let destination: Location = (Parent, Parachain(1000)).into();
 		let call = asset_hub::RuntimeCall::ForeignAssets(pallet_assets::Call::<
 			asset_hub::Runtime,
 			pallet_assets::Instance2,
 		>::create {
 			id: (Parent, Parachain(3)).into(),
-			admin: asset_hub::LocationConverter::convert_location(&destination).unwrap(), /* This
-			                                                                               * should
-			                                                                               * be from
-			                                                                               * the other
-			                                                                               * side.
-			                                                                               */
+			admin: asset_hub::LocationConverter::convert_location(&para_c_asset_hub_pov).unwrap(),
 			min_balance: 1,
 		});
 		let estimated_weight = Weight::from_parts(276_838_000, 3_675);

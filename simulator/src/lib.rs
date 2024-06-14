@@ -124,6 +124,7 @@ pub fn para_ext(para_id: u32) -> sp_io::TestExternalities {
 			(sibling_account_id(1), INITIAL_BALANCE),
 			(sibling_account_id(2), INITIAL_BALANCE),
 			(sibling_account_id(3), INITIAL_BALANCE),
+			(parent_account_id(), INITIAL_BALANCE),
 		],
 	}
 	.assimilate_storage(&mut t)
