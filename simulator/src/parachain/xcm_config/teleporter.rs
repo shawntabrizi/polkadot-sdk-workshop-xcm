@@ -1,11 +1,11 @@
 pub use sandbox::*;
 
-#[cfg(feature = "start")]
+#[cfg(not(feature = "asset-hub"))]
 mod sandbox {
 	pub type TrustedTeleporters = ();
 }
 
-#[cfg(not(feature = "start"))]
+#[cfg(feature = "asset-hub")]
 mod sandbox {
 	use frame_support::parameter_types;
 	use xcm::latest::prelude::*;
