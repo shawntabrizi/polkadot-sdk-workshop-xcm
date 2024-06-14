@@ -126,7 +126,7 @@ impl<T: Config> Pallet<T> {
 	pub fn do_execute(origin: OriginFor<T>, message: Xcm<()>) -> DispatchResult {
 		// Use `ExecuteXcmOrigin` to "ensure" that `origin` is able to execute a local XCM
 		// and assign the resulting location to `execute_origin`.
-		// Use `XcmExecutor` to `execute` the call, and if an error occurs, return `ExecuteError`.
+		// Use `XcmExecutor` to `execute` the call, and if an error occurs, return `ExecutorError`.
 		todo!("{:?}", message)
 	}
 
