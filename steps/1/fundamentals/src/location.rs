@@ -48,7 +48,7 @@ pub mod relative_to_polkadot_relay {
 		pub PolkadotPara1000Alice: Location = todo!();
 		// The location of the `Assets` pallet on the relay chain.
 		pub PolkadotRelayBalancesPallet: Location = todo!();
-		// The asset with index `21` of the Assets pallet on parachain A with id 1000.
+		// The asset with index `1984` of the Assets pallet on polkadot parachain with id 1000.
 		pub PolkadotPara1000Asset1984: Location = todo!();
 		// The Kusama parachain with id 1000.
 		pub KusamaPara1000: Location = todo!();
