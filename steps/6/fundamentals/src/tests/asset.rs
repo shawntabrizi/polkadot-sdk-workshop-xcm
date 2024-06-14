@@ -12,10 +12,7 @@ fn fungibles() {
 
 #[test]
 fn nonfungibles() {
-	assert_eq!(
-		NftLocation::get(),
-		Location::new(0, [PalletInstance(52), GeneralIndex(3)])
-	);
+	assert_eq!(NftLocation::get(), Location::new(0, [PalletInstance(52), GeneralIndex(3)]));
 	assert_eq!(Nft::get(), (NftLocation::get(), 69u64).into());
 }
 

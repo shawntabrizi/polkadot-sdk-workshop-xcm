@@ -75,7 +75,7 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 					- If the append fails, return `XcmError::LocationFull`.
 				*/
 				todo!("{:?}", who)
-			}
+			},
 			// Withdraw asset(s) (`assets`) from the ownership of `origin` and place equivalent
 			// assets under the ownership of `beneficiary`.
 			//
