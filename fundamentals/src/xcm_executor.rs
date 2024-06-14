@@ -132,32 +132,50 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 			// - `assets`: The asset(s) to remove from holding.
 			// - `beneficiary`: The new owner for the assets.
 			DepositAsset { assets, beneficiary } => {
-				/* TODO:
-					- Make a clone of `self.holding` into a variable `old_holding`.
-					- Start a new `TransactionalProcessor`, storing the `result`.
-						- `saturating_take` the `assets` into a variable `deposited.
-						- For `asset` in `deposited`
-							- Use `AssetTransactor` to `deposit_asset` to the `beneficiary`.
-					- If anything goes wrong, we should reset `self.holding` to `old_holding`.
-					- Return the `result`
-				*/
-				todo!("{:?} {:?}", assets, beneficiary)
+				let old_holding = self.holding.clone();
+				let result = Config::TransactionalProcessor::process(|| {
+					// Take assets from the holding registrar...
+					let deposited = self.holding.saturating_take(assets);
+					// ... and deposit them to the `beneficiary`.
+					for asset in deposited.into_assets_iter() {
+						Config::AssetTransactor::deposit_asset(
+							&asset,
+							&beneficiary,
+							Some(&self.context),
+						)?;
+					}
+					Ok(())
+				});
+				// If we were unable to execute `deposit_asset` in the `AssetTransactor`, we reset
+				// the XCM Executor holding registrar since no operations took place.
+				if Config::TransactionalProcessor::IS_TRANSACTIONAL && result.is_err() {
+					self.holding = old_holding;
+				}
+				result
 			},
 			// Asset(s) (`assets`) have been destroyed on the `origin` system and equivalent assets
 			// should be created and placed into the Holding Register.
 			//
 			// - `assets`: The asset(s) that are minted into the Holding Register.
 			ReceiveTeleportedAsset(assets) => {
-				/* TODO:
-					- Process everything inside `TransactionalProcessor`.
-						- Get the `origin` or return `XcmError::BadOrigin`.
-						- For `asset` in `assets`:
-							- Use `AssetTransactor` to see if we `can_check_in`.
-							- Then actually `check_in` those assets.
-					- `and_then`, if everything goes okay...
-					- `subsume_assets` into the `self.holding`.
-				*/
-				todo!("{:?}", assets)
+				Config::TransactionalProcessor::process(|| {
+					let origin = self.origin_ref().ok_or(XcmError::BadOrigin)?;
+					// check whether we trust origin to teleport this asset to us via config trait.
+					for asset in assets.inner() {
+						// We should check that the asset can actually be teleported in (for this to
+						// be in error, there would need to be an accounting violation by one of the
+						// trusted chains, so it's unlikely, but we don't want to punish a possibly
+						// innocent chain/user).
+						Config::AssetTransactor::can_check_in(origin, asset, &self.context)?;
+						Config::AssetTransactor::check_in(origin, asset, &self.context);
+					}
+					Ok(())
+				})
+				.and_then(|_| {
+					// ...and place into holding.
+					self.holding.subsume_assets(assets.into());
+					Ok(())
+				})
 			},
 			// In this workshop, we won't be implementing every instruction, just the ones above...
 			// Our executor will simply panic if you try to execute other instructions.
