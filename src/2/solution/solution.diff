@@ -1,8 +1,8 @@
 diff --git a/fundamentals/src/asset.rs b/fundamentals/src/asset.rs
-index 120f3a8..a49a7ab 100644
+index 3f1774c..c3004bb 100644
 --- a/fundamentals/src/asset.rs
 +++ b/fundamentals/src/asset.rs
-@@ -44,31 +44,31 @@ const DOT_DECIMALS: u32 = 10;
+@@ -44,32 +44,32 @@ const USDT_DECIMALS: u32 = 6;
  // Construct these assets from the perspective of AssetHub (1000).
  parameter_types! {
  	// `Assets` instance that contains no assets.
@@ -14,19 +14,20 @@ index 120f3a8..a49a7ab 100644
  	// The native token of the relay chain, i.e. DOT.
 -	pub DotToken: AssetId = todo!();
 +	pub DotToken: AssetId = Parent.into();
- 	// 100 of the parachain's native token
+ 	// 100 USDT.
 -	pub OneHundredUsdt: Asset = todo!();
-+	pub OneHundredUsdt: Asset = (Usdt::get(), 100u128 * 10u128.pow(HDX_DECIMALS)).into();
++	pub OneHundredUsdt: Asset = (Usdt::get(), 100u128 * 10u128.pow(USDT_DECIMALS)).into();
  	// Some amount of the native token of the relay chain.
 -	pub OneHundredDot: Asset = todo!();
 +	pub OneHundredDot: Asset = (DotToken::get(), 100u128 * 10u128.pow(DOT_DECIMALS)).into();
  }
  
  // Non-Fungible Tokens
+ // Construct these assets from the perspective of AssetHub (1000).
  parameter_types! {
- 	// Location of NFT collection with id 42 inside of the uniques pallet in Polkadot parachain 1000.
+ 	// Location of NFT collection with id 3 inside of the NFT pallet in Polkadot parachain 1000.
 -	pub NftLocation: Location = todo!();
-+	pub NftLocation: Location = Location::new(1, [Parachain(1000), PalletInstance(52), GeneralIndex(3)]);
++	pub NftLocation: Location = [PalletInstance(52), GeneralIndex(3)].into();
  	// The NFT with id 69 inside of that collection.
 -	pub Nft: Asset = todo!();
 +	pub Nft: Asset = (NftLocation::get(), 69u64).into();
@@ -37,10 +38,10 @@ index 120f3a8..a49a7ab 100644
  	// A filter which will capture all possible assets.
 -	pub AllAssetsFilter: AssetFilter = todo!();
 +	pub AllAssetsFilter: AssetFilter = AssetFilter::Wild(WildAsset::All);
- 	// A filter specific for the DOT Token
+ 	// A filter specific for the DOT Token.
 -	pub DotFilter: AssetFilter = todo!();
 +	pub DotFilter: AssetFilter = OneHundredDot::get().into();
- 	// A filter specific for the Native Token
+ 	// A filter specific for USDT.
 -	pub UsdtFilter: AssetFilter = todo!();
 +	pub UsdtFilter: AssetFilter = OneHundredUsdt::get().into();
  }

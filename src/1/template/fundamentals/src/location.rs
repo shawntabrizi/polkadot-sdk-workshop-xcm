@@ -27,9 +27,9 @@ use xcm::latest::prelude::*;
 //                     │                            │
 //               ┌─────┴─────┐               ┌──────┴─────┐
 //               │   Asset   │               │   Smart    │
-//               │   wBTC    │               │ Contract   │
+//               │   USDT    │               │ Contract   │
 //               │           │               │            │
-//               │   Id 21   │               │ 0x55555... │
+//               │  Id 1984  │               │ 0x55555... │
 //               └───────────┘               └────────────┘
 
 /// All these locations are relative to the Polkadot Relay Chain.
@@ -48,7 +48,7 @@ pub mod relative_to_polkadot_relay {
 		pub PolkadotPara1000Alice: Location = todo!();
 		// The location of the `Assets` pallet on the relay chain.
 		pub PolkadotRelayBalancesPallet: Location = todo!();
-		// The asset with index `21` of the Assets pallet on parachain A with id 1000.
+		// The asset with index `1984` of the Assets pallet on polkadot parachain with id 1000.
 		pub PolkadotPara1000Asset1984: Location = todo!();
 		// The Kusama parachain with id 1000.
 		pub KusamaPara1000: Location = todo!();
@@ -111,7 +111,7 @@ pub mod relative_to_polkadot_para_2000_sc {
 // │    NFT    │
 // │  Kitties  │
 // │           │
-// │   Id 21   │
+// │  Id 1984  │
 // └───────────┘
 
 /// All these locations are relative to the Kusama Relay Chain.
@@ -155,7 +155,7 @@ pub mod absolute {
 	parameter_types! {
 		// The Polkadot parachain with id 1000.
 		pub PolkadotPara1000: Location = todo!();
-		// The Polkadot parachain with id 1337.
+		// The Polkadot parachain with id 2004.
 		pub PolkadotPara2004: Location = todo!();
 		// The Polkadot relay chain.
 		pub PolkadotRelay: Location = todo!();
@@ -166,7 +166,7 @@ pub mod absolute {
 		pub PolkadotRelayBalancesPallet: Location = todo!();
 		// The asset with index `1984` of the Assets pallet on the Polkadot parachain with id 1000.
 		pub PolkadotPara1000Asset1984: Location = todo!();
-		// The Kusama parachain with id 69.
+		// The Kusama parachain with id 1000.
 		pub KusamaPara1000: Location = todo!();
 	}
 }

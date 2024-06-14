@@ -37,8 +37,8 @@ use xcm::latest::prelude::*;
 // │ Id 1337   │ │  Id 1984  │  │    Id 3    │ │    Id 66   │
 // └───────────┘ └───────────┘  └────────────┘ └────────────┘
 
-const HDX_DECIMALS: u32 = 12;
 const DOT_DECIMALS: u32 = 10;
+const USDT_DECIMALS: u32 = 6;
 
 // Fungible Tokens
 // Construct these assets from the perspective of AssetHub (1000).
@@ -49,15 +49,16 @@ parameter_types! {
 	pub Usdt: AssetId = todo!();
 	// The native token of the relay chain, i.e. DOT.
 	pub DotToken: AssetId = todo!();
-	// 100 of the parachain's native token
+	// 100 USDT.
 	pub OneHundredUsdt: Asset = todo!();
 	// Some amount of the native token of the relay chain.
 	pub OneHundredDot: Asset = todo!();
 }
 
 // Non-Fungible Tokens
+// Construct these assets from the perspective of AssetHub (1000).
 parameter_types! {
-	// Location of NFT collection with id 42 inside of the uniques pallet in Polkadot parachain 1000.
+	// Location of NFT collection with id 3 inside of the NFT pallet in Polkadot parachain 1000.
 	pub NftLocation: Location = todo!();
 	// The NFT with id 69 inside of that collection.
 	pub Nft: Asset = todo!();
@@ -67,8 +68,8 @@ parameter_types! {
 parameter_types! {
 	// A filter which will capture all possible assets.
 	pub AllAssetsFilter: AssetFilter = todo!();
-	// A filter specific for the DOT Token
+	// A filter specific for the DOT Token.
 	pub DotFilter: AssetFilter = todo!();
-	// A filter specific for the Native Token
+	// A filter specific for USDT.
 	pub UsdtFilter: AssetFilter = todo!();
 }

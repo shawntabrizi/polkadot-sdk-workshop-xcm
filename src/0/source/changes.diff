@@ -4571,7 +4571,7 @@ index 0000000..8b13789
 +
 diff --git a/fundamentals/src/tests/asset.rs b/fundamentals/src/tests/asset.rs
 new file mode 100644
-index 0000000..c6d3418
+index 0000000..1f27042
 --- /dev/null
 +++ b/fundamentals/src/tests/asset.rs
 @@ -0,0 +1,27 @@
@@ -4583,7 +4583,7 @@ index 0000000..c6d3418
 +	assert_eq!(EmptyAssets::get(), Assets::new());
 +	assert_eq!(Usdt::get(), AssetId(Location::new(0, [PalletInstance(50), GeneralIndex(1984)])));
 +	assert_eq!(DotToken::get(), AssetId(Location::new(1, [])));
-+	assert_eq!(OneHundredUsdt::get(), (Usdt::get(), 100_000_000_000_000u128).into());
++	assert_eq!(OneHundredUsdt::get(), (Usdt::get(), 100_000_000u128).into());
 +	assert_eq!(OneHundredDot::get(), (DotToken::get(), 1_000_000_000_000u128).into());
 +}
 +
@@ -4591,7 +4591,7 @@ index 0000000..c6d3418
 +fn nonfungibles() {
 +	assert_eq!(
 +		NftLocation::get(),
-+		Location::new(1, [Parachain(1000), PalletInstance(52), GeneralIndex(3)])
++		Location::new(0, [PalletInstance(52), GeneralIndex(3)])
 +	);
 +	assert_eq!(Nft::get(), (NftLocation::get(), 69u64).into());
 +}
@@ -4781,7 +4781,7 @@ index 0000000..7fbd677
 +}
 diff --git a/fundamentals/src/tests/location.rs b/fundamentals/src/tests/location.rs
 new file mode 100644
-index 0000000..77c5390
+index 0000000..5b415d1
 --- /dev/null
 +++ b/fundamentals/src/tests/location.rs
 @@ -0,0 +1,119 @@
@@ -4796,9 +4796,9 @@ index 0000000..77c5390
 +	assert_eq!(PolkadotRelay::get(), Parent.into());
 +	assert_eq!(
 +		PolkadotPara1000Alice::get(),
-+		Location::new(1, [Parachain(1000), AliceBytes::get().into()])
++		Location::new(0, [AliceBytes::get().into()])
 +	);
-+	assert_eq!(PolkadotRelayBalancesPallet::get(), Location::new(1, [PalletInstance(5)]));
++	assert_eq!(PolkadotPara1000AssetsPallet::get(), Location::new(0, [PalletInstance(50)]));
 +	assert_eq!(
 +		PolkadotPara1000Asset1984::get(),
 +		Location::new(0, [PalletInstance(50), GeneralIndex(1984)])
@@ -4816,7 +4816,7 @@ index 0000000..77c5390
 +		PolkadotPara1000Alice::get(),
 +		Location::new(0, [Parachain(1000), AliceBytes::get().into()])
 +	);
-+	assert_eq!(PolkadotRelayBalancesPallet::get(), Location::new(0, [PalletInstance(5)]));
++	assert_eq!(PolkadotPara1000AssetsPallet::get(), Location::new(0, [Parachain(1000), PalletInstance(50)]));
 +	assert_eq!(
 +		PolkadotPara1000Asset1984::get(),
 +		Location::new(0, [Parachain(1000), PalletInstance(50), GeneralIndex(1984)])
@@ -4841,8 +4841,8 @@ index 0000000..77c5390
 +		Location::new(0, [GlobalConsensus(Polkadot), Parachain(1000), AliceBytes::get().into()])
 +	);
 +	assert_eq!(
-+		PolkadotRelayBalancesPallet::get(),
-+		Location::new(0, [GlobalConsensus(Polkadot), PalletInstance(5)])
++		PolkadotPara1000AssetsPallet::get(),
++		Location::new(0, [GlobalConsensus(Polkadot), Parachain(1000), PalletInstance(50)])
 +	);
 +	assert_eq!(
 +		PolkadotPara1000Asset1984::get(),
