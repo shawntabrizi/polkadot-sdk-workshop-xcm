@@ -22,8 +22,8 @@ mod sandbox {
 		Balances,
 		// This transactor deals with the native token of the Relay Chain.
 		// This token is referenced by the Location of the Relay Chain relative to this chain
-		// -- Location::here().
-		IsConcrete<LocalPrefix>,
+		// -- Location::parent().
+		IsConcrete<ParentLocation>,
 		// How to convert an XCM Location into a local account id.
 		// This is also something that's configured in the XCM executor.
 		LocationConverter,
@@ -35,6 +35,7 @@ mod sandbox {
 	>;
 
 	parameter_types! {
+		pub ParentLocation: Location = Location::parent();
 		pub LocalPrefix: Location = Location::here();
 		pub CheckingAccount: AccountId = PolkadotXcm::check_account();
 	}

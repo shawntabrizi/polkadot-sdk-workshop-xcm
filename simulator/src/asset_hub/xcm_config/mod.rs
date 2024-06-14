@@ -29,12 +29,12 @@ impl xcm_executor::Config for XcmConfig {
 	type Barrier = barrier::Barrier;
 	type Weigher = weigher::Weigher;
 	type Trader = FixedRateOfFungible<constants::KsmPerSecondPerByte, ()>;
-	type ResponseHandler = ();
-	type AssetTrap = ();
+	type ResponseHandler = PolkadotXcm;
+	type AssetTrap = PolkadotXcm;
 	type AssetLocker = PolkadotXcm;
 	type AssetExchanger = ();
-	type AssetClaims = ();
-	type SubscriptionService = ();
+	type AssetClaims = PolkadotXcm;
+	type SubscriptionService = PolkadotXcm;
 	type PalletInstancesInfo = ();
 	type FeeManager = ();
 	type MaxAssetsIntoHolding = constants::MaxAssetsIntoHolding;

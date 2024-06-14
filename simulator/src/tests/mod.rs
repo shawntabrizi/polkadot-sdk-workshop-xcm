@@ -13,3 +13,7 @@ mod register_assets;
 /// Lesson 4
 #[cfg(feature = "asset-hub")]
 mod asset_hub;
+
+/// Lesson 5
+#[cfg(feature = "barrier")]
+mod barriers;
