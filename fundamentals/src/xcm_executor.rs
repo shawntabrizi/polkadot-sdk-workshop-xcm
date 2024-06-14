@@ -79,14 +79,20 @@ impl<Config: XcmConfig> XcmExecutor<Config> {
 			// - `assets`: The asset(s) to be withdrawn.
 			// - `beneficiary`: The new owner for the assets.
 			TransferAsset { assets, beneficiary } => {
-				/* TODO:
-					- Process everything inside a `TransactionalProcessor`.
-					- Get the `origin` from `self.origin_ref()`.
-					- For each `asset` in `assets`
-						- Use `AssetTransactor` and `transfer_asset` to the `beneficiary`.
-					- If everything works well, return `Ok(())`
-				*/
-				todo!("{:?} {:?}", assets, beneficiary)
+				Config::TransactionalProcessor::process(|| {
+					// Take `assets` from the origin account (on-chain) and place into dest account.
+					let origin = self.origin_ref().ok_or(XcmError::BadOrigin)?;
+					// Transfer each asset using the `AssetTransactor`.
+					for asset in assets.inner() {
+						Config::AssetTransactor::transfer_asset(
+							&asset,
+							origin,
+							&beneficiary,
+							&self.context,
+						)?;
+					}
+					Ok(())
+				})
 			},
 			// Withdraw asset(s) (`assets`) from the ownership of `origin` and place them into the
 			// Holding Register.
