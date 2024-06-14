@@ -43,8 +43,8 @@ mod sandbox {
 	use frame_support::{parameter_types, traits::EverythingBut};
 	use xcm::prelude::*;
 	use xcm_builder::{
-		FungibleAdapter, FungiblesAdapter, IsConcrete, MatchedConvertedConcreteId, NoChecking,
-		StartsWith, MintLocation,
+		FungibleAdapter, FungiblesAdapter, IsConcrete, MatchedConvertedConcreteId, MintLocation,
+		NoChecking, StartsWith,
 	};
 	use xcm_executor::traits::JustTry;
 
@@ -79,11 +79,11 @@ mod sandbox {
 	/// inside our local chain.
 	// TODO: Finish type.
 	pub type ForeignAssetsMatcher = MatchedConvertedConcreteId<
-		(),                      // Asset id.
-		(),                                // Balance type.
+		(), // Asset id.
+		(), // Balance type.
 		(), // Location matcher.
-		(),                                // How to convert from Location to AssetId.
-		(),                                // How to convert from u128 to Balance.
+		(), // How to convert from Location to AssetId.
+		(), // How to convert from u128 to Balance.
 	>;
 
 	/// AssetTransactor for handling other parachains' native tokens.

@@ -14,13 +14,7 @@ mod sandbox {
 	use xcm::prelude::*;
 	use xcm_builder::{AllowExplicitUnpaidExecutionFrom, AllowTopLevelPaidExecutionFrom};
 
-	pub struct ParentRelay;
-	impl Contains<Location> for ParentRelay {
-		fn contains(location: &Location) -> bool {
-			matches!(location.unpack(), (1, []))
-		}
-	}
-
-	pub type Barrier =
-		(AllowTopLevelPaidExecutionFrom<Everything>, AllowExplicitUnpaidExecutionFrom<ParentRelay>);
+	// We want to allow paid messages from anyone, explicitly unpaid only for relay.
+	// TODO: Finish type.
+	pub type Barrier = ();
 }

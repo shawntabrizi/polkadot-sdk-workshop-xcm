@@ -7,12 +7,17 @@ mod sandbox {
 
 #[cfg(feature = "relay-token")]
 mod sandbox {
-	use xcm_builder::NativeAsset;
-
-	pub type TrustedReserves = NativeAsset;
+	// We want to accept any location as a reserve for their own native token.
+	// TODO: Finish type.
+	pub type TrustedReserves = ();
 }
 
-#[cfg(any(feature = "other-parachain-tokens", feature = "register-assets", feature = "asset-hub", feature = "barrier"))]
+#[cfg(any(
+	feature = "other-parachain-tokens",
+	feature = "register-assets",
+	feature = "asset-hub",
+	feature = "barrier"
+))]
 mod sandbox {
 	use core::marker::PhantomData;
 	use frame_support::{parameter_types, traits::ContainsPair};
@@ -22,9 +27,8 @@ mod sandbox {
 
 	pub struct ReserveAssetsFrom<T>(PhantomData<T>);
 	impl<T: Get<Location>> ContainsPair<Asset, Location> for ReserveAssetsFrom<T> {
-		fn contains(_asset: &Asset, origin: &Location) -> bool {
-			let prefix = T::get();
-			&prefix == origin
+		fn contains(_asset: &Asset, _origin: &Location) -> bool {
+			todo!()
 		}
 	}
 
@@ -33,5 +37,6 @@ mod sandbox {
 	}
 
 	/// We trust other chains as reserves of their own asset AND assets from asset hub.
-	pub type TrustedReserves = (NativeAsset, ReserveAssetsFrom<AssetHubLocation>);
+	// TODO: Finish type.
+	pub type TrustedReserves = ();
 }
