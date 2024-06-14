@@ -15,7 +15,7 @@ mod sandbox {
 
 	pub struct ReserveAssetsFrom<T>(PhantomData<T>);
 	impl<T: Get<Location>> ContainsPair<Asset, Location> for ReserveAssetsFrom<T> {
-		fn contains(asset: &Asset, origin: &Location) -> bool {
+		fn contains(_asset: &Asset, origin: &Location) -> bool {
 			let prefix = T::get();
 			&prefix == origin
 		}

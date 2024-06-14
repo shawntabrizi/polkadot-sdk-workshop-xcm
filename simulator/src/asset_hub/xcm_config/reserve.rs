@@ -7,8 +7,6 @@ mod sandbox {
 
 #[cfg(not(feature = "start"))]
 mod sandbox {
-	use xcm_builder::NativeAsset;
-
 	/// We don't trust any chain as a reserve.
 	pub type TrustedReserves = ();
 }

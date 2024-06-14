@@ -4,7 +4,11 @@
 # List of cargo features to be tested
 features=(
     "start"
-    "example"
+    "relay-token"
+    "other-parachain-tokens"
+    "register-assets"
+    "asset-hub"
+    # "example"
 )
 
 # Run cargo test commands

@@ -24,7 +24,7 @@ use frame_support::{
 	derive_impl, parameter_types,
 	traits::{
 		AsEnsureOriginWithArg, ConstU128, ContainsPair, EnsureOrigin, EnsureOriginWithArg,
-		Everything, Nothing,
+		Everything,
 	},
 	weights::{constants::WEIGHT_REF_TIME_PER_SECOND, Weight},
 };

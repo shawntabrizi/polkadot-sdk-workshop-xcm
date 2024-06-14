@@ -22,10 +22,7 @@ pub use xcm_config::*;
 use core::marker::PhantomData;
 use frame_support::{
 	derive_impl, parameter_types,
-	traits::{
-		AsEnsureOriginWithArg, ConstU128, ContainsPair, EnsureOrigin, EnsureOriginWithArg,
-		Everything, Nothing,
-	},
+	traits::{AsEnsureOriginWithArg, ConstU128, ContainsPair, Everything},
 	weights::{constants::WEIGHT_REF_TIME_PER_SECOND, Weight},
 };
 use frame_system::{EnsureRoot, EnsureSigned};
@@ -37,7 +34,7 @@ use sp_runtime::{
 use sp_std::prelude::*;
 use xcm::latest::prelude::*;
 use xcm_builder::{EnsureXcmOrigin, SignedToAccountId32};
-use xcm_executor::{traits::ConvertLocation, XcmExecutor};
+use xcm_executor::XcmExecutor;
 
 use super::mock_message_queue;
 
@@ -95,13 +92,16 @@ pub struct ForeignCreators;
 // `EnsureOriginWithArg` impl for `CreateOrigin` which allows only XCM origins
 // which are locations containing the class location.
 #[cfg(feature = "register-assets")]
-impl EnsureOriginWithArg<RuntimeOrigin, Location> for ForeignCreators {
+impl frame_support::traits::EnsureOriginWithArg<RuntimeOrigin, Location> for ForeignCreators {
 	type Success = AccountId;
 
 	fn try_origin(
 		o: RuntimeOrigin,
 		a: &Location,
 	) -> sp_std::result::Result<Self::Success, RuntimeOrigin> {
+		use frame_support::traits::EnsureOrigin;
+		use xcm_executor::traits::ConvertLocation;
+
 		let origin_location = pallet_xcm::EnsureXcm::<Everything>::try_origin(o.clone())?;
 		if !a.starts_with(&origin_location) {
 			return Err(o);
