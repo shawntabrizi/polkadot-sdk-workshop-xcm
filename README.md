@@ -1,3 +1,3 @@
-# Pallet XCM
+# Starting Template
 
-Start of Pallet XCM Section
+Cover the template
