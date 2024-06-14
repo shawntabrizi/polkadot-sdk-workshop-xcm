@@ -1,69 +1,80 @@
-# XCM Workshop
+# Locations
 
-Students will first go through, learn, and use all the fundamental building blocks for XCM:
+In the world of XCM, the first fundamental primitive you need to learn about is Locations.
 
-1. [Location / Topography](location.md)
-	- Learn how to construct relative and absolute locations for common objects and types used in XCM.
-2. Assets and Filters
-	- Learn how to represent various types of assets like fungible tokens and non-fungible tokens.
-	- Constructing asset filters to target pools of assets.
-3. Asset Holding
-	- Learn how we can manage multiple assets in memory using the `AssetsInHolding` abstraction.
-4. Instructions
-	- Construct common XCM messages through individual XCM instructions.
-5. The XCM Executor
-	- Learn how the XCM Executor actually functions, and loosely implement a few common instructions needed to complete end to end scenarios.
-6. Pallet XCM
-	- Learn how Pallet XCM provides a simple to access wrapper to the underlying XCM Executor to perform common tasks like send, execute, and teleport transfers.
+As a software developer, Locations are most similar to filepaths in a filesystem.
 
+When writing a program, filepaths can help you locate folders, which contain many items, and the items themselves.
 
-## Prerequisite Knowledge
+This is very similar to Locations in XCM, which can be used to locate consensus systems, like Relay Chains, Parachains, Smart Contracts, etc... and also specific users, assets, applications, and groups.
 
-Before we can even start teaching the low level concepts of XCM, we need to provide some high level knowledge about Polkadot, cross consensus messages, and tokens, and more...
+Let's explore how Locations work inside of XCM.
 
-## Parachains
+## Relative Locations
 
-Truthfully, we cannot in fine detail go over Polkadot and Parachains in this workshop. That would be its own educational endeavour.
+By default, locations in XCM are always relative.
 
-However, for the context of understanding common end to end scenarios that we will try to cover in this XCM Workshop, you will need to have a basic understanding of Parachains in the Polkadot Ecosystem.
+This means, when considering how to construct a location, you must first establish your relative perspective.
 
-### System Parachains
+For example, take the following topography:
 
-Polkadot uses parachains to scale itself through the creation of "system parachains".
+```text
+                  ┌───────────┐
+                  │  Relay A  │
+                  │  Polkadot │
+                  └─────┬─────┘
+                        │
+             ┌──────────┴──────────┐
+             │                     │
+       ┌─────┴─────┐         ┌─────┴─────┐
+       │  Para A   │         │  Para B   │
+       │  Id 1000  │         │  Id 1337  │
+       └─────┬─────┘         └─────┬─────┘
+             │                     │
+      ┌──────┴──────┐              ├───────────┐
+      │             │              │           │
+┌─────┴─────┐ ┌─────┴─────┐ ┌──────┴────┐ ┌────┴──────┐
+│   Alice   │ │  Pallet   │ │    Bob    │ │  Pallet   │
+│ AcctKey32 │ │  Assets   │ │ AcctKey20 │ │   EVM     │
+│           │ │           │ │           │ │           │
+│ 0x11111...│ │ Pallet #2 │ │ 0x22222...│ │ Pallet #5 │
+└───────────┘ └─────┬─────┘ └───────────┘ └─────┬─────┘
+                    │                           │
+              ┌─────┴─────┐               ┌─────┴─────┐
+              │   Asset   │               │   Smart   │
+              │   USDT    │               │ Contract  │
+              │           │               │           │
+              │  Id 1984  │               │ 0x55555...│
+              └───────────┘               └───────────┘
+```
 
-System parachains use the same parachain technology stack used to create and secure self-sovereign parachains. But in this case, rather than these parachains being their own sovereign entity,
+Let's treat this like a file system, and say we want to locate `Asset wBTC - ID 21`.
 
-A very relevant example of this is the Asset Hub. This is a System Parachain for
+From the perspective of the Polkadot relay chain:
 
-## Transfers
+```text
+./{Para A}/{Pallet Assets}/{Asset wBTC}
+```
 
-We can argue that one of the native operations of any blockchain is to transfer assets and keep track of the ownership of those assets. Within a single consensus system, this is a solved problem.
+But from the perspective of Smart Contract `0x555...`, which might be a DEX used to trade `wBTC`:
 
-However, in a multi-chain, multi-token, multi-consensus ecosystem, this is a problem still being solved.
+```text
+../../../{Para A}/{Pallet Assets}/{Asset wBTC}
+```
 
-Within the XCM world, we have established two different kinds of transfers which can be used across consensus systems, and based on their trust assumptions.
+## The Location Format
 
-### Teleport Transfers
+So nothing new to learn about with locations, we just need to break down how they are represented in the XCM system.
 
-In high trust scenarios, we
+### Junction
 
-Teleport:
+The building blocks of a location are Junctions.
 
-	Destroying an asset (or amount of funds/token/currency) in one place and minting a corresponding amount in a second place. Imagine the teleporter from Star Trek. The two places need not be equivalent in nature (e.g. could be a UTXO chain that destroys assets and an account-based chain that mints them). Neither place acts as a reserve or derivative for the other. Though the nature of the tokens may be different, neither place is more canonical than the other. This is only possible if there is a bilateral trust relationship both of the STF and the validity/finality/availability between them.
-
-### Reserved Backed Transfers
-
-## XCM
-
-### Principles
-
-XCM is designed around four 'A's:
-
-- Asynchronous: XCM messages in no way assume that the sender will be blocking on its completion.
-- Absolute: XCM messages are guaranteed to be delivered and interpreted accurately, in order and in a timely fashion.
-- Asymmetric: XCM messages do not have results. Any results must be separately communicated to the sender with an additional message.
-- Agnostic: XCM makes no assumptions about the nature of the Consensus System between which messages are being passed.
-
-### Messages
-
-### XCM Virtual Machine
+```rust
+pub enum Junction {
+	Parachain(#[codec(compact)] u32),
+	PalletInstance(u8),
+	GeneralIndex(#[codec(compact)] u128),
+	// ... there are more junctions
+}
+```
