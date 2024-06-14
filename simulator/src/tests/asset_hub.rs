@@ -40,8 +40,8 @@ fn reserve_asset_transfer_works() {
 		});
 		let estimated_weight = Weight::from_parts(276_838_000, 3_675);
 		let message = Xcm::<()>::builder()
-			.withdraw_asset((Here, 50u128 * CENTS))
-			.buy_execution((Here, 1u128 * CENTS), Unlimited)
+			.withdraw_asset((Parent, 50u128 * CENTS))
+			.buy_execution((Parent, 1u128 * CENTS), Unlimited)
 			.transact(OriginKind::Xcm, estimated_weight, call.encode())
 			.build();
 		assert_ok!(parachain::PolkadotXcm::send_xcm(Here, destination, message,));
