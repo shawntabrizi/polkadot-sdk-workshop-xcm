@@ -1,3 +1,3 @@
-# Send
+# Teleport
 
-Send Solution
+Teleport
