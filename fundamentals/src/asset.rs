@@ -37,7 +37,6 @@ use xcm::latest::prelude::*;
 // │ Id 1337   │ │  Id 1984  │  │    Id 3    │ │    Id 66   │
 // └───────────┘ └───────────┘  └────────────┘ └────────────┘
 
-const HDX_DECIMALS: u32 = 12;
 const DOT_DECIMALS: u32 = 10;
 const USDT_DECIMALS: u32 = 6;
 
