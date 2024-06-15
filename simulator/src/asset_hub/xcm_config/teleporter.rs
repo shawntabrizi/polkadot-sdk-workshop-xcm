@@ -1,5 +1,11 @@
 pub use sandbox::*;
 
+#[cfg(feature = "start")]
+mod sandbox {
+	pub type TrustedTeleporters = ();
+}
+
+#[cfg(not(feature = "start"))]
 mod sandbox {
 	use frame_support::{parameter_types, traits::ContainsPair};
 	use sp_runtime::traits::Get;
