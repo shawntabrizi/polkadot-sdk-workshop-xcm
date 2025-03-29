@@ -44,9 +44,9 @@ fn reserve_asset_transfer_works() {
 		let assets: Assets = (Here, 50u128 * CENTS).into();
 		assert_ok!(relay_chain::XcmPallet::transfer_assets(
 			relay_chain::RuntimeOrigin::signed(ALICE),
-			Box::new(VersionedLocation::V4(destination.clone())),
-			Box::new(VersionedLocation::V4(beneficiary)),
-			Box::new(VersionedAssets::V4(assets)),
+			Box::new(VersionedLocation::from(destination.clone())),
+			Box::new(VersionedLocation::from(beneficiary)),
+			Box::new(VersionedAssets::from(assets)),
 			0,
 			WeightLimit::Unlimited,
 		));
@@ -80,9 +80,9 @@ fn reserve_asset_transfer_works() {
 		let assets: Assets = (Parent, 25u128 * CENTS).into();
 		assert_ok!(parachain::PolkadotXcm::transfer_assets(
 			parachain::RuntimeOrigin::signed(BOB),
-			Box::new(VersionedLocation::V4(destination)),
-			Box::new(VersionedLocation::V4(beneficiary)),
-			Box::new(VersionedAssets::V4(assets)),
+			Box::new(VersionedLocation::from(destination)),
+			Box::new(VersionedLocation::from(beneficiary)),
+			Box::new(VersionedAssets::from(assets)),
 			0,
 			WeightLimit::Unlimited,
 		));
