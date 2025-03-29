@@ -57,7 +57,7 @@ pub fn withdraw_and_deposit_paying_fees() -> Xcm<()> {
 	let alice_bytes: [u8; 32] = ALICE.into();
 	let message = Xcm::builder()
 		.withdraw_asset((Parent, 100u128))
-		.buy_execution((Parent, 10u128), Unlimited)
+		.pay_fees((Parent, 10u128))
 		.deposit_asset(All, alice_bytes)
 		.build();
 
