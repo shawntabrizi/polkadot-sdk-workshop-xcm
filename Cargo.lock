@@ -881,7 +881,7 @@ dependencies = [
  "staging-xcm 7.0.1",
  "staging-xcm-builder 7.0.0",
  "staging-xcm-executor 7.0.0",
- "substrate-wasm-builder",
+ "substrate-wasm-builder 17.0.0",
  "testnet-parachains-constants",
  "westend-runtime-constants",
  "xcm-runtime-apis 0.1.1",
@@ -914,7 +914,7 @@ dependencies = [
  "staging-xcm 7.0.1",
  "staging-xcm-builder 7.0.0",
  "staging-xcm-executor 7.0.0",
- "substrate-wasm-builder",
+ "substrate-wasm-builder 17.0.0",
  "xcm-runtime-apis 0.1.1",
 ]
 
@@ -937,7 +937,7 @@ dependencies = [
  "staging-xcm 7.0.1",
  "staging-xcm-builder 7.0.0",
  "staging-xcm-executor 7.0.0",
- "substrate-wasm-builder",
+ "substrate-wasm-builder 17.0.0",
  "tracing",
 ]
 
@@ -2957,6 +2957,7 @@ dependencies = [
  "pallet-staking 28.0.0",
  "pallet-uniques 28.0.0",
  "pallet-xcm 7.0.0",
+ "parachain",
  "parachains-common",
  "parity-scale-codec",
  "polkadot-core-primitives 7.0.0",
@@ -3413,7 +3414,7 @@ checksum = "6027a409bac4fe95b4d107f965fcdbc252fc89d884a360d076b3070b6128c094"
 dependencies = [
  "frame-metadata 17.0.0",
  "parity-scale-codec",
- "scale-decode",
+ "scale-decode 0.14.0",
  "scale-info",
  "scale-type-resolver",
  "sp-crypto-hashing 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4039,6 +4040,16 @@ checksum = "b6c80984affa11d98d1b88b66ac8853f143217b399d3c74116778ff8fdb4ed2e"
 dependencies = [
  "fallible-iterator 0.2.0",
  "indexmap 1.9.3",
+ "stable_deref_trait",
+]
+
+[[package]]
+name = "gimli"
+version = "0.28.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4271d37baee1b8c7e4b708028c57d816cf9d2434acb33a549475f78c181f6253"
+dependencies = [
+ "fallible-iterator 0.3.0",
  "stable_deref_trait",
 ]
 
@@ -5730,6 +5741,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "merkleized-metadata"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "38c592efaf1b3250df14c8f3c2d952233f0302bb81d3586db2f303666c1cd607"
+dependencies = [
+ "array-bytes",
+ "blake3",
+ "frame-metadata 18.0.0",
+ "parity-scale-codec",
+ "scale-decode 0.13.1",
+ "scale-info",
+]
+
+[[package]]
 name = "merlin"
 version = "3.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6132,6 +6157,15 @@ dependencies = [
  "crc32fast",
  "hashbrown 0.13.2",
  "indexmap 1.9.3",
+ "memchr",
+]
+
+[[package]]
+name = "object"
+version = "0.32.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a6a622008b6e321afc04970976f62ee297fdbaa6f95318ca343e3eebb9648441"
+dependencies = [
  "memchr",
 ]
 
@@ -7362,6 +7396,7 @@ dependencies = [
  "pallet-authorship 28.0.0",
  "pallet-session 28.0.0",
  "parity-scale-codec",
+ "rand_chacha 0.3.1",
  "scale-info",
  "serde",
  "sp-application-crypto 30.0.0",
@@ -7750,6 +7785,71 @@ dependencies = [
 ]
 
 [[package]]
+name = "parachain"
+version = "0.1.0"
+dependencies = [
+ "cumulus-pallet-aura-ext",
+ "cumulus-pallet-parachain-system",
+ "cumulus-pallet-session-benchmarking",
+ "cumulus-pallet-xcm",
+ "cumulus-pallet-xcmp-queue",
+ "cumulus-primitives-aura",
+ "cumulus-primitives-core",
+ "cumulus-primitives-storage-weight-reclaim",
+ "cumulus-primitives-utility",
+ "deranged",
+ "docify",
+ "frame-benchmarking 28.0.0",
+ "frame-executive",
+ "frame-metadata-hash-extension",
+ "frame-support 28.0.0",
+ "frame-system 28.0.0",
+ "frame-system-benchmarking",
+ "frame-system-rpc-runtime-api",
+ "frame-try-runtime",
+ "hex-literal",
+ "log",
+ "pallet-aura",
+ "pallet-authorship 28.0.0",
+ "pallet-balances 28.0.0",
+ "pallet-collator-selection",
+ "pallet-message-queue 31.0.0",
+ "pallet-session 28.0.0",
+ "pallet-sudo",
+ "pallet-timestamp 27.0.0",
+ "pallet-transaction-payment 28.0.0",
+ "pallet-transaction-payment-rpc-runtime-api",
+ "pallet-xcm 7.0.0",
+ "parachains-common",
+ "parity-scale-codec",
+ "polkadot-parachain-primitives 6.0.0",
+ "polkadot-primitives 7.0.0",
+ "polkadot-runtime-common",
+ "scale-info",
+ "smallvec",
+ "sp-api 26.0.0",
+ "sp-block-builder",
+ "sp-consensus-aura",
+ "sp-core 28.0.0",
+ "sp-genesis-builder 0.8.0",
+ "sp-inherents 26.0.0",
+ "sp-io 30.0.0",
+ "sp-keyring",
+ "sp-offchain",
+ "sp-runtime 31.0.1",
+ "sp-session 27.0.0",
+ "sp-std 14.0.0 (git+https://github.com/paritytech/polkadot-sdk?rev=972e95732bc9828093a344d40952c19729a33331)",
+ "sp-transaction-pool",
+ "sp-version 29.0.0",
+ "staging-parachain-info",
+ "staging-xcm 7.0.1",
+ "staging-xcm-builder 7.0.0",
+ "staging-xcm-executor 7.0.0",
+ "substrate-build-script-utils",
+ "substrate-wasm-builder 25.0.0",
+]
+
+[[package]]
 name = "parachains-common"
 version = "7.0.0"
 source = "git+https://github.com/paritytech/polkadot-sdk?rev=972e95732bc9828093a344d40952c19729a33331#972e95732bc9828093a344d40952c19729a33331"
@@ -7776,7 +7876,7 @@ dependencies = [
  "staging-parachain-info",
  "staging-xcm 7.0.1",
  "staging-xcm-executor 7.0.0",
- "substrate-wasm-builder",
+ "substrate-wasm-builder 17.0.0",
 ]
 
 [[package]]
@@ -7807,7 +7907,7 @@ dependencies = [
  "staging-parachain-info",
  "staging-xcm 7.0.1",
  "staging-xcm-executor 7.0.0",
- "substrate-wasm-builder",
+ "substrate-wasm-builder 17.0.0",
  "xcm-runtime-apis 0.1.1",
 ]
 
@@ -8195,6 +8295,7 @@ dependencies = [
  "log",
  "pallet-asset-rate",
  "pallet-authorship 28.0.0",
+ "pallet-babe 28.0.0",
  "pallet-balances 28.0.0",
  "pallet-broker 0.6.0",
  "pallet-election-provider-multi-phase",
@@ -8300,6 +8401,7 @@ dependencies = [
  "sp-std 14.0.0 (git+https://github.com/paritytech/polkadot-sdk?rev=972e95732bc9828093a344d40952c19729a33331)",
  "staging-xcm 7.0.1",
  "staging-xcm-executor 7.0.0",
+ "static_assertions",
 ]
 
 [[package]]
@@ -8397,6 +8499,19 @@ dependencies = [
 
 [[package]]
 name = "polkavm"
+version = "0.9.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8a3693e5efdb2bf74e449cd25fd777a28bd7ed87e41f5d5da75eb31b4de48b94"
+dependencies = [
+ "libc",
+ "log",
+ "polkavm-assembler 0.9.0",
+ "polkavm-common 0.9.0",
+ "polkavm-linux-raw 0.9.0",
+]
+
+[[package]]
+name = "polkavm"
 version = "0.18.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dd044ab1d3b11567ab6b98ca71259a992b4034220d5972988a0e96518e5d343d"
@@ -8423,6 +8538,15 @@ dependencies = [
 
 [[package]]
 name = "polkavm-assembler"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1fa96d6d868243acc12de813dd48e756cbadcc8e13964c70d272753266deadc1"
+dependencies = [
+ "log",
+]
+
+[[package]]
+name = "polkavm-assembler"
 version = "0.18.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "eaad38dc420bfed79e6f731471c973ce5ff5e47ab403e63cf40358fef8a6368f"
@@ -8444,6 +8568,9 @@ name = "polkavm-common"
 version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1d9428a5cfcc85c5d7b9fc4b6a18c4b802d0173d768182a51cc7751640f08b92"
+dependencies = [
+ "log",
+]
 
 [[package]]
 name = "polkavm-common"
@@ -8561,6 +8688,21 @@ dependencies = [
 
 [[package]]
 name = "polkavm-linker"
+version = "0.9.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9c7be503e60cf56c0eb785f90aaba4b583b36bff00e93997d93fef97f9553c39"
+dependencies = [
+ "gimli 0.28.1",
+ "hashbrown 0.14.5",
+ "log",
+ "object 0.32.2",
+ "polkavm-common 0.9.0",
+ "regalloc2 0.9.3",
+ "rustc-demangle",
+]
+
+[[package]]
+name = "polkavm-linker"
 version = "0.18.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e9bfe793b094d9ea5c99b7c43ba46e277b0f8f48f4bbfdbabf8d3ebf701a4bd3"
@@ -8590,6 +8732,12 @@ dependencies = [
  "regalloc2 0.9.3",
  "rustc-demangle",
 ]
+
+[[package]]
+name = "polkavm-linux-raw"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "26e85d3456948e650dff0cfc85603915847faf893ed1e66b020bb82ef4557120"
 
 [[package]]
 name = "polkavm-linux-raw"
@@ -9024,7 +9172,7 @@ dependencies = [
  "once_cell",
  "socket2",
  "tracing",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -9679,6 +9827,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "sc-allocator"
+version = "30.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5a63e577eb150187ddd444a0a6f01e1ece0a5cfc592aacb4204d9f79bdc5265d"
+dependencies = [
+ "log",
+ "sp-core 35.0.0",
+ "sp-wasm-interface 21.0.1",
+ "thiserror 1.0.69",
+]
+
+[[package]]
 name = "sc-block-builder"
 version = "0.33.0"
 source = "git+https://github.com/paritytech/polkadot-sdk?rev=972e95732bc9828093a344d40952c19729a33331#972e95732bc9828093a344d40952c19729a33331"
@@ -9705,7 +9865,7 @@ dependencies = [
  "parity-scale-codec",
  "sc-chain-spec-derive",
  "sc-client-api",
- "sc-executor",
+ "sc-executor 0.32.0",
  "sc-network",
  "sc-telemetry",
  "serde",
@@ -9741,7 +9901,7 @@ dependencies = [
  "log",
  "parity-scale-codec",
  "parking_lot 0.12.3",
- "sc-executor",
+ "sc-executor 0.32.0",
  "sc-transaction-pool-api",
  "sc-utils",
  "sp-api 26.0.0",
@@ -9833,9 +9993,9 @@ source = "git+https://github.com/paritytech/polkadot-sdk?rev=972e95732bc9828093a
 dependencies = [
  "parity-scale-codec",
  "parking_lot 0.12.3",
- "sc-executor-common",
- "sc-executor-polkavm",
- "sc-executor-wasmtime",
+ "sc-executor-common 0.29.0",
+ "sc-executor-polkavm 0.29.0",
+ "sc-executor-wasmtime 0.29.0",
  "schnellru",
  "sp-api 26.0.0",
  "sp-core 28.0.0",
@@ -9850,14 +10010,52 @@ dependencies = [
 ]
 
 [[package]]
+name = "sc-executor"
+version = "0.41.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2b450573fc0ca024bdcb6d508d61c104f862519ca7f78c416bd8042c9db32975"
+dependencies = [
+ "parity-scale-codec",
+ "parking_lot 0.12.3",
+ "sc-executor-common 0.36.0",
+ "sc-executor-polkavm 0.33.0",
+ "sc-executor-wasmtime 0.36.0",
+ "schnellru",
+ "sp-api 35.0.0",
+ "sp-core 35.0.0",
+ "sp-externalities 0.30.0",
+ "sp-io 39.0.0",
+ "sp-panic-handler 13.0.1",
+ "sp-runtime-interface 29.0.0",
+ "sp-trie 38.0.0",
+ "sp-version 38.0.0",
+ "sp-wasm-interface 21.0.1",
+ "tracing",
+]
+
+[[package]]
 name = "sc-executor-common"
 version = "0.29.0"
 source = "git+https://github.com/paritytech/polkadot-sdk?rev=972e95732bc9828093a344d40952c19729a33331#972e95732bc9828093a344d40952c19729a33331"
 dependencies = [
  "polkavm 0.18.0",
- "sc-allocator",
- "sp-maybe-compressed-blob",
+ "sc-allocator 23.0.0",
+ "sp-maybe-compressed-blob 11.0.0 (git+https://github.com/paritytech/polkadot-sdk?rev=972e95732bc9828093a344d40952c19729a33331)",
  "sp-wasm-interface 20.0.0 (git+https://github.com/paritytech/polkadot-sdk?rev=972e95732bc9828093a344d40952c19729a33331)",
+ "thiserror 1.0.69",
+ "wasm-instrument",
+]
+
+[[package]]
+name = "sc-executor-common"
+version = "0.36.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "27f5d872331b68ed4601488100f22e8aa16331de006b51d4c69353930c568a16"
+dependencies = [
+ "polkavm 0.9.3",
+ "sc-allocator 30.0.0",
+ "sp-maybe-compressed-blob 11.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sp-wasm-interface 21.0.1",
  "thiserror 1.0.69",
  "wasm-instrument",
 ]
@@ -9869,8 +10067,20 @@ source = "git+https://github.com/paritytech/polkadot-sdk?rev=972e95732bc9828093a
 dependencies = [
  "log",
  "polkavm 0.18.0",
- "sc-executor-common",
+ "sc-executor-common 0.29.0",
  "sp-wasm-interface 20.0.0 (git+https://github.com/paritytech/polkadot-sdk?rev=972e95732bc9828093a344d40952c19729a33331)",
+]
+
+[[package]]
+name = "sc-executor-polkavm"
+version = "0.33.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "16c4b3532c0f6dae1fcbe85f4582618042aefb9c8e2a03f855d298f56362daaa"
+dependencies = [
+ "log",
+ "polkavm 0.9.3",
+ "sc-executor-common 0.36.0",
+ "sp-wasm-interface 21.0.1",
 ]
 
 [[package]]
@@ -9884,10 +10094,29 @@ dependencies = [
  "log",
  "parking_lot 0.12.3",
  "rustix 0.36.17",
- "sc-allocator",
- "sc-executor-common",
+ "sc-allocator 23.0.0",
+ "sc-executor-common 0.29.0",
  "sp-runtime-interface 24.0.0 (git+https://github.com/paritytech/polkadot-sdk?rev=972e95732bc9828093a344d40952c19729a33331)",
  "sp-wasm-interface 20.0.0 (git+https://github.com/paritytech/polkadot-sdk?rev=972e95732bc9828093a344d40952c19729a33331)",
+ "wasmtime",
+]
+
+[[package]]
+name = "sc-executor-wasmtime"
+version = "0.36.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1d04b8d98a96a83b56eeb1061cd4a7a1949b7c2c147d572d309c4e4d5c0d870f"
+dependencies = [
+ "anyhow",
+ "cfg-if",
+ "libc",
+ "log",
+ "parking_lot 0.12.3",
+ "rustix 0.36.17",
+ "sc-allocator 30.0.0",
+ "sc-executor-common 0.36.0",
+ "sp-runtime-interface 29.0.0",
+ "sp-wasm-interface 21.0.1",
  "wasmtime",
 ]
 
@@ -10092,6 +10321,19 @@ dependencies = [
 
 [[package]]
 name = "scale-decode"
+version = "0.13.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e98f3262c250d90e700bb802eb704e1f841e03331c2eb815e46516c4edbf5b27"
+dependencies = [
+ "derive_more 0.99.19",
+ "parity-scale-codec",
+ "scale-bits",
+ "scale-type-resolver",
+ "smallvec",
+]
+
+[[package]]
+name = "scale-decode"
 version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f8ae9cc099ae85ff28820210732b00f019546f36f33225f509fe25d5816864a0"
@@ -10191,7 +10433,7 @@ dependencies = [
  "either",
  "parity-scale-codec",
  "scale-bits",
- "scale-decode",
+ "scale-decode 0.14.0",
  "scale-encode",
  "scale-info",
  "scale-type-resolver",
@@ -10879,9 +11121,9 @@ dependencies = [
 
 [[package]]
 name = "socket2"
-version = "0.5.8"
+version = "0.5.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c970269d99b64e60ec3bd6ad27270092a5394c4e309314b18ae3fe575695fbe8"
+checksum = "4f5fd57c80058a56cf5c777ab8a126398ece8e442983605d280a44ce79d0edef"
 dependencies = [
  "libc",
  "windows-sys 0.52.0",
@@ -11605,6 +11847,16 @@ dependencies = [
 [[package]]
 name = "sp-maybe-compressed-blob"
 version = "11.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f0c768c11afbe698a090386876911da4236af199cd38a5866748df4d8628aeff"
+dependencies = [
+ "thiserror 1.0.69",
+ "zstd 0.12.4",
+]
+
+[[package]]
+name = "sp-maybe-compressed-blob"
+version = "11.0.0"
 source = "git+https://github.com/paritytech/polkadot-sdk?rev=972e95732bc9828093a344d40952c19729a33331#972e95732bc9828093a344d40952c19729a33331"
 dependencies = [
  "thiserror 1.0.69",
@@ -12260,6 +12512,7 @@ dependencies = [
  "impl-trait-for-tuples",
  "log",
  "parity-scale-codec",
+ "wasmtime",
 ]
 
 [[package]]
@@ -12593,6 +12846,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "substrate-build-script-utils"
+version = "11.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b285e7d183a32732fdc119f3d81b7915790191fad602b7c709ef247073c77a2e"
+
+[[package]]
 name = "substrate-prometheus-endpoint"
 version = "0.17.0"
 source = "git+https://github.com/paritytech/polkadot-sdk?rev=972e95732bc9828093a344d40952c19729a33331#972e95732bc9828093a344d40952c19729a33331"
@@ -12619,7 +12878,38 @@ dependencies = [
  "parity-wasm",
  "polkavm-linker 0.18.0",
  "shlex",
- "sp-maybe-compressed-blob",
+ "sp-maybe-compressed-blob 11.0.0 (git+https://github.com/paritytech/polkadot-sdk?rev=972e95732bc9828093a344d40952c19729a33331)",
+ "strum 0.26.3",
+ "tempfile",
+ "toml 0.8.20",
+ "walkdir",
+ "wasm-opt",
+]
+
+[[package]]
+name = "substrate-wasm-builder"
+version = "25.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cfebe406eca8d18abd10bb29d7c6af2d656fa60b5d4a8033afd80b97795b9efb"
+dependencies = [
+ "array-bytes",
+ "build-helper",
+ "cargo_metadata",
+ "console",
+ "filetime",
+ "frame-metadata 18.0.0",
+ "jobserver",
+ "merkleized-metadata",
+ "parity-scale-codec",
+ "parity-wasm",
+ "polkavm-linker 0.9.2",
+ "sc-executor 0.41.0",
+ "shlex",
+ "sp-core 35.0.0",
+ "sp-io 39.0.0",
+ "sp-maybe-compressed-blob 11.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sp-tracing 17.0.1",
+ "sp-version 38.0.0",
  "strum 0.26.3",
  "tempfile",
  "toml 0.8.20",
@@ -12652,7 +12942,7 @@ dependencies = [
  "polkadot-sdk",
  "primitive-types 0.13.1",
  "scale-bits",
- "scale-decode",
+ "scale-decode 0.14.0",
  "scale-encode",
  "scale-info",
  "scale-value",
@@ -13963,7 +14253,7 @@ dependencies = [
  "staging-xcm 7.0.1",
  "staging-xcm-builder 7.0.0",
  "staging-xcm-executor 7.0.0",
- "substrate-wasm-builder",
+ "substrate-wasm-builder 17.0.0",
  "westend-runtime-constants",
  "xcm-runtime-apis 0.1.1",
 ]
