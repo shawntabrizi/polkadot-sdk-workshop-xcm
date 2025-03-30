@@ -42,3 +42,6 @@ other-parachain-tokens = []
 register-assets = []
 asset-hub = []
 barrier = []
+
+std = []
+runtime-benchmarks = []

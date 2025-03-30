@@ -1,0 +1,51 @@
+[package]
+name = "emulator"
+description = "XCM Emulator"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+codec = { package = "parity-scale-codec", version = "3.7.4" }
+scale-info = { version = "2.11.6", features = ["derive"] }
+log = { version = "0.4.21", default-features = false }
+
+frame-system = "39.1.0"
+frame-support = { version = "39.0.0", features = ["experimental"] }
+pallet-balances = "40.0.1"
+pallet-assets = "41.0.0"
+pallet-message-queue = "42.0.0"
+pallet-uniques = "39.0.0"
+pallet-staking = "39.0.1"
+
+sp-std = "14.0.0"
+sp-core = "35.0.0"
+sp-runtime = "40.1.0"
+sp-io = "39.0.0"
+sp-weights = "31.0.0"
+sp-tracing = "17.0.1"
+sp-authority-discovery = "35.0.0"
+sp-consensus-babe = "0.41.0"
+sp-consensus-beefy = "23.0.0"
+sp-keyring = "40.0.0"
+
+sc-consensus-grandpa = "0.33.0"
+
+xcm = { version = "15.0.1", package = "staging-xcm" }
+xcm-executor = { version = "18.0.1", package = "staging-xcm-executor" }
+xcm-builder = { version = "18.0.1", package = "staging-xcm-builder" }
+xcm-emulator = "0.17.1"
+pallet-xcm = "18.0.0"
+polkadot-core-primitives = "16.0.0"
+polkadot-runtime-parachains = "18.0.1"
+polkadot-parachain-primitives = "15.0.0"
+polkadot-primitives = "17.0.0"
+parachains-common = "19.0.0"
+cumulus-primitives-core = "0.17.0"
+
+emulated-integration-tests-common = "19.0.1"
+
+westend-runtime = "21.0.0"
+westend-runtime-constants = "18.0.0"
+asset-hub-westend-runtime = "0.27.0"
+
+deranged = "=0.4.0"

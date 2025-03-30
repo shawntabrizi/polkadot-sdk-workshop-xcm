@@ -1,0 +1,22 @@
+[package]
+name = "execution"
+description = "Execution exercises"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+codec = { package = "parity-scale-codec", version = "3.7.4" }
+
+frame-system = { version = "39.1.0" }
+frame-support = { version = "39.0.0", features = ["experimental"] }
+
+simulator = { path = "../simulator", features = ["start"] }
+emulator = { path = "../emulator" }
+
+xcm = { version = "15.0.1", package = "staging-xcm" }
+pallet-xcm = { version = "18.0.0" }
+
+[dev-dependencies]
+env_logger = "0.10.0"
+test-log = "0.2.12"
