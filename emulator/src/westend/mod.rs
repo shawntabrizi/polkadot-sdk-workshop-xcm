@@ -5,7 +5,7 @@ use xcm_emulator::decl_test_relay_chains;
 
 // Westend declaration
 decl_test_relay_chains! {
-	#[api_version(12)]
+	#[api_version(13)]
 	pub struct Westend {
 		genesis = genesis::genesis(),
 		on_init = (),
