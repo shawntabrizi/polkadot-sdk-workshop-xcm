@@ -1,7 +1,11 @@
 mod genesis;
 
+use emulated_integration_tests_common::{
+	impl_foreign_assets_helpers_for_parachain,
+	impl_accounts_helpers_for_parachain,
+};
 use frame_support::traits::OnInitialize;
-use xcm_emulator::decl_test_parachains;
+use xcm_emulator::{decl_test_parachains, Parachain};
 
 // AssetHubWestend Parachain declaration
 decl_test_parachains! {
@@ -27,3 +31,6 @@ decl_test_parachains! {
 		}
 	},
 }
+
+impl_foreign_assets_helpers_for_parachain!(AssetHubWestend, xcm::v5::Location);
+impl_accounts_helpers_for_parachain!(AssetHubWestend);
