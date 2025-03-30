@@ -19,6 +19,7 @@ pallet-assets = { git = "https://github.com/paritytech/polkadot-sdk", rev = "972
 pallet-message-queue = { git = "https://github.com/paritytech/polkadot-sdk", rev = "972e95732bc9828093a344d40952c19729a33331" }
 pallet-uniques = { git = "https://github.com/paritytech/polkadot-sdk", rev = "972e95732bc9828093a344d40952c19729a33331" }
 pallet-staking = { git = "https://github.com/paritytech/polkadot-sdk", rev = "972e95732bc9828093a344d40952c19729a33331" }
+parachain-info = { package = "staging-parachain-info", git = "https://github.com/paritytech/polkadot-sdk", rev = "972e95732bc9828093a344d40952c19729a33331" }
 
 sp-std = { git = "https://github.com/paritytech/polkadot-sdk", rev = "972e95732bc9828093a344d40952c19729a33331" }
 sp-core = { git = "https://github.com/paritytech/polkadot-sdk", rev = "972e95732bc9828093a344d40952c19729a33331" }
