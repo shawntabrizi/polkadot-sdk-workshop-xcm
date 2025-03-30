@@ -8,14 +8,14 @@ publish = false
 [dependencies]
 codec = { package = "parity-scale-codec", version = "3.7.4" }
 
-frame-system = { version = "39.1.0" }
-frame-support = { version = "39.0.0", features = ["experimental"] }
+frame-system = { git = "https://github.com/paritytech/polkadot-sdk", rev = "972e95732bc9828093a344d40952c19729a33331" }
+frame-support = { git = "https://github.com/paritytech/polkadot-sdk", rev = "972e95732bc9828093a344d40952c19729a33331" }
 
 simulator = { path = "../simulator", features = ["start"] }
 emulator = { path = "../emulator" }
 
-xcm = { version = "15.0.1", package = "staging-xcm" }
-pallet-xcm = { version = "18.0.0" }
+xcm = { git = "https://github.com/paritytech/polkadot-sdk", rev = "972e95732bc9828093a344d40952c19729a33331", package = "staging-xcm" }
+xcm-runtime-apis = { git = "https://github.com/paritytech/polkadot-sdk", rev = "972e95732bc9828093a344d40952c19729a33331" }
 
 [dev-dependencies]
 env_logger = "0.10.0"
