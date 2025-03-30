@@ -3,6 +3,9 @@ mod asset_hub_westend;
 mod parachain;
 mod network;
 
+pub use parachain_runtime;
+pub use westend_runtime_constants;
+
 pub mod prelude {
     use super::*;
 
@@ -20,5 +23,7 @@ pub mod prelude {
 
     pub use westend::WestendRelayPallet as WestendPallet;
     pub use asset_hub_westend::AssetHubWestendParaPallet as AssetHubWestendPallet;
-    pub use parachain::CustomParaPallet as CustomPallet;
+    pub use parachain::CustomParaPallet;
+
+    pub use xcm_emulator::{Chain, Parachain, TestExt};
 }

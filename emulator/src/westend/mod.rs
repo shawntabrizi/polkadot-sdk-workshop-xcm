@@ -1,6 +1,6 @@
 mod genesis;
 
-// Cumulus
+use emulated_integration_tests_common::impl_hrmp_channels_helpers_for_relay_chain;
 use xcm_emulator::decl_test_relay_chains;
 
 // Westend declaration
@@ -25,3 +25,5 @@ decl_test_relay_chains! {
 		}
 	},
 }
+
+impl_hrmp_channels_helpers_for_relay_chain!(Westend);
