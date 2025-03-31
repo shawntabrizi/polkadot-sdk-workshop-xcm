@@ -28,17 +28,17 @@ mod tests {
         let fees_amount = 10 * PARA_CENTS;
         CustomPara::execute_with(|| {
             type CustomBalances = <CustomPara as CustomParaPallet>::Balances;
-            let assets_to_withdraw: Assets = vec![
-                (Here, transfer_amount).into(),
-                (Parent, 10 * WND_CENTS).into()
-            ].into();
-            let remote_fees: Assets = (Parent, 10 * WND_CENTS).into();
             let xcm = Xcm::<<CustomPara as Chain>::RuntimeCall>::builder()
-                .withdraw_asset(assets_to_withdraw)
+                .withdraw_asset(vec![
+                    (Here, transfer_amount).into(),
+                    (Parent, 10 * WND_UNITS).into()
+                ])
                 .pay_fees((Here, fees_amount))
                 .initiate_transfer(
                     (Parent, Parachain(1000)),
-                    AssetTransferFilter::ReserveWithdraw(Definite(remote_fees)),
+                    AssetTransferFilter::ReserveWithdraw(Definite(
+                        (Parent, 10 * WND_CENTS).into())
+                    ),
                     false,
                     vec![AssetTransferFilter::Teleport(Wild(AllCounted(1)))],
                     Xcm::builder_unsafe()
