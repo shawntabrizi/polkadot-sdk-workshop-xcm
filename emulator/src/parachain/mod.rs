@@ -1,5 +1,6 @@
 mod genesis;
 
+use emulated_integration_tests_common::impl_foreign_assets_helpers_for_parachain;
 use xcm_emulator::decl_test_parachains;
 
 decl_test_parachains! {
@@ -15,7 +16,10 @@ decl_test_parachains! {
         },
         pallets = {
             Balances: parachain_runtime::Balances,
+            ForeignAssets: parachain_runtime::ForeignAssets,
             PolkadotXcm: parachain_runtime::PolkadotXcm,
         }
     }
 }
+
+impl_foreign_assets_helpers_for_parachain!(Custom, xcm::v5::Location);

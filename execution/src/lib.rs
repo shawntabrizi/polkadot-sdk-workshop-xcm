@@ -34,25 +34,48 @@ mod tests {
         AssetHubWestend::fund_accounts(vec![(sov_account_custom_para_on_ah, initial_balance)]);
         let sender = CustomParaSender::get();
         let receiver = AssetHubWestendReceiver::get();
+        CustomPara::force_create_foreign_asset(
+            Location::parent(),
+            CustomParaSender::get(),
+            false,
+            1,
+            Vec::new()
+        );
 
+        let starting_balance = 10 * PARA_UNITS;
         CustomPara::execute_with(|| {
             type CustomBalances = <CustomPara as CustomParaPallet>::Balances;
-            let starting_balance = 10 * PARA_UNITS;
             assert_ok!(<CustomBalances as fungible::Mutate<_>>::mint_into(
                 &sender,
                 starting_balance,
             ));
-            let transfer_amount = 1 * PARA_UNITS;
-            let fees_amount = 10 * PARA_CENTS;
+        });
+
+        CustomPara::mint_foreign_asset(
+            <CustomPara as Chain>::RuntimeOrigin::signed(sender.clone()),
+            Location::parent(),
+            sender.clone(),
+            100 * WND_UNITS
+        );
+
+        let transfer_amount = 1 * PARA_UNITS;
+        let fees_amount = 10 * PARA_CENTS;
+
+        CustomPara::execute_with(|| {
+            type CustomBalances = <CustomPara as CustomParaPallet>::Balances;
+            let assets_to_withdraw: Assets = vec![
+                (Here, transfer_amount).into(),
+                (Parent, 10 * WND_CENTS).into()
+            ].into();
             let remote_fees: Assets = (Parent, 10 * WND_CENTS).into();
             let xcm = Xcm::<<CustomPara as Chain>::RuntimeCall>::builder()
-                .withdraw_asset((Here, transfer_amount))
+                .withdraw_asset(assets_to_withdraw)
                 .pay_fees((Here, fees_amount))
                 .initiate_transfer(
                     (Parent, Parachain(1000)),
                     AssetTransferFilter::ReserveWithdraw(Definite(remote_fees)),
                     false,
-                    vec![AssetTransferFilter::ReserveDeposit(Wild(AllCounted(1)))],
+                    vec![AssetTransferFilter::Teleport(Wild(AllCounted(1)))],
                     Xcm::builder_unsafe()
                         .deposit_asset(AllCounted(1), receiver.clone())
                         .build()
@@ -73,7 +96,7 @@ mod tests {
         AssetHubWestend::execute_with(|| {
             type ForeignAssets = <AssetHubWestend as AssetHubWestendPallet>::ForeignAssets;
             let balance = <ForeignAssets as fungibles::Inspect<_>>::balance(custom_para_from_ah, &receiver);
-            dbg!(&balance);
+            assert_eq!(balance, transfer_amount - fees_amount);
         });
     }
 

@@ -7810,6 +7810,7 @@ dependencies = [
  "frame-try-runtime",
  "hex-literal",
  "log",
+ "pallet-assets 29.1.0",
  "pallet-aura",
  "pallet-authorship 28.0.0",
  "pallet-balances 28.0.0",

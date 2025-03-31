@@ -9,7 +9,8 @@ use frame_support::{
     dispatch::DispatchClass,
     parameter_types,
     traits::{
-        ConstBool, ConstU32, ConstU64, ConstU8, EitherOfDiverse, TransformOrigin, VariantCountOf,
+        ConstBool, ConstU32, ConstU64, ConstU128, ConstU8, EitherOfDiverse, TransformOrigin, VariantCountOf,
+        NeverEnsureOrigin,
     },
     weights::{ConstantMultiplier, Weight},
     PalletId,
@@ -98,7 +99,7 @@ impl frame_system::Config for Runtime {
     type SS58Prefix = SS58Prefix;
     /// The action to take on a Runtime Upgrade
     type OnSetCode = cumulus_pallet_parachain_system::ParachainSetCode<Self>;
-    type MaxConsumers = frame_support::traits::ConstU32<16>;
+    type MaxConsumers = ConstU32<16>;
 }
 
 impl pallet_timestamp::Config for Runtime {
@@ -152,10 +153,31 @@ impl pallet_transaction_payment::Config for Runtime {
     type WeightInfo = ();
 }
 
-// #[derive_impl(pallet_assets::config_preludes::TestDefaultConfig)]
-// impl pallet_assets::Config for Runtime {
-    
-// }
+// We use `Instance2` because of a constraint in the emulator helpers.
+impl pallet_assets::Config<pallet_assets::Instance2> for Runtime {
+    type RuntimeEvent = RuntimeEvent;
+    type Balance = Balance;
+    type AssetId = xcm::v5::Location;
+    type AssetIdParameter = xcm::v5::Location;
+    type RemoveItemsLimit = ConstU32<1000>;
+    type Currency = Balances;
+    type CreateOrigin = NeverEnsureOrigin<AccountId>;
+    type ForceOrigin = EnsureRoot<AccountId>;
+    // Deposits are zero because creation/admin is limited to Root.
+    type AssetDeposit = ConstU128<0>;
+    type AssetAccountDeposit = ConstU128<0>;
+    type MetadataDepositBase = ConstU128<0>;
+    type MetadataDepositPerByte = ConstU128<0>;
+    type ApprovalDeposit = ExistentialDeposit; // Or whatever value you're using for the balances pallet.
+    type StringLimit = ConstU32<50>;
+    type Freezer = ();
+    type Holder = ();
+    type Extra = ();
+    type WeightInfo = (); // Make sure to benchmark this for production!
+    type CallbackHandle = ();
+    #[cfg(feature = "runtime-benchmarks")]
+    type BenchmarkHelper = ();
+}
 
 impl pallet_sudo::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
