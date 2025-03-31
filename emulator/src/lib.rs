@@ -26,4 +26,6 @@ pub mod prelude {
     pub use parachain::CustomParaPallet;
 
     pub use xcm_emulator::{Chain, Parachain, TestExt};
+
+    pub use sp_runtime::AccountId32 as AccountId;
 }

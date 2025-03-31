@@ -21,46 +21,11 @@ mod tests {
 
     #[test]
     fn cross_chain_transfer() {
-        let custom_para_from_ah = AssetHubWestend::sibling_location_of(CustomPara::para_id());
-        AssetHubWestend::force_create_foreign_asset(
-             custom_para_from_ah.clone(),
-             AssetHubWestendSender::get(),
-             false,
-             1,
-             Vec::new()
-        );
-        let sov_account_custom_para_on_ah = AssetHubWestend::sovereign_account_id_of(custom_para_from_ah.clone());
-        let initial_balance = 10 * WND_UNITS;
-        AssetHubWestend::fund_accounts(vec![(sov_account_custom_para_on_ah, initial_balance)]);
-        let sender = CustomParaSender::get();
-        let receiver = AssetHubWestendReceiver::get();
-        CustomPara::force_create_foreign_asset(
-            Location::parent(),
-            CustomParaSender::get(),
-            false,
-            1,
-            Vec::new()
-        );
-
-        let starting_balance = 10 * PARA_UNITS;
-        CustomPara::execute_with(|| {
-            type CustomBalances = <CustomPara as CustomParaPallet>::Balances;
-            assert_ok!(<CustomBalances as fungible::Mutate<_>>::mint_into(
-                &sender,
-                starting_balance,
-            ));
-        });
-
-        CustomPara::mint_foreign_asset(
-            <CustomPara as Chain>::RuntimeOrigin::signed(sender.clone()),
-            Location::parent(),
-            sender.clone(),
-            100 * WND_UNITS
-        );
-
+        let initial_wnd_balance = 10 * WND_UNITS;
+        let initial_para_balance = 10 * PARA_UNITS;
+        let (sender, receiver) = setup(initial_wnd_balance, initial_para_balance);
         let transfer_amount = 1 * PARA_UNITS;
         let fees_amount = 10 * PARA_CENTS;
-
         CustomPara::execute_with(|| {
             type CustomBalances = <CustomPara as CustomParaPallet>::Balances;
             let assets_to_withdraw: Assets = vec![
@@ -89,13 +54,16 @@ mod tests {
 
             assert_eq!(
                 <CustomBalances as fungible::Inspect<_>>::balance(&sender),
-                starting_balance - transfer_amount
+                initial_para_balance - transfer_amount
             );
         });
 
         AssetHubWestend::execute_with(|| {
             type ForeignAssets = <AssetHubWestend as AssetHubWestendPallet>::ForeignAssets;
-            let balance = <ForeignAssets as fungibles::Inspect<_>>::balance(custom_para_from_ah, &receiver);
+            let balance = <ForeignAssets as fungibles::Inspect<_>>::balance(
+                Location::new(1, [Parachain(CustomPara::para_id().into())]),
+                &receiver
+            );
             assert_eq!(balance, transfer_amount - fees_amount);
         });
     }
@@ -113,6 +81,48 @@ mod tests {
     #[test]
     fn transfer_n_times() {
         // TODO
+    }
+
+    fn setup(
+        initial_wnd_balance: u128,
+        initial_para_balance: u128,
+    ) -> (AccountId, AccountId) {
+        let custom_para_from_ah = AssetHubWestend::sibling_location_of(CustomPara::para_id());
+        AssetHubWestend::force_create_foreign_asset(
+             custom_para_from_ah.clone(),
+             AssetHubWestendSender::get(),
+             false,
+             1,
+             Vec::new()
+        );
+        let sov_account_custom_para_on_ah = AssetHubWestend::sovereign_account_id_of(custom_para_from_ah.clone());
+        AssetHubWestend::fund_accounts(vec![(sov_account_custom_para_on_ah, initial_wnd_balance)]);
+        let sender = CustomParaSender::get();
+        let receiver = AssetHubWestendReceiver::get();
+        CustomPara::force_create_foreign_asset(
+            Location::parent(),
+            CustomParaSender::get(),
+            false,
+            1,
+            Vec::new()
+        );
+
+        CustomPara::execute_with(|| {
+            type CustomBalances = <CustomPara as CustomParaPallet>::Balances;
+            assert_ok!(<CustomBalances as fungible::Mutate<_>>::mint_into(
+                &sender,
+                initial_para_balance,
+            ));
+        });
+
+        CustomPara::mint_foreign_asset(
+            <CustomPara as Chain>::RuntimeOrigin::signed(sender.clone()),
+            Location::parent(),
+            sender.clone(),
+            initial_wnd_balance
+        );
+
+        (sender, receiver)
     }
 }
 
