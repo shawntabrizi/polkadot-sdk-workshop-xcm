@@ -38,20 +38,20 @@ pub mod relative_to_polkadot_relay {
 
 	parameter_types! {
 		// The Polkadot parachain A with id 1000.
-		pub PolkadotPara1000: Location = Parachain(1000).into();
+		pub PolkadotPara1000: Location = // TODO
 		// The Polkadot parachain B with id 2004.
-		pub PolkadotPara2004: Location = Parachain(2004).into();
+		pub PolkadotPara2004: Location = // TODO
 		// The Polkadot relay chain.
-		pub PolkadotRelay: Location = Here.into();
+		pub PolkadotRelay: Location = // TODO
 		// A 32 byte account on para 1000 with all bytes equal to 1 (Alice).
-		pub AliceBytes: [u8; 32] = ALICE.into();
-		pub PolkadotPara1000Alice: Location = Location::new(0, [Parachain(1000), AliceBytes::get().into()]);
+		pub AliceBytes: [u8; 32] = // TODO
+		pub PolkadotPara1000Alice: Location = // TODO
 		// The location of the `Assets` pallet on the relay chain.
-		pub PolkadotPara1000AssetsPallet: Location = [Parachain(1000), PalletInstance(50)].into();
+		pub PolkadotPara1000AssetsPallet: Location = // TODO
 		// The asset with index `1984` of the Assets pallet on polkadot parachain with id 1000.
-		pub PolkadotPara1000Asset1984: Location = (Parachain(1000), PalletInstance(50), GeneralIndex(1984)).into();
+		pub PolkadotPara1000Asset1984: Location = // TODO
 		// The Kusama parachain with id 1000.
-		pub KusamaPara1000: Location = (Parent, GlobalConsensus(Kusama), Parachain(1000)).into();
+		pub KusamaPara1000: Location = // TODO
 	}
 }
 
@@ -61,20 +61,20 @@ pub mod relative_to_polkadot_para_1000 {
 
 	parameter_types! {
 		// The Polkadot parachain with id 1000.
-		pub PolkadotPara1000: Location = Here.into();
+		pub PolkadotPara1000: Location = // TODO
 		// The Polkadot parachain with id 2004.
-		pub PolkadotPara2004: Location = (Parent, Parachain(2004)).into();
+		pub PolkadotPara2004: Location = // TODO
 		// The Polkadot relay chain.
-		pub PolkadotRelay: Location = Parent.into();
+		pub PolkadotRelay: Location = // TODO
 		// A 32 byte account on para 1000.
-		pub AliceBytes: [u8; 32] = ALICE.into();
-		pub PolkadotPara1000Alice: Location = Location::new(0, [AliceBytes::get().into()]);
+		pub AliceBytes: [u8; 32] = // TODO
+		pub PolkadotPara1000Alice: Location = // TODO
 		// The location of the `Balances` pallet on the relay chain.
-		pub PolkadotPara1000AssetsPallet: Location = (PalletInstance(50)).into();
+		pub PolkadotPara1000AssetsPallet: Location = // TODO
 		// The asset with index `1984` of the Assets pallet on the Polkadot parachain with id 1000.
-		pub PolkadotPara1000Asset1984: Location = (PalletInstance(50), GeneralIndex(1984)).into();
+		pub PolkadotPara1000Asset1984: Location = // TODO
 		// The Kusama parachain with id 1000.
-		pub KusamaPara1000: Location = (Parent, Parent, GlobalConsensus(Kusama), Parachain(1000)).into();
+		pub KusamaPara1000: Location = // TODO
 	}
 }
 
@@ -154,20 +154,20 @@ pub mod absolute {
 
 	parameter_types! {
 		// The Polkadot parachain with id 1000.
-		pub PolkadotPara1000: Location = [GlobalConsensus(Polkadot), Parachain(1000)].into();
+		pub PolkadotPara1000: Location = // TODO
 		// The Polkadot parachain with id 2004.
-		pub PolkadotPara2004: Location = [GlobalConsensus(Polkadot), Parachain(2004)].into();
+		pub PolkadotPara2004: Location = // TODO
 		// The Polkadot relay chain.
-		pub PolkadotRelay: Location = [GlobalConsensus(Polkadot)].into();
+		pub PolkadotRelay: Location = // TODO
 		// A 32 byte account on para 1000.
-		pub AliceBytes: [u8; 32] = ALICE.into();
-		pub PolkadotPara1000Alice: Location = [GlobalConsensus(Polkadot), Parachain(1000), AliceBytes::get().into()].into();
+		pub AliceBytes: [u8; 32] = // TODO
+		pub PolkadotPara1000Alice: Location = // TODO
 		// The location of the `Balances` pallet on the relay chain.
-		pub PolkadotPara1000AssetsPallet: Location = [GlobalConsensus(Polkadot), Parachain(1000), PalletInstance(50)].into();
+		pub PolkadotPara1000AssetsPallet: Location = // TODO
 		// The asset with index `1984` of the Assets pallet on the Polkadot parachain with id 1000.
-		pub PolkadotPara1000Asset1984: Location = [GlobalConsensus(Polkadot), Parachain(1000), PalletInstance(50), GeneralIndex(1984)].into();
+		pub PolkadotPara1000Asset1984: Location = // TODO
 		// The Kusama parachain with id 1000.
-		pub KusamaPara1000: Location = [GlobalConsensus(Kusama), Parachain(1000)].into();
+		pub KusamaPara1000: Location = // TODO
 	}
 }
 

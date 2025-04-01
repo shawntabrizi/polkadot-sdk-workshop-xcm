@@ -44,31 +44,31 @@ const USDT_DECIMALS: u32 = 6;
 // Construct these assets from the perspective of AssetHub (1000).
 parameter_types! {
 	// `Assets` instance that contains no assets.
-	pub EmptyAssets: Assets = vec![].into();
+	pub EmptyAssets: Assets = // TODO
 	// USDT.
-	pub Usdt: AssetId = (PalletInstance(50), GeneralIndex(1984)).into();
+	pub Usdt: AssetId = // TODO
 	// The native token of the relay chain, i.e. DOT.
-	pub DotToken: AssetId = Parent.into();
+	pub DotToken: AssetId = // TODO
 	// 100 USDT.
-	pub OneHundredUsdt: Asset = (Usdt::get(), 100u128 * 10u128.pow(USDT_DECIMALS)).into();
+	pub OneHundredUsdt: Asset = // TODO
 	// Some amount of the native token of the relay chain.
-	pub OneHundredDot: Asset = (DotToken::get(), 100u128 * 10u128.pow(DOT_DECIMALS)).into();
+	pub OneHundredDot: Asset = // TODO
 }
 
 // Non-Fungible Tokens
 parameter_types! {
 	// Location of NFT collection with id 3 inside of the NFT pallet in Polkadot parachain 1000.
-	pub NftLocation: Location = [PalletInstance(52), GeneralIndex(3)].into();
+	pub NftLocation: Location = // TODO
 	// The NFT with id 69 inside of that collection.
-	pub Nft: Asset = (NftLocation::get(), 69u64).into();
+	pub Nft: Asset = // TODO
 }
 
 // Asset Filters
 parameter_types! {
 	// A filter which will capture all possible assets.
-	pub AllAssetsFilter: AssetFilter = AssetFilter::Wild(WildAsset::All);
+	pub AllAssetsFilter: AssetFilter = // TODO
 	// A filter specific for the DOT Token.
-	pub DotFilter: AssetFilter = OneHundredDot::get().into();
+	pub DotFilter: AssetFilter = // TODO
 	// A filter specific for USDT.
-	pub UsdtFilter: AssetFilter = OneHundredUsdt::get().into();
+	pub UsdtFilter: AssetFilter = // TODO
 }
