@@ -4,8 +4,8 @@ use sp_keyring::Sr25519Keyring as Keyring;
 
 // Cumulus
 use emulated_integration_tests_common::{
-	accounts, build_genesis_storage, collators, PenpalASiblingSovereignAccount, PenpalATeleportableAssetLocation,
-	PenpalBSiblingSovereignAccount, PenpalBTeleportableAssetLocation, RESERVABLE_ASSET_ID,
+	accounts, build_genesis_storage, collators,
+	RESERVABLE_ASSET_ID,
 	SAFE_XCM_VERSION, USDT_ID,
 };
 use parachains_common::{AccountId, Balance};
@@ -58,25 +58,6 @@ pub fn genesis() -> Storage {
 			assets: vec![
 				(RESERVABLE_ASSET_ID, AssetHubWestendAssetOwner::get(), false, ED),
 				(USDT_ID, AssetHubWestendAssetOwner::get(), true, USDT_ED),
-			],
-			..Default::default()
-		},
-		foreign_assets: asset_hub_westend_runtime::ForeignAssetsConfig {
-			assets: vec![
-				// PenpalA's teleportable asset representation
-				(
-					PenpalATeleportableAssetLocation::get(),
-					PenpalASiblingSovereignAccount::get(),
-					false,
-					ED,
-				),
-				// PenpalB's teleportable asset representation
-				(
-					PenpalBTeleportableAssetLocation::get(),
-					PenpalBSiblingSovereignAccount::get(),
-					false,
-					ED,
-				),
 			],
 			..Default::default()
 		},

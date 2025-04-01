@@ -75,7 +75,51 @@ mod tests {
 
     #[test]
     fn transfer_swap_and_back() {
-        // TODO
+        let initial_wnd_balance = 10 * WND_UNITS;
+        let initial_para_balance = 100 * PARA_UNITS;
+        let (sender, receiver) = setup(initial_wnd_balance, initial_para_balance);
+        let transfer_amount = 23 * PARA_UNITS;
+        let fees_amount = 10 * PARA_CENTS;
+        CustomPara::execute_with(|| {
+            type CustomBalances = <CustomPara as CustomParaPallet>::Balances;
+            let xcm = Xcm::<<CustomPara as Chain>::RuntimeCall>::builder()
+                .withdraw_asset(vec![
+                    (Here, transfer_amount).into(),
+                ])
+                .pay_fees((Here, fees_amount))
+                .initiate_transfer(
+                    (Parent, Parachain(1000)),
+                    AssetTransferFilter::Teleport(Definite(
+                        (Here, 10 * PARA_CENTS).into()
+                    )),
+                    false,
+                    vec![AssetTransferFilter::Teleport(Wild(AllCounted(1)))],
+                    Xcm::builder_unsafe()
+                        .exchange_asset(
+                            Wild(AllCounted(1)),
+                            (Parent, 10 * WND_UNITS),
+                            true
+                        )
+                        .initiate_transfer(
+                            (Parent, Parachain(2000)),
+                            AssetTransferFilter::ReserveDeposit(Definite(
+                                (Parent, 50 * WND_CENTS).into()
+                            )),
+                            false,
+                            vec![AssetTransferFilter::ReserveDeposit(Wild(AllCounted(1)))],
+                            Xcm::builder_unsafe()
+                                .deposit_asset(AllCounted(1), sender.clone())
+                                .build()
+                        )
+                        .build()
+                )
+                .build();
+            assert_ok!(<CustomPara as CustomParaPallet>::PolkadotXcm::execute(
+                <CustomPara as Chain>::RuntimeOrigin::signed(sender.clone()),
+                Box::new(VersionedXcm::from(xcm)),
+                Weight::MAX,
+            ));
+        });
     }
 
     #[test]
@@ -96,7 +140,10 @@ mod tests {
              Vec::new()
         );
         let sov_account_custom_para_on_ah = AssetHubWestend::sovereign_account_id_of(custom_para_from_ah.clone());
-        AssetHubWestend::fund_accounts(vec![(sov_account_custom_para_on_ah, initial_wnd_balance)]);
+        AssetHubWestend::fund_accounts(vec![
+            (sov_account_custom_para_on_ah, initial_wnd_balance),
+            (AssetHubWestendSender::get(), 1000 * WND_UNITS)
+        ]);
         let sender = CustomParaSender::get();
         let receiver = AssetHubWestendReceiver::get();
         CustomPara::force_create_foreign_asset(
@@ -121,6 +168,32 @@ mod tests {
             sender.clone(),
             initial_wnd_balance
         );
+
+        AssetHubWestend::mint_foreign_asset(
+            <AssetHubWestend as Chain>::RuntimeOrigin::signed(AssetHubWestendSender::get()),
+            custom_para_from_ah.clone(),
+            AssetHubWestendSender::get(),
+            201 * PARA_UNITS,
+        );
+        AssetHubWestend::execute_with(|| {
+            type AssetConversion = <AssetHubWestend as AssetHubWestendPallet>::AssetConversion;
+            type RuntimeOrigin = <AssetHubWestend as Chain>::RuntimeOrigin;
+            assert_ok!(AssetConversion::create_pool(
+                RuntimeOrigin::signed(AssetHubWestendSender::get()),
+                Box::new(Location::parent()),
+                Box::new(custom_para_from_ah.clone())
+            ));
+            assert_ok!(AssetConversion::add_liquidity(
+                RuntimeOrigin::signed(AssetHubWestendSender::get()),
+                Box::new(Location::parent()),
+                Box::new(custom_para_from_ah.clone()),
+                100 * WND_UNITS,
+                200 * PARA_UNITS, // Custom para asset is worth half of WND.
+                0,
+                0,
+                AssetHubWestendSender::get()
+            ));
+        });
 
         (sender, receiver)
     }
