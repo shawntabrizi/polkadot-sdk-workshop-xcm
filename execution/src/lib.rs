@@ -16,6 +16,7 @@ mod tests {
         parachain_runtime::{UNITS as PARA_UNITS, CENTS as PARA_CENTS},
         westend_runtime_constants::currency::{UNITS as WND_UNITS, CENTS as WND_CENTS},
     };
+    use codec::Encode;
     use frame_support::{assert_ok, traits::tokens::{fungible, fungibles}, weights::Weight};
     use xcm::{prelude::*, latest::AssetTransferFilter};
 
@@ -33,7 +34,8 @@ mod tests {
         ];
 
         // Pay asset parameters.
-        let fees_assets: Assets = (Here, 10 * PARA_CENTS).into();
+        let fees_amount = 10 * PARA_CENTS;
+        let fees_assets: Asset = (Here, fees_amount).into();
 
         // Transfer parameters.
         let destination = Location::new(1, [Parachain(1000)]);
@@ -83,7 +85,78 @@ mod tests {
 
     #[test]
     fn transfer_and_transact() {
-        // TODO
+        let initial_wnd_balance = 10 * WND_UNITS;
+        let initial_para_balance = 10 * PARA_UNITS;
+        let (sender, receiver) = setup(initial_wnd_balance, initial_para_balance);
+        let transfer_amount = 1 * PARA_UNITS;
+
+        // Withdraw asset parameters.
+        let assets_to_withdraw = vec![
+            (Here, transfer_amount).into(),
+            (Parent, 10 * WND_UNITS).into()
+        ];
+
+        // Pay asset parameters.
+        let fees_amount = 10 * PARA_CENTS;
+        let fees_assets: Asset = (Here, 10 * PARA_CENTS).into();
+
+        // Transact parameters (remember this is on AssetHubWestend!).
+        let origin_kind = OriginKind::SovereignAccount;
+        let fallback_max_weight = None;
+        let remark = b"Hello, world!".to_vec();
+        let remark_hash = sp_io::hashing::blake2_256(&remark);
+        let call = <AssetHubWestend as Chain>::RuntimeCall::System(
+            frame_system::Call::<<AssetHubWestend as Chain>::Runtime>::remark_with_event {
+                remark,
+            },
+        ).encode();
+
+        // Transfer parameters.
+        let destination = Location::new(1, [Parachain(1000)]);
+        let remote_fees = AssetTransferFilter::ReserveWithdraw(Definite(
+            (Parent, 10 * WND_CENTS).into())
+        );
+        let preserve_origin = true;
+        let transfer_assets = vec![AssetTransferFilter::Teleport(Wild(AllCounted(1)))];
+        let remote_xcm = Xcm::builder_unsafe()
+            .transact(origin_kind, fallback_max_weight, call)
+            .deposit_asset(AllCounted(1), receiver.clone())
+            .build();
+
+        CustomPara::execute_with(|| {
+            type CustomBalances = <CustomPara as CustomParaPallet>::Balances;
+            let xcm = Xcm::<<CustomPara as Chain>::RuntimeCall>::builder()
+                .withdraw_asset(assets_to_withdraw)
+                .pay_fees(fees_assets)
+                .initiate_transfer(
+                    destination,
+                    remote_fees,
+                    preserve_origin,
+                    transfer_assets,
+                    remote_xcm
+                )
+                .build();
+            assert_ok!(<CustomPara as CustomParaPallet>::PolkadotXcm::execute(
+                <CustomPara as Chain>::RuntimeOrigin::signed(sender.clone()),
+                Box::new(VersionedXcm::from(xcm)),
+                Weight::MAX,
+            ));
+
+            assert_eq!(
+                <CustomBalances as fungible::Inspect<_>>::balance(&sender),
+                initial_para_balance - transfer_amount
+            );
+        });
+
+        // We check that the event from the transaction we made is actually emitted.
+        AssetHubWestend::execute_with(|| {
+            let sov_account_of_sender_on_custom_para = AssetHubWestend::sovereign_account_id_of(
+                Location::new(1, [Parachain(2000), AccountId32 { network: None, id: CustomParaSender::get().into() }])
+            );
+            <AssetHubWestend as AssetHubWestendPallet>::System::assert_has_event(
+                frame_system::Event::Remarked { sender: sov_account_of_sender_on_custom_para, hash: remark_hash.into() }.into()
+            );
+        });
     }
 
     #[test]
