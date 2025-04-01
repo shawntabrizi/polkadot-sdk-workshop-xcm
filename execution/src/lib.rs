@@ -83,6 +83,95 @@ mod tests {
         });
     }
 
+
+    #[test]
+    fn transfer_n_times() {
+        // This is the `n`. Has to be odd so we deposit in the destination.
+        let number_of_hops = 3;
+
+        // Initial balances.
+        let initial_wnd_balance = 10 * WND_UNITS;
+        let initial_para_balance = 10 * PARA_UNITS;
+        let (sender, receiver) = setup(initial_wnd_balance, initial_para_balance);
+        let transfer_amount = 1 * PARA_UNITS;
+
+        // `WithdrawAsset` parameters.
+        let assets_to_withdraw: Assets = (Here, transfer_amount).into();
+
+        // `PayFees` parameters.
+        let fees_amount = 10 * PARA_CENTS;
+        let fees_assets: Asset = (Here, fees_amount).into();
+
+        // Transfer parameters.
+        let destination = Location::new(1, [Parachain(1000)]); // Where we want to go.
+        let return_destination = Location::new(1, [Parachain(2000)]); // Where we want to return.
+        // Whether or not we are returning or going.
+        let mut is_returning = false;
+        let remote_fees_amount = 20 * PARA_CENTS;
+        let remote_fees = AssetTransferFilter::Teleport(Definite(
+            (Here, remote_fees_amount).into())
+        );
+        let remote_fees_returning_amount = 10 * PARA_CENTS;
+        let remote_fees_returning = AssetTransferFilter::Teleport(Definite(
+            ((Parent, Parachain(2000)), remote_fees_returning_amount).into()
+        ));
+        let preserve_origin = false;
+        let transfer_assets = vec![AssetTransferFilter::Teleport(Wild(AllCounted(1)))];
+
+        // We recursively go forwards and backwards.
+        // This is our base case.
+        let mut xcm = Xcm::<<CustomPara as Chain>::RuntimeCall>::builder_unsafe()
+            .deposit_asset(AllCounted(1), receiver.clone());
+        for _ in 0..number_of_hops {
+            xcm = Xcm::<<CustomPara as Chain>::RuntimeCall>::builder_unsafe()
+                .initiate_transfer(
+                    if is_returning { return_destination.clone() } else { destination.clone() },
+                    if is_returning { remote_fees_returning.clone() } else { remote_fees.clone() },
+                    preserve_origin,
+                    transfer_assets.clone(),
+                    xcm.build().clone().into()
+                );
+            is_returning = !is_returning;
+        }
+        // We finally build it.
+        let recursive_xcm = xcm.build();
+        let mut xcm = Xcm::builder_unsafe()
+            .withdraw_asset(assets_to_withdraw)
+            .pay_fees(fees_assets)
+            .build();
+        xcm.inner_mut().extend(recursive_xcm.into_iter());
+
+        CustomPara::execute_with(|| {
+            type CustomBalances = <CustomPara as CustomParaPallet>::Balances;
+            assert_ok!(<CustomPara as CustomParaPallet>::PolkadotXcm::execute(
+                <CustomPara as Chain>::RuntimeOrigin::signed(sender.clone()),
+                Box::new(VersionedXcm::from(xcm)),
+                Weight::MAX,
+            ));
+
+            assert_eq!(
+                <CustomBalances as fungible::Inspect<_>>::balance(&sender),
+                initial_para_balance - transfer_amount
+            );
+        });
+
+        AssetHubWestend::execute_with(|| {});
+        CustomPara::execute_with(|| {});
+        AssetHubWestend::execute_with(|| {});
+        CustomPara::execute_with(|| {});
+        AssetHubWestend::execute_with(|| {
+            type ForeignAssets = <AssetHubWestend as AssetHubWestendPallet>::ForeignAssets;
+            let balance = <ForeignAssets as fungibles::Inspect<_>>::balance(
+                Location::new(1, [Parachain(CustomPara::para_id().into())]),
+                &receiver
+            );
+            assert_eq!(
+                balance,
+                transfer_amount - fees_amount - 2 * remote_fees_amount - remote_fees_returning_amount
+            );
+        });
+    }
+
     #[test]
     fn transfer_and_transact() {
         let initial_wnd_balance = 10 * WND_UNITS;
@@ -206,11 +295,6 @@ mod tests {
                 Weight::MAX,
             ));
         });
-    }
-
-    #[test]
-    fn transfer_n_times() {
-        // TODO
     }
 
     fn setup(
