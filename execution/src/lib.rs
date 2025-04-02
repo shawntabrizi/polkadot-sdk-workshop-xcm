@@ -249,6 +249,56 @@ mod tests {
     }
 
     #[test]
+    fn transfer_and_swap() {
+        let initial_wnd_balance = 10 * WND_UNITS;
+        let initial_para_balance = 100 * PARA_UNITS;
+        let (sender, _) = setup(initial_wnd_balance, initial_para_balance);
+        let transfer_amount = 23 * PARA_UNITS;
+        let fees_amount = 10 * PARA_CENTS;
+        let initial_wnd_on_ah = AssetHubWestend::execute_with(|| {
+            // We check if we have more WND.
+            type Balances = <CustomPara as CustomParaPallet>::Balances;
+            let balance = <Balances as fungible::Inspect<_>>::balance(&sender);
+            balance
+        });
+        CustomPara::execute_with(|| {
+            let xcm = Xcm::<<CustomPara as Chain>::RuntimeCall>::builder()
+                .withdraw_asset(vec![
+                    (Here, transfer_amount).into(),
+                ])
+                .pay_fees((Here, fees_amount))
+                .initiate_transfer(
+                    (Parent, Parachain(1000)),
+                    AssetTransferFilter::Teleport(Definite(
+                        (Here, 20 * PARA_CENTS).into()
+                    )),
+                    false,
+                    vec![AssetTransferFilter::Teleport(Wild(AllCounted(1)))],
+                    Xcm::builder_unsafe()
+                        .exchange_asset(
+                            Wild(AllCounted(1)),
+                            (Parent, 10 * WND_UNITS),
+                            true // Maximal.
+                        )
+                        .deposit_asset(AllCounted(1), sender.clone())
+                        .build()
+                )
+                .build();
+            assert_ok!(<CustomPara as CustomParaPallet>::PolkadotXcm::execute(
+                <CustomPara as Chain>::RuntimeOrigin::signed(sender.clone()),
+                Box::new(VersionedXcm::from(xcm)),
+                Weight::MAX,
+            ));
+        });
+        AssetHubWestend::execute_with(|| {
+            // We check if we have more WND.
+            type Balances = <CustomPara as CustomParaPallet>::Balances;
+            let balance = <Balances as fungible::Inspect<_>>::balance(&sender);
+            assert!(balance > initial_wnd_on_ah);
+        });
+    }
+
+    #[test]
     fn transfer_swap_and_back() {
         let initial_wnd_balance = 10 * WND_UNITS;
         let initial_para_balance = 100 * PARA_UNITS;
