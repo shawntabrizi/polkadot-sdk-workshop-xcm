@@ -4,9 +4,7 @@ use sp_keyring::Sr25519Keyring as Keyring;
 
 // Cumulus
 use emulated_integration_tests_common::{
-	accounts, build_genesis_storage, collators,
-	RESERVABLE_ASSET_ID,
-	SAFE_XCM_VERSION, USDT_ID,
+	accounts, build_genesis_storage, collators, RESERVABLE_ASSET_ID, SAFE_XCM_VERSION, USDT_ID,
 };
 use parachains_common::{AccountId, Balance};
 use xcm::{latest::prelude::*, opaque::latest::WESTEND_GENESIS_HASH};

@@ -1,8 +1,7 @@
 mod genesis;
 
 use emulated_integration_tests_common::{
-	impl_foreign_assets_helpers_for_parachain,
-	impl_accounts_helpers_for_parachain,
+	impl_accounts_helpers_for_parachain, impl_foreign_assets_helpers_for_parachain,
 };
 use frame_support::traits::OnInitialize;
 use xcm_emulator::{decl_test_parachains, Parachain};
