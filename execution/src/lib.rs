@@ -39,10 +39,10 @@ mod tests {
 		// Parameters of the `WithdrawAsset` instruction.
 		// These assets will be taken from the sender account and put into
 		// the holding register.
-		let assets_to_withdraw = vec![
+		let assets_to_withdraw: Assets = vec![
 			(Here, transfer_amount).into(),  // The assets we want to transfer.
 			(Parent, 10 * WND_CENTS).into(), // We use for remote fees.
-		];
+		].into();
 
 		// Parameters of the `PayFees` instruction.
 		// These assets will be taken from the holding register, local execution
@@ -68,10 +68,10 @@ mod tests {
 		let transfer_assets = vec![AssetTransferFilter::Teleport(Wild(AllCounted(1)))];
 		// The XCM meant to execute on the destination, so on the asset hub.
 		let remote_xcm =
-			Xcm::builder_unsafe().deposit_asset(AllCounted(1), receiver.clone()).build();
+			Xcm::<()>::builder_unsafe().deposit_asset(AllCounted(1), receiver.clone()).build();
 
 		// We assemble everything into the XCM we'll execute locally.
-		let xcm = Xcm::<<CustomPara as Chain>::RuntimeCall>::builder()
+		let xcm = Xcm::<<CustomPara as Chain>::RuntimeCall>::builder_unsafe()
 			// TODO: Add instructions.
 			.build();
 
@@ -231,8 +231,8 @@ mod tests {
 		let transfer_amount = 1 * PARA_UNITS;
 
 		// `WithdrawAsset` parameters.
-		let assets_to_withdraw =
-			vec![(Here, transfer_amount).into(), (Parent, 10 * WND_UNITS).into()];
+		let assets_to_withdraw: Assets =
+			vec![(Here, transfer_amount).into(), (Parent, 10 * WND_UNITS).into()].into();
 
 		// `PayFees` parameters.
 		let fees_amount = 10 * PARA_CENTS;
@@ -266,13 +266,13 @@ mod tests {
 		// to execute the call.
 		let preserve_origin = true;
 		let transfer_assets = vec![AssetTransferFilter::Teleport(Wild(AllCounted(1)))];
-		let remote_xcm = Xcm::builder_unsafe()
+		let remote_xcm = Xcm::<()>::builder_unsafe()
 			.transact(origin_kind, fallback_max_weight, call)
 			.deposit_asset(AllCounted(1), receiver.clone())
 			.build();
 
 		// We assemble the XCM with all the previous values.
-		let xcm = Xcm::<<CustomPara as Chain>::RuntimeCall>::builder()
+		let xcm = Xcm::<<CustomPara as Chain>::RuntimeCall>::builder_unsafe()
 			// TODO: Add instructions.
 			.build();
 
@@ -334,7 +334,7 @@ mod tests {
 			Some(AssetTransferFilter::Teleport(Definite((Here, 20 * PARA_CENTS).into())));
 		let preserve_origin = false;
 		let assets_to_transfer = vec![AssetTransferFilter::Teleport(Wild(AllCounted(1)))];
-		let remote_xcm = Xcm::builder_unsafe()
+		let remote_xcm = Xcm::<()>::builder_unsafe()
 			.exchange_asset(
 				Wild(AllCounted(1)),
 				(Parent, 10 * WND_UNITS),
@@ -343,7 +343,7 @@ mod tests {
 			.deposit_asset(AllCounted(1), sender.clone())
 			.build();
 
-		let xcm = Xcm::<<CustomPara as Chain>::RuntimeCall>::builder()
+		let xcm = Xcm::<<CustomPara as Chain>::RuntimeCall>::builder_unsafe()
 			// TODO: Add instructions.
 			.build();
 
@@ -378,7 +378,7 @@ mod tests {
 		let (sender, _) = setup(initial_wnd_balance, initial_para_balance);
 		let transfer_amount = 23 * PARA_UNITS;
 		let fees_amount = 10 * PARA_CENTS;
-		let xcm = Xcm::<<CustomPara as Chain>::RuntimeCall>::builder()
+		let xcm = Xcm::<<CustomPara as Chain>::RuntimeCall>::builder_unsafe()
 			// TODO: Add instructions.
 			.build();
 
