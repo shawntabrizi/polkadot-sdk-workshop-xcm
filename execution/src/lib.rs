@@ -1,4 +1,5 @@
 //! Exercises for crafting and executing XCMs.
+#![allow(unused_variables)]
 
 #[cfg(test)]
 mod tests {
