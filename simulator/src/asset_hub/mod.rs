@@ -112,8 +112,8 @@ impl EnsureOriginWithArg<RuntimeOrigin, Location> for ForeignCreators {
 
 #[derive_impl(pallet_assets::config_preludes::TestDefaultConfig)]
 impl pallet_assets::Config<pallet_assets::Instance2> for Runtime {
-	type AssetId = xcm::v4::Location;
-	type AssetIdParameter = xcm::v4::Location;
+	type AssetId = xcm::v5::Location;
+	type AssetIdParameter = xcm::v5::Location;
 	type Currency = Balances;
 	type Balance = Balance;
 	type CreateOrigin = ForeignCreators;

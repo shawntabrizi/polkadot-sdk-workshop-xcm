@@ -2,5 +2,8 @@
 resolver = "2"
 members = [
   "fundamentals",
+  "execution",
   "simulator",
+  "emulator",
+  "parachain",
 ]

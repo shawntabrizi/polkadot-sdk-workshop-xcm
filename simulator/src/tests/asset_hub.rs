@@ -54,9 +54,9 @@ fn reserve_asset_transfer_works() {
 		let assets: Assets = (Here, 50u128 * CENTS).into();
 		assert_ok!(parachain::PolkadotXcm::transfer_assets(
 			parachain::RuntimeOrigin::signed(CHARLIE),
-			Box::new(VersionedLocation::V4(destination.clone())),
-			Box::new(VersionedLocation::V4(beneficiary)),
-			Box::new(VersionedAssets::V4(assets)),
+			Box::new(VersionedLocation::from(destination.clone())),
+			Box::new(VersionedLocation::from(beneficiary)),
+			Box::new(VersionedAssets::from(assets)),
 			0,
 			WeightLimit::Unlimited,
 		));
@@ -84,9 +84,9 @@ fn reserve_asset_transfer_works() {
 		let assets: Assets = ((Parent, Parachain(3)), 25u128 * CENTS).into();
 		assert_ok!(asset_hub::PolkadotXcm::transfer_assets(
 			asset_hub::RuntimeOrigin::signed(ALICE),
-			Box::new(VersionedLocation::V4(destination)),
-			Box::new(VersionedLocation::V4(beneficiary)),
-			Box::new(VersionedAssets::V4(assets)),
+			Box::new(VersionedLocation::from(destination)),
+			Box::new(VersionedLocation::from(beneficiary)),
+			Box::new(VersionedAssets::from(assets)),
 			0,
 			WeightLimit::Unlimited,
 		));
