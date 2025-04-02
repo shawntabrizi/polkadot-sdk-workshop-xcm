@@ -12,7 +12,12 @@ mod sandbox {
 	pub type TrustedReserves = NativeAsset;
 }
 
-#[cfg(any(feature = "other-parachain-tokens", feature = "register-assets", feature = "asset-hub", feature = "barrier"))]
+#[cfg(any(
+	feature = "other-parachain-tokens",
+	feature = "register-assets",
+	feature = "asset-hub",
+	feature = "barrier"
+))]
 mod sandbox {
 	use core::marker::PhantomData;
 	use frame_support::{parameter_types, traits::ContainsPair};
