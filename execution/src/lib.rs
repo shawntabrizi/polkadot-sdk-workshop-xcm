@@ -187,7 +187,7 @@ mod tests {
 
         // Pay asset parameters.
         let fees_amount = 10 * PARA_CENTS;
-        let fees_assets: Asset = (Here, 10 * PARA_CENTS).into();
+        let fees_assets: Asset = (Here, fees_amount).into();
 
         // Transact parameters (remember this is on AssetHubWestend!).
         let origin_kind = OriginKind::SovereignAccount;
@@ -252,11 +252,10 @@ mod tests {
     fn transfer_swap_and_back() {
         let initial_wnd_balance = 10 * WND_UNITS;
         let initial_para_balance = 100 * PARA_UNITS;
-        let (sender, receiver) = setup(initial_wnd_balance, initial_para_balance);
+        let (sender, _) = setup(initial_wnd_balance, initial_para_balance);
         let transfer_amount = 23 * PARA_UNITS;
         let fees_amount = 10 * PARA_CENTS;
         CustomPara::execute_with(|| {
-            type CustomBalances = <CustomPara as CustomParaPallet>::Balances;
             let xcm = Xcm::<<CustomPara as Chain>::RuntimeCall>::builder()
                 .withdraw_asset(vec![
                     (Here, transfer_amount).into(),
@@ -265,7 +264,7 @@ mod tests {
                 .initiate_transfer(
                     (Parent, Parachain(1000)),
                     AssetTransferFilter::Teleport(Definite(
-                        (Here, 10 * PARA_CENTS).into()
+                        (Here, 20 * PARA_CENTS).into()
                     )),
                     false,
                     vec![AssetTransferFilter::Teleport(Wild(AllCounted(1)))],
@@ -273,7 +272,7 @@ mod tests {
                         .exchange_asset(
                             Wild(AllCounted(1)),
                             (Parent, 10 * WND_UNITS),
-                            true
+                            true // Maximal.
                         )
                         .initiate_transfer(
                             (Parent, Parachain(2000)),
@@ -294,6 +293,14 @@ mod tests {
                 Box::new(VersionedXcm::from(xcm)),
                 Weight::MAX,
             ));
+        });
+        // We let the message in `AssetHubWestend` process.
+        AssetHubWestend::execute_with(|| {});
+        CustomPara::execute_with(|| {
+            // We check if we got the WND back.
+            type ForeignAssets = <CustomPara as CustomParaPallet>::ForeignAssets;
+            let balance = <ForeignAssets as fungibles::Inspect<_>>::balance(Location::parent(), &sender);
+            assert!(balance > initial_wnd_balance);
         });
     }
 
