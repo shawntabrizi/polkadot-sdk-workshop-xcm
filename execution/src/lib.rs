@@ -20,36 +20,60 @@ mod tests {
     use frame_support::{assert_ok, traits::tokens::{fungible, fungibles}, weights::Weight};
     use xcm::{prelude::*, latest::AssetTransferFilter};
 
+    // Scenario:
+    // A sender on our `CustomPara` wants to send 1 unit of its native parachain token to
+    // the asset hub.
     #[test]
     fn cross_chain_transfer() {
+        // We setup the initial balances of the sender on `CustomPara`.
         let initial_wnd_balance = 10 * WND_UNITS;
         let initial_para_balance = 10 * PARA_UNITS;
         let (sender, receiver) = setup(initial_wnd_balance, initial_para_balance);
+        // The amount that wants to be cross-chain transferred to `AssetHubWestend`.
         let transfer_amount = 1 * PARA_UNITS;
 
-        // Withdraw asset parameters.
+        // Parameters of the `WithdrawAsset` instruction.
+        // These assets will be taken from the sender account and put into
+        // the holding register.
         let assets_to_withdraw = vec![
-            (Here, transfer_amount).into(),
-            (Parent, 10 * WND_UNITS).into()
+            (Here, transfer_amount).into(), // The assets we want to transfer.
+            (Parent, 10 * WND_CENTS).into() // We use for remote fees.
         ];
 
-        // Pay asset parameters.
+        // Parameters of the `PayFees` instruction.
+        // These assets will be taken from the holding register, local execution
+        // will be paid for with them and the rest will go to the fees register.
         let fees_amount = 10 * PARA_CENTS;
         let fees_assets: Asset = (Here, fees_amount).into();
 
-        // Transfer parameters.
+        // Parameters of the `InitiateTransfer` instruction.
+        // The location of the asset hub.
         let destination = Location::new(1, [Parachain(1000)]);
+        // We'll pay fees on the asset hub with its native token: WND.
+        // In order to transfer it, we use a reserve asset transfer, since
+        // the asset hub is a reserve for it.
         let remote_fees = AssetTransferFilter::ReserveWithdraw(Definite(
             (Parent, 10 * WND_CENTS).into())
         );
+        // We don't need to preserve the origin for doing just a regular transfer.
         let preserve_origin = false;
+        // We want to transfer all the assets we withdrew.
+        // This transfer is a teleport since assets registered on asset hub can be
+        // teleported back and forth.
+        // Remember, we trust asset hub since it's part of the system, and we already
+        // trust the system.
         let transfer_assets = vec![AssetTransferFilter::Teleport(Wild(AllCounted(1)))];
+        // The XCM meant to execute on the destination, so on the asset hub.
         let remote_xcm = Xcm::builder_unsafe()
             .deposit_asset(AllCounted(1), receiver.clone())
             .build();
 
+        // This lets us execute calls on `CustomPara`.
+        // It's the main feature provided by the XCM emulator.
         CustomPara::execute_with(|| {
+            // We can use our runtime's pallets like this.
             type CustomBalances = <CustomPara as CustomParaPallet>::Balances;
+            // We assemble everything into the XCM we'll execute locally.
             let xcm = Xcm::<<CustomPara as Chain>::RuntimeCall>::builder()
                 .withdraw_asset(assets_to_withdraw)
                 .pay_fees(fees_assets)
@@ -61,35 +85,42 @@ mod tests {
                     remote_xcm
                 )
                 .build();
+            // We execute it via the use of the xcm pallet.
             assert_ok!(<CustomPara as CustomParaPallet>::PolkadotXcm::execute(
                 <CustomPara as Chain>::RuntimeOrigin::signed(sender.clone()),
                 Box::new(VersionedXcm::from(xcm)),
                 Weight::MAX,
             ));
 
+            // We check that `transfer_amount` actually left the sender's account.
             assert_eq!(
                 <CustomBalances as fungible::Inspect<_>>::balance(&sender),
                 initial_para_balance - transfer_amount
             );
         });
 
+        // We look at the other chain...
         AssetHubWestend::execute_with(|| {
             type ForeignAssets = <AssetHubWestend as AssetHubWestendPallet>::ForeignAssets;
             let balance = <ForeignAssets as fungibles::Inspect<_>>::balance(
                 Location::new(1, [Parachain(CustomPara::para_id().into())]),
                 &receiver
             );
+            // ...to check that the receiver got `transfer_amount - fees_amount`.
             assert_eq!(balance, transfer_amount - fees_amount);
         });
     }
 
-
+    // Now that we know how to make a cross-chain transfer. We'll see that we can nest them.
+    // This is a toy example but it shows how you can nest XCMs and how you can manipulate the builder
+    // to craft these XCMs.
     #[test]
     fn transfer_n_times() {
         // This is the `n`. Has to be odd so we deposit in the destination.
+        // You can try and see what happens when you change it.
         let number_of_hops = 3;
 
-        // Initial balances.
+        // Initial setup.
         let initial_wnd_balance = 10 * WND_UNITS;
         let initial_para_balance = 10 * PARA_UNITS;
         let (sender, receiver) = setup(initial_wnd_balance, initial_para_balance);
@@ -102,19 +133,28 @@ mod tests {
         let fees_amount = 10 * PARA_CENTS;
         let fees_assets: Asset = (Here, fees_amount).into();
 
-        // Transfer parameters.
+        // `InitiateTransfer` parameters.
         let destination = Location::new(1, [Parachain(1000)]); // Where we want to go.
         let return_destination = Location::new(1, [Parachain(2000)]); // Where we want to return.
-        // Whether or not we are returning or going.
+        // We'll be using this toggle in our loop to know whether we are going
+        // to the asset hub or returning to our custom parachain.
         let mut is_returning = false;
+        // This time we use `PARA` for the remote fees, instead of `WND`.
+        // This is because the asset hub supports paying fees in any asset you can
+        // exchange for `WND`.
+        // We've setup a pool between `PARA` and `WND` and added liquidity to it in the `setup`
+        // helper function.
+        // You can refer to it for more details.
         let remote_fees_amount = 20 * PARA_CENTS;
         let remote_fees = AssetTransferFilter::Teleport(Definite(
             (Here, remote_fees_amount).into())
         );
+        // We'll also use `PARA` for the returning fees.
         let remote_fees_returning_amount = 10 * PARA_CENTS;
         let remote_fees_returning = AssetTransferFilter::Teleport(Definite(
             ((Parent, Parachain(2000)), remote_fees_returning_amount).into()
         ));
+        // No need to preserve the origin.
         let preserve_origin = false;
         let transfer_assets = vec![AssetTransferFilter::Teleport(Wild(AllCounted(1)))];
 
@@ -122,6 +162,7 @@ mod tests {
         // This is our base case.
         let mut xcm = Xcm::<<CustomPara as Chain>::RuntimeCall>::builder_unsafe()
             .deposit_asset(AllCounted(1), receiver.clone());
+        // Then we loop and assemble our XCM.
         for _ in 0..number_of_hops {
             xcm = Xcm::<<CustomPara as Chain>::RuntimeCall>::builder_unsafe()
                 .initiate_transfer(
@@ -141,24 +182,32 @@ mod tests {
             .build();
         xcm.inner_mut().extend(recursive_xcm.into_iter());
 
+        // We check that the `transfer_amount` was transferred out of the sender's
+        // account.
         CustomPara::execute_with(|| {
-            type CustomBalances = <CustomPara as CustomParaPallet>::Balances;
             assert_ok!(<CustomPara as CustomParaPallet>::PolkadotXcm::execute(
                 <CustomPara as Chain>::RuntimeOrigin::signed(sender.clone()),
                 Box::new(VersionedXcm::from(xcm)),
                 Weight::MAX,
             ));
 
+            type Balances = <CustomPara as CustomParaPallet>::Balances;
             assert_eq!(
-                <CustomBalances as fungible::Inspect<_>>::balance(&sender),
+                <Balances as fungible::Inspect<_>>::balance(&sender),
                 initial_para_balance - transfer_amount
             );
         });
 
+        // We need to do this to let the message in `AssetHubWestend` be processed
+        // and the new one forwarded back to `CustomPara`.
         AssetHubWestend::execute_with(|| {});
+        // We poke the process for every message.
         CustomPara::execute_with(|| {});
         AssetHubWestend::execute_with(|| {});
         CustomPara::execute_with(|| {});
+        // Until we reach the final destination.
+        // Here, we check that the account on asset hub receives the funds minus fees from
+        // all the hops.
         AssetHubWestend::execute_with(|| {
             type ForeignAssets = <AssetHubWestend as AssetHubWestendPallet>::ForeignAssets;
             let balance = <ForeignAssets as fungibles::Inspect<_>>::balance(
@@ -172,6 +221,11 @@ mod tests {
         });
     }
 
+    // Scenario:
+    // An account on `CustomPara` wants to execute a call on `AssetHubWestend`.
+    // For this use case, we have the `Transact` instruction.
+    // It's an escape hatch that lets you do anything you need to do with XCM,
+    // since you drop down into the FRAME subsystem.
     #[test]
     fn transfer_and_transact() {
         let initial_wnd_balance = 10 * WND_UNITS;
@@ -179,19 +233,26 @@ mod tests {
         let (sender, receiver) = setup(initial_wnd_balance, initial_para_balance);
         let transfer_amount = 1 * PARA_UNITS;
 
-        // Withdraw asset parameters.
+        // `WithdrawAsset` parameters.
         let assets_to_withdraw = vec![
             (Here, transfer_amount).into(),
             (Parent, 10 * WND_UNITS).into()
         ];
 
-        // Pay asset parameters.
+        // `PayFees` parameters.
         let fees_amount = 10 * PARA_CENTS;
         let fees_assets: Asset = (Here, fees_amount).into();
 
-        // Transact parameters (remember this is on AssetHubWestend!).
+        // `Transact` parameters (remember this is on AssetHubWestend!).
+        // How to convert the location into a FRAME origin.
+        // In this case, we want a two step process where we:
+        // - Convert the location into an account (the sovereign account)
+        // - Convert that account into a FRAME Signed origin.
         let origin_kind = OriginKind::SovereignAccount;
+        // An optional value we only need when we want backwards compatibility
+        // with versions older than 5.
         let fallback_max_weight = None;
+        // We want to execute the `remark_with_event` call on the asset hub.
         let remark = b"Hello, world!".to_vec();
         let remark_hash = sp_io::hashing::blake2_256(&remark);
         let call = <AssetHubWestend as Chain>::RuntimeCall::System(
@@ -200,11 +261,14 @@ mod tests {
             },
         ).encode();
 
-        // Transfer parameters.
+        // `InitiateTransfer` parameters.
         let destination = Location::new(1, [Parachain(1000)]);
         let remote_fees = AssetTransferFilter::ReserveWithdraw(Definite(
             (Parent, 10 * WND_CENTS).into())
         );
+        // This time we NEED to preserve the origin.
+        // If not, the Transact won't know how to get a FRAME origin
+        // to execute the call.
         let preserve_origin = true;
         let transfer_assets = vec![AssetTransferFilter::Teleport(Wild(AllCounted(1)))];
         let remote_xcm = Xcm::builder_unsafe()
@@ -212,27 +276,31 @@ mod tests {
             .deposit_asset(AllCounted(1), receiver.clone())
             .build();
 
+        // We assemble the XCM with all the previous values.
+        let xcm = Xcm::<<CustomPara as Chain>::RuntimeCall>::builder()
+            .withdraw_asset(assets_to_withdraw)
+            .pay_fees(fees_assets)
+            .initiate_transfer(
+                destination,
+                remote_fees,
+                preserve_origin,
+                transfer_assets,
+                remote_xcm
+            )
+            .build();
+
+        // We execute the XCM and assert that the `transfer_amount` is taken
+        // out of the senders account.
         CustomPara::execute_with(|| {
-            type CustomBalances = <CustomPara as CustomParaPallet>::Balances;
-            let xcm = Xcm::<<CustomPara as Chain>::RuntimeCall>::builder()
-                .withdraw_asset(assets_to_withdraw)
-                .pay_fees(fees_assets)
-                .initiate_transfer(
-                    destination,
-                    remote_fees,
-                    preserve_origin,
-                    transfer_assets,
-                    remote_xcm
-                )
-                .build();
             assert_ok!(<CustomPara as CustomParaPallet>::PolkadotXcm::execute(
                 <CustomPara as Chain>::RuntimeOrigin::signed(sender.clone()),
                 Box::new(VersionedXcm::from(xcm)),
                 Weight::MAX,
             ));
 
+            type Balances = <CustomPara as CustomParaPallet>::Balances;
             assert_eq!(
-                <CustomBalances as fungible::Inspect<_>>::balance(&sender),
+                <Balances as fungible::Inspect<_>>::balance(&sender),
                 initial_para_balance - transfer_amount
             );
         });
@@ -248,6 +316,11 @@ mod tests {
         });
     }
 
+    // Scenario:
+    // An account on our custom parachain wants to exchange some assets but
+    // can't do that locally.
+    // We can use the `ExchangeAsset` instruction to swap between two assets.
+    // Keep in mind this only works if the underlying chain implements this operation.
     #[test]
     fn transfer_and_swap() {
         let initial_wnd_balance = 10 * WND_UNITS;
@@ -255,8 +328,8 @@ mod tests {
         let (sender, _) = setup(initial_wnd_balance, initial_para_balance);
         let transfer_amount = 23 * PARA_UNITS;
         let fees_amount = 10 * PARA_CENTS;
+        // We get the initial WND amount so we can compare it later.
         let initial_wnd_on_ah = AssetHubWestend::execute_with(|| {
-            // We check if we have more WND.
             type Balances = <CustomPara as CustomParaPallet>::Balances;
             let balance = <Balances as fungible::Inspect<_>>::balance(&sender);
             balance
@@ -298,6 +371,9 @@ mod tests {
         });
     }
 
+    // Scenario:
+    // Now, the account on `CustomPara` wants to send some assets to the asset hub
+    // to swap them, but then wants to get them back **in the same message**.
     #[test]
     fn transfer_swap_and_back() {
         let initial_wnd_balance = 10 * WND_UNITS;
@@ -319,11 +395,13 @@ mod tests {
                     false,
                     vec![AssetTransferFilter::Teleport(Wild(AllCounted(1)))],
                     Xcm::builder_unsafe()
+                        // After the exchange...
                         .exchange_asset(
                             Wild(AllCounted(1)),
                             (Parent, 10 * WND_UNITS),
                             true // Maximal.
                         )
+                        // ..we just send all the assets back...
                         .initiate_transfer(
                             (Parent, Parachain(2000)),
                             AssetTransferFilter::ReserveDeposit(Definite(
@@ -332,6 +410,7 @@ mod tests {
                             false,
                             vec![AssetTransferFilter::ReserveDeposit(Wild(AllCounted(1)))],
                             Xcm::builder_unsafe()
+                                // ...and deposit them.
                                 .deposit_asset(AllCounted(1), sender.clone())
                                 .build()
                         )
@@ -354,10 +433,15 @@ mod tests {
         });
     }
 
+    // A helper function for setting up initial balances and liquidity pools.
     fn setup(
         initial_wnd_balance: u128,
         initial_para_balance: u128,
     ) -> (AccountId, AccountId) {
+        // We are going to be making transfers between `CustomPara` and `AssetHubWestend`,
+        // of both `PARA` and `WND`, the native tokens of each chain respectively.
+        // In order to do this with `PARA`, we need to register the token in the asset hub.
+        // We do this using its xcm location.
         let custom_para_from_ah = AssetHubWestend::sibling_location_of(CustomPara::para_id());
         AssetHubWestend::force_create_foreign_asset(
              custom_para_from_ah.clone(),
@@ -366,13 +450,16 @@ mod tests {
              1,
              Vec::new()
         );
+        // We then need to fund its sovereign account, so `WND` can be reserve transferred
+        // into the parachain.
         let sov_account_custom_para_on_ah = AssetHubWestend::sovereign_account_id_of(custom_para_from_ah.clone());
         AssetHubWestend::fund_accounts(vec![
             (sov_account_custom_para_on_ah, initial_wnd_balance),
-            (AssetHubWestendSender::get(), 1000 * WND_UNITS)
+            (AssetHubWestendSender::get(), 1000 * WND_UNITS) // This is balance for later adding liquidity to the pools.
         ]);
         let sender = CustomParaSender::get();
         let receiver = AssetHubWestendReceiver::get();
+        // We also register `WND` on the parachain.
         CustomPara::force_create_foreign_asset(
             Location::parent(),
             CustomParaSender::get(),
@@ -381,27 +468,29 @@ mod tests {
             Vec::new()
         );
 
+        // We mint the initial `PARA` balance passed in to the sender.
         CustomPara::execute_with(|| {
-            type CustomBalances = <CustomPara as CustomParaPallet>::Balances;
-            assert_ok!(<CustomBalances as fungible::Mutate<_>>::mint_into(
+            type Balances = <CustomPara as CustomParaPallet>::Balances;
+            assert_ok!(<Balances as fungible::Mutate<_>>::mint_into(
                 &sender,
                 initial_para_balance,
             ));
         });
-
+        // We mint the initial `WND` balance passed in to the sender.
         CustomPara::mint_foreign_asset(
             <CustomPara as Chain>::RuntimeOrigin::signed(sender.clone()),
             Location::parent(),
             sender.clone(),
             initial_wnd_balance
         );
-
+        // We mint some initial `PARA` balance to an asset hub account.
         AssetHubWestend::mint_foreign_asset(
             <AssetHubWestend as Chain>::RuntimeOrigin::signed(AssetHubWestendSender::get()),
             custom_para_from_ah.clone(),
             AssetHubWestendSender::get(),
             201 * PARA_UNITS,
         );
+        // We create the pool between `WND` and `PARA` and add liquidity to it.
         AssetHubWestend::execute_with(|| {
             type AssetConversion = <AssetHubWestend as AssetHubWestendPallet>::AssetConversion;
             type RuntimeOrigin = <AssetHubWestend as Chain>::RuntimeOrigin;
