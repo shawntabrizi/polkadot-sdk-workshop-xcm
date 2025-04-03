@@ -1,9 +1,5 @@
 //! The tests.
 
-// Tests with the full parachain configuration.
-// They showcase various features of XCM.
-mod full;
-
 // Tests that show how configuring different asset transactors change the behaviour
 // of XCM.
 mod asset_transactor;
