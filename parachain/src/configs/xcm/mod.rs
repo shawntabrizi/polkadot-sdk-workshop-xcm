@@ -1,30 +1,32 @@
+// We split the XCM config between multiple files for convenience.
+mod asset_transactor;
+mod barrier;
+mod reserves_and_teleports;
+
 use crate::{
-	AccountId, AllPalletsWithSystem, Balance, Balances, ForeignAssets, ParachainInfo,
+	AccountId, AllPalletsWithSystem, Balances, ParachainInfo,
 	ParachainSystem, PolkadotXcm, Runtime, RuntimeCall, RuntimeEvent, RuntimeOrigin, WeightToFee,
 	XcmpQueue,
 };
-use core::marker::PhantomData;
 use frame_support::{
 	parameter_types,
-	traits::{ConstU32, Contains, ContainsPair, Everything, EverythingBut, Nothing},
+	traits::{ConstU32, Contains, Everything, Nothing},
 	weights::Weight,
 };
 use frame_system::EnsureRoot;
 use pallet_xcm::XcmPassthrough;
 use parachains_common::TREASURY_PALLET_ID;
 use polkadot_runtime_common::impls::ToAuthor;
-use sp_runtime::traits::{AccountIdConversion, Get};
+use sp_runtime::traits::AccountIdConversion;
 use xcm::latest::prelude::*;
 use xcm_builder::{
-	AccountId32Aliases, AllowExplicitUnpaidExecutionFrom, AllowTopLevelPaidExecutionFrom,
-	DenyReserveTransferToRelayChain, DenyThenTry, DescribeAllTerminal, DescribeFamily,
-	EnsureXcmOrigin, FixedWeightBounds, FrameTransactionalProcessor, FungibleAdapter,
-	FungiblesAdapter, HashedDescription, IsConcrete, MatchedConvertedConcreteId, NativeAsset,
-	NoChecking, RelayChainAsNative, SiblingParachainAsNative, SignedAccountId32AsNative,
-	SignedToAccountId32, SovereignSignedViaLocation, StartsWith, TakeWeightCredit,
-	TrailingSetTopicAsId, UsingComponents, WithComputedOrigin, WithUniqueTopic,
+	AccountId32Aliases, DescribeAllTerminal, DescribeFamily,
+	EnsureXcmOrigin, FixedWeightBounds, FrameTransactionalProcessor, HashedDescription,
+	RelayChainAsNative, SiblingParachainAsNative, SignedAccountId32AsNative,
+	SignedToAccountId32, SovereignSignedViaLocation,
+	UsingComponents, WithUniqueTopic,
 };
-use xcm_executor::{traits::JustTry, XcmExecutor};
+use xcm_executor::XcmExecutor;
 
 pub const ASSET_HUB_ID: u32 = 1000;
 
@@ -33,7 +35,6 @@ parameter_types! {
 	pub const HereLocation: Location = Location::here();
 	pub const RelayNetwork: Option<NetworkId> = None;
 	pub const TokenLocation: Location = Location::here();
-	pub AssetHubLocation: Location = Location::new(1, [Parachain(ASSET_HUB_ID)]);
 	pub CheckingAccount: AccountId = PolkadotXcm::check_account();
 	pub RelayChainOrigin: RuntimeOrigin = cumulus_pallet_xcm::Origin::Relay.into();
 	// For the real deployment, it is recommended to set `RelayNetwork` according to the relay chain
@@ -51,44 +52,6 @@ pub type LocationToAccountId = (
 	// Straight up local `AccountId32` origins just alias directly to `AccountId`.
 	AccountId32Aliases<RelayNetwork, AccountId>,
 );
-
-/// Means for transacting assets on this chain.
-pub type LocalFungibleTransactor = FungibleAdapter<
-	// Use this currency:
-	Balances,
-	// Use this currency when it is a fungible asset matching the given location or name:
-	IsConcrete<HereLocation>,
-	// Do a simple punn to convert an AccountId32 Location into a native chain account ID:
-	LocationToAccountId,
-	// Our chain's account ID type (we can't get away without mentioning it explicitly):
-	AccountId,
-	// We don't track any teleports.
-	(),
->;
-
-pub type ForeignFungiblesTransactor = FungiblesAdapter<
-	// Use this fungibles impl.
-	ForeignAssets,
-	// Match all locations except `Here`.
-	MatchedConvertedConcreteId<
-		Location,
-		Balance,
-		EverythingBut<StartsWith<HereLocation>>,
-		JustTry,
-		JustTry,
-	>,
-	// Location converter.
-	LocationToAccountId,
-	// Needed for satisfying trait bounds.
-	AccountId,
-	// Not tracking teleports.
-	NoChecking,
-	// Still have to specify a checking account...
-	CheckingAccount,
->;
-
-/// We group all transactors in this tuple and set it in XcmConfig.
-pub type AssetTransactors = (LocalFungibleTransactor, ForeignFungiblesTransactor);
 
 /// This is the type we use to convert an (incoming) XCM origin into a local `Origin` instance,
 /// ready for dispatching a transaction with Xcm's `Transact`. There is an `OriginKind` which can
@@ -125,60 +88,17 @@ impl Contains<Location> for ParentOrParentsExecutivePlurality {
 	}
 }
 
-pub type Barrier = TrailingSetTopicAsId<
-	DenyThenTry<
-		DenyReserveTransferToRelayChain,
-		(
-			TakeWeightCredit,
-			WithComputedOrigin<
-				(
-					AllowTopLevelPaidExecutionFrom<Everything>,
-					AllowExplicitUnpaidExecutionFrom<ParentOrParentsExecutivePlurality>,
-					// ^^^ Parent and its exec plurality get free execution
-				),
-				UniversalLocation,
-				ConstU32<8>,
-			>,
-		),
-	>,
->;
-
-pub struct RelayAssetFrom<T>(PhantomData<T>);
-impl<T: Get<Location>> ContainsPair<Asset, Location> for RelayAssetFrom<T> {
-	fn contains(asset: &Asset, location: &Location) -> bool {
-		let loc = T::get();
-		&loc == location &&
-			matches!(asset, Asset { id: AssetId(asset_location), fun: Fungible(_) }
-            if *asset_location == Location::parent())
-	}
-}
-
-pub struct NativeAssetFrom<T>(PhantomData<T>);
-impl<T: Get<Location>> ContainsPair<Asset, Location> for NativeAssetFrom<T> {
-	fn contains(asset: &Asset, location: &Location) -> bool {
-		let loc = T::get();
-		&loc == location &&
-			matches!(asset, Asset { id: AssetId(asset_location), fun: Fungible(_) }
-            if *asset_location == Location::here())
-	}
-}
-
-pub type TrustedReserves = (NativeAsset, RelayAssetFrom<AssetHubLocation>);
-
-/// We only allow teleports of our native asset PARA between here and AssetHub.
-pub type TrustedTeleporters = NativeAssetFrom<AssetHubLocation>;
-
 pub struct XcmConfig;
 impl xcm_executor::Config for XcmConfig {
 	type RuntimeCall = RuntimeCall;
 	type XcmSender = XcmRouter;
 	// How to withdraw and deposit an asset.
-	type AssetTransactor = AssetTransactors;
+	type AssetTransactor = asset_transactor::AssetTransactor;
 	type OriginConverter = XcmOriginToTransactDispatchOrigin;
-	type IsReserve = TrustedReserves;
-	type IsTeleporter = TrustedTeleporters;
+	type IsReserve = reserves_and_teleports::TrustedReserves;
+	type IsTeleporter = reserves_and_teleports::TrustedTeleporters;
 	type UniversalLocation = UniversalLocation;
-	type Barrier = Barrier;
+	type Barrier = barrier::Barrier;
 	type Weigher = FixedWeightBounds<UnitWeightCost, RuntimeCall, MaxInstructions>;
 	type Trader = (
 		UsingComponents<WeightToFee, HereLocation, AccountId, Balances, ToAuthor<Runtime>>,

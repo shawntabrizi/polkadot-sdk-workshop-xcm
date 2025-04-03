@@ -1,4 +1,4 @@
-#[path = "xcm.rs"]
+#[path = "xcm/mod.rs"]
 pub mod xcm_config;
 
 // Substrate and Polkadot dependencies

@@ -15,6 +15,7 @@ decl_test_parachains! {
 			MessageOrigin: cumulus_primitives_core::AggregateMessageOrigin,
 		},
 		pallets = {
+			System: parachain_runtime::System,
 			Balances: parachain_runtime::Balances,
 			ForeignAssets: parachain_runtime::ForeignAssets,
 			PolkadotXcm: parachain_runtime::PolkadotXcm,
