@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use super::ASSET_HUB_ID;
 
 use core::marker::PhantomData;
