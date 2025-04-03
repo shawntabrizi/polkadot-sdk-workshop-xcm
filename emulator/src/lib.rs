@@ -3,9 +3,6 @@ mod network;
 mod parachain;
 mod westend;
 
-pub use parachain_runtime;
-pub use westend_runtime_constants;
-
 pub mod prelude {
 	use super::*;
 
@@ -21,7 +18,10 @@ pub mod prelude {
 	pub use parachain::CustomParaPallet;
 	pub use westend::WestendRelayPallet as WestendPallet;
 
-	pub use xcm_emulator::{Chain, Parachain, TestExt};
+	pub use xcm_emulator::{assert_expected_events, Chain, Parachain, TestExt};
 
 	pub use sp_runtime::AccountId32 as AccountId;
+
+	pub use parachain_runtime::{CENTS as PARA_CENTS, UNITS as PARA_UNITS};
+	pub use westend_runtime_constants::currency::{CENTS as WND_CENTS, UNITS as WND_UNITS};
 }

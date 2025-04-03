@@ -3166,6 +3166,7 @@ dependencies = [
  "env_logger 0.10.2",
  "frame-support 28.0.0",
  "frame-system 28.0.0",
+ "pallet-message-queue 31.0.0",
  "parity-scale-codec",
  "simulator",
  "sp-io 30.0.0",

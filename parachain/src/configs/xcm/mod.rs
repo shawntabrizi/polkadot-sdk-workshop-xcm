@@ -1,3 +1,6 @@
+// We split the XCM config between multiple files for convenience.
+mod asset_transactor;
+
 use crate::{
 	AccountId, AllPalletsWithSystem, Balance, Balances, ForeignAssets, ParachainInfo,
 	ParachainSystem, PolkadotXcm, Runtime, RuntimeCall, RuntimeEvent, RuntimeOrigin, WeightToFee,
@@ -6,7 +9,7 @@ use crate::{
 use core::marker::PhantomData;
 use frame_support::{
 	parameter_types,
-	traits::{ConstU32, Contains, ContainsPair, Everything, EverythingBut, Nothing},
+	traits::{ConstU32, Contains, ContainsPair, Equals, Everything, EverythingBut, Nothing},
 	weights::Weight,
 };
 use frame_system::EnsureRoot;
@@ -18,11 +21,12 @@ use xcm::latest::prelude::*;
 use xcm_builder::{
 	AccountId32Aliases, AllowExplicitUnpaidExecutionFrom, AllowTopLevelPaidExecutionFrom,
 	DenyReserveTransferToRelayChain, DenyThenTry, DescribeAllTerminal, DescribeFamily,
-	EnsureXcmOrigin, FixedWeightBounds, FrameTransactionalProcessor, FungibleAdapter,
-	FungiblesAdapter, HashedDescription, IsConcrete, MatchedConvertedConcreteId, NativeAsset,
+	EnsureXcmOrigin, FixedWeightBounds, FrameTransactionalProcessor, HashedDescription, IsConcrete, MatchedConvertedConcreteId, NativeAsset,
 	NoChecking, RelayChainAsNative, SiblingParachainAsNative, SignedAccountId32AsNative,
 	SignedToAccountId32, SovereignSignedViaLocation, StartsWith, TakeWeightCredit,
 	TrailingSetTopicAsId, UsingComponents, WithComputedOrigin, WithUniqueTopic,
+	FungibleAdapter,
+	FungiblesAdapter,
 };
 use xcm_executor::{traits::JustTry, XcmExecutor};
 
@@ -51,44 +55,6 @@ pub type LocationToAccountId = (
 	// Straight up local `AccountId32` origins just alias directly to `AccountId`.
 	AccountId32Aliases<RelayNetwork, AccountId>,
 );
-
-/// Means for transacting assets on this chain.
-pub type LocalFungibleTransactor = FungibleAdapter<
-	// Use this currency:
-	Balances,
-	// Use this currency when it is a fungible asset matching the given location or name:
-	IsConcrete<HereLocation>,
-	// Do a simple punn to convert an AccountId32 Location into a native chain account ID:
-	LocationToAccountId,
-	// Our chain's account ID type (we can't get away without mentioning it explicitly):
-	AccountId,
-	// We don't track any teleports.
-	(),
->;
-
-pub type ForeignFungiblesTransactor = FungiblesAdapter<
-	// Use this fungibles impl.
-	ForeignAssets,
-	// Match all locations except `Here`.
-	MatchedConvertedConcreteId<
-		Location,
-		Balance,
-		EverythingBut<StartsWith<HereLocation>>,
-		JustTry,
-		JustTry,
-	>,
-	// Location converter.
-	LocationToAccountId,
-	// Needed for satisfying trait bounds.
-	AccountId,
-	// Not tracking teleports.
-	NoChecking,
-	// Still have to specify a checking account...
-	CheckingAccount,
->;
-
-/// We group all transactors in this tuple and set it in XcmConfig.
-pub type AssetTransactors = (LocalFungibleTransactor, ForeignFungiblesTransactor);
 
 /// This is the type we use to convert an (incoming) XCM origin into a local `Origin` instance,
 /// ready for dispatching a transaction with Xcm's `Transact`. There is an `OriginKind` which can
@@ -132,7 +98,7 @@ pub type Barrier = TrailingSetTopicAsId<
 			TakeWeightCredit,
 			WithComputedOrigin<
 				(
-					AllowTopLevelPaidExecutionFrom<Everything>,
+					AllowTopLevelPaidExecutionFrom<EverythingBut<Equals<RelayLocation>>>,
 					AllowExplicitUnpaidExecutionFrom<ParentOrParentsExecutivePlurality>,
 					// ^^^ Parent and its exec plurality get free execution
 				),
@@ -165,6 +131,43 @@ impl<T: Get<Location>> ContainsPair<Asset, Location> for NativeAssetFrom<T> {
 
 pub type TrustedReserves = (NativeAsset, RelayAssetFrom<AssetHubLocation>);
 
+/// Means for transacting assets on this chain.
+pub type LocalFungibleTransactor = FungibleAdapter<
+	// Use this currency:
+	Balances,
+	// Use this currency when it is a fungible asset matching the given location or name:
+	IsConcrete<HereLocation>,
+	// Do a simple punn to convert an AccountId32 Location into a native chain account ID:
+	LocationToAccountId,
+	// Our chain's account ID type (we can't get away without mentioning it explicitly):
+	AccountId,
+	// We don't track any teleports.
+	(),
+>;
+
+pub type ForeignFungiblesTransactor = FungiblesAdapter<
+	// Use this fungibles impl.
+	ForeignAssets,
+	// Match all locations except `Here`.
+	MatchedConvertedConcreteId<
+		Location,
+		Balance,
+		EverythingBut<StartsWith<HereLocation>>,
+		JustTry,
+		JustTry,
+	>,
+	// Location converter.
+	LocationToAccountId,
+	// Needed for satisfying trait bounds.
+	AccountId,
+	// Not tracking teleports.
+	NoChecking,
+	// Still have to specify a checking account...
+	CheckingAccount,
+>;
+
+pub type AssetTransactor = (LocalFungibleTransactor, ForeignFungiblesTransactor);
+
 /// We only allow teleports of our native asset PARA between here and AssetHub.
 pub type TrustedTeleporters = NativeAssetFrom<AssetHubLocation>;
 
@@ -173,7 +176,7 @@ impl xcm_executor::Config for XcmConfig {
 	type RuntimeCall = RuntimeCall;
 	type XcmSender = XcmRouter;
 	// How to withdraw and deposit an asset.
-	type AssetTransactor = AssetTransactors;
+	type AssetTransactor = AssetTransactor;
 	type OriginConverter = XcmOriginToTransactDispatchOrigin;
 	type IsReserve = TrustedReserves;
 	type IsTeleporter = TrustedTeleporters;
