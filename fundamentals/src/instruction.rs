@@ -1,4 +1,4 @@
-//! # Fundamentals Lesson 4
+//! # Fundamentals Lesson 3
 //!
 //! Instructions are the fundamental building block of XCM programs.
 //! Let's look at the most basic ones.
