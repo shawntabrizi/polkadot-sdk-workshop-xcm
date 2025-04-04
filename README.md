@@ -7,7 +7,7 @@ This project is a workshop for learning about Polkadot SDK's XCM.
 To start the workshop:
 
 ```sh
-git clone -b fundamentals-starting-point https://github.com/shawntabrizi/polkadot-sdk-workshop-xcm.git
+git clone -b fundamentals-0 https://github.com/shawntabrizi/polkadot-sdk-workshop-xcm.git
 cd polkadot-sdk-workshop-xcm
 ```
 
