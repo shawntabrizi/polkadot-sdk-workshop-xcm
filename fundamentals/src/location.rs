@@ -1,3 +1,4 @@
+#![allow(unused_imports)]
 //! # Fundamentals Lesson 1
 use crate::constants::ALICE;
 use frame_support::parameter_types;
@@ -38,20 +39,20 @@ pub mod relative_to_polkadot_relay {
 
 	parameter_types! {
 		// The Polkadot parachain A with id 1000.
-		pub PolkadotPara1000: Location = // TODO
+		pub PolkadotPara1000: Location = todo!();
 		// The Polkadot parachain B with id 2004.
-		pub PolkadotPara2004: Location = // TODO
+		pub PolkadotPara2004: Location = todo!();
 		// The Polkadot relay chain.
-		pub PolkadotRelay: Location = // TODO
+		pub PolkadotRelay: Location = todo!();
 		// A 32 byte account on para 1000 with all bytes equal to 1 (Alice).
-		pub AliceBytes: [u8; 32] = // TODO
-		pub PolkadotPara1000Alice: Location = // TODO
+		pub AliceBytes: [u8; 32] = todo!();
+		pub PolkadotPara1000Alice: Location = todo!();
 		// The location of the `Assets` pallet on the relay chain.
-		pub PolkadotPara1000AssetsPallet: Location = // TODO
+		pub PolkadotPara1000AssetsPallet: Location = todo!();
 		// The asset with index `1984` of the Assets pallet on polkadot parachain with id 1000.
-		pub PolkadotPara1000Asset1984: Location = // TODO
+		pub PolkadotPara1000Asset1984: Location = todo!();
 		// The Kusama parachain with id 1000.
-		pub KusamaPara1000: Location = // TODO
+		pub KusamaPara1000: Location = todo!();
 	}
 }
 
@@ -61,20 +62,20 @@ pub mod relative_to_polkadot_para_1000 {
 
 	parameter_types! {
 		// The Polkadot parachain with id 1000.
-		pub PolkadotPara1000: Location = // TODO
+		pub PolkadotPara1000: Location = todo!();
 		// The Polkadot parachain with id 2004.
-		pub PolkadotPara2004: Location = // TODO
+		pub PolkadotPara2004: Location = todo!();
 		// The Polkadot relay chain.
-		pub PolkadotRelay: Location = // TODO
+		pub PolkadotRelay: Location = todo!();
 		// A 32 byte account on para 1000.
-		pub AliceBytes: [u8; 32] = // TODO
-		pub PolkadotPara1000Alice: Location = // TODO
+		pub AliceBytes: [u8; 32] = todo!();
+		pub PolkadotPara1000Alice: Location = todo!();
 		// The location of the `Balances` pallet on the relay chain.
-		pub PolkadotPara1000AssetsPallet: Location = // TODO
+		pub PolkadotPara1000AssetsPallet: Location = todo!();
 		// The asset with index `1984` of the Assets pallet on the Polkadot parachain with id 1000.
-		pub PolkadotPara1000Asset1984: Location = // TODO
+		pub PolkadotPara1000Asset1984: Location = todo!();
 		// The Kusama parachain with id 1000.
-		pub KusamaPara1000: Location = // TODO
+		pub KusamaPara1000: Location = todo!();
 	}
 }
 
@@ -154,20 +155,20 @@ pub mod absolute {
 
 	parameter_types! {
 		// The Polkadot parachain with id 1000.
-		pub PolkadotPara1000: Location = // TODO
+		pub PolkadotPara1000: Location = todo!();
 		// The Polkadot parachain with id 2004.
-		pub PolkadotPara2004: Location = // TODO
+		pub PolkadotPara2004: Location = todo!();
 		// The Polkadot relay chain.
-		pub PolkadotRelay: Location = // TODO
+		pub PolkadotRelay: Location = todo!();
 		// A 32 byte account on para 1000.
-		pub AliceBytes: [u8; 32] = // TODO
-		pub PolkadotPara1000Alice: Location = // TODO
+		pub AliceBytes: [u8; 32] = todo!();
+		pub PolkadotPara1000Alice: Location = todo!();
 		// The location of the `Balances` pallet on the relay chain.
-		pub PolkadotPara1000AssetsPallet: Location = // TODO
+		pub PolkadotPara1000AssetsPallet: Location = todo!();
 		// The asset with index `1984` of the Assets pallet on the Polkadot parachain with id 1000.
-		pub PolkadotPara1000Asset1984: Location = // TODO
+		pub PolkadotPara1000Asset1984: Location = todo!();
 		// The Kusama parachain with id 1000.
-		pub KusamaPara1000: Location = // TODO
+		pub KusamaPara1000: Location = todo!();
 	}
 }
 
