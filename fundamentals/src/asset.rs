@@ -38,8 +38,8 @@ use xcm::latest::prelude::*;
 // │ Id 1337   │ │  Id 1984  │  │    Id 3    │ │    Id 66   │
 // └───────────┘ └───────────┘  └────────────┘ └────────────┘
 
-const DOT_DECIMALS: u32 = 10;
-const USDT_DECIMALS: u32 = 6;
+const DOT_DECIMALS: u128 = 10_000_000_000;
+const USDT_DECIMALS: u128 = 1_000_000;
 
 // Fungible Tokens
 // Construct these assets from the perspective of AssetHub (1000).
