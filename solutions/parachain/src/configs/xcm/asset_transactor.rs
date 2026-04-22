@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 use crate::{AccountId, Balance, Balances, ForeignAssets};
 use super::{LocationToAccountId, HereLocation, CheckingAccount};
 
@@ -43,8 +41,4 @@ pub type ForeignFungiblesTransactor = FungiblesAdapter<
 	CheckingAccount,
 >;
 
-// The two adapters above are fully defined. Compose them into a single `AssetTransactor`.
-//
-// TODO: Combine them. XCM config types compose via tuples — the executor will try each
-// in order until one handles the asset.
-pub type AssetTransactor = ();
+pub type AssetTransactor = (LocalFungibleTransactor, ForeignFungiblesTransactor);

@@ -1,16 +1,4 @@
-#![allow(unused_imports)]
-//! # Fundamentals Lesson 1 — Locations
-//!
-//! A `Location` is XCM's way of pointing at *a thing* in a multi-chain world: a chain, an
-//! account, a pallet, an asset, etc. The closest mental model is a filesystem path.
-//!
-//! Like filesystem paths, locations are usually **relative** — `./foo` and `../bar` mean
-//! different things from different directories. XCM also supports **absolute** locations
-//! that look the same from everywhere, similar to `/tmp/x`.
-//!
-//! Every module below names the same set of targets. Only the perspective changes. Get
-//! the relay's view right first, then translate.
-
+//! # Fundamentals Lesson 1
 use crate::constants::ALICE;
 use frame_support::parameter_types;
 use xcm::latest::prelude::*;
@@ -49,71 +37,44 @@ pub mod relative_to_polkadot_relay {
 	use super::*;
 
 	parameter_types! {
-		// ✅ Worked example — Polkadot parachain 1000, from the relay's view.
-		// `Parachain(id)` is a junction; `.into()` wraps it in a Location with 0 parents.
+		// The Polkadot parachain A with id 1000.
 		pub PolkadotPara1000: Location = Parachain(1000).into();
-
-		// TODO: The Polkadot parachain B with id 2004.
-		pub PolkadotPara2004: Location = todo!();
-
-		// TODO: The Polkadot relay chain, from its own perspective.
-		pub PolkadotRelay: Location = todo!();
-
+		// The Polkadot parachain B with id 2004.
+		pub PolkadotPara2004: Location = Parachain(2004).into();
+		// The Polkadot relay chain.
+		pub PolkadotRelay: Location = Here.into();
 		// A 32 byte account on para 1000 with all bytes equal to 1 (Alice).
-		// Hint: `ALICE` is already imported as a `[u8; 32]` constant.
-		pub AliceBytes: [u8; 32] = todo!();
-
-		// TODO: Alice's account *on* parachain 1000, from the relay's view.
-		// Hint: this location names *two* things: which parachain, and which account on it.
-		pub PolkadotPara1000Alice: Location = todo!();
-
-		// TODO: The `Assets` pallet (index 50) on parachain 1000.
-		// Hint: a Location can be built from a tuple of junctions via `.into()`.
-		pub PolkadotPara1000AssetsPallet: Location = todo!();
-
-		// TODO: Asset 1984 inside the Assets pallet on parachain 1000.
-		// Hint: assets inside a pallet are addressed by a numeric index; there's a junction for that.
-		pub PolkadotPara1000Asset1984: Location = todo!();
-
-		// TODO: The Kusama parachain with id 1000, from Polkadot's relay view.
-		// Hint: to reach something in a different consensus system, you have to leave yours first.
-		pub KusamaPara1000: Location = todo!();
+		pub AliceBytes: [u8; 32] = ALICE.into();
+		pub PolkadotPara1000Alice: Location = Location::new(0, [Parachain(1000), AliceBytes::get().into()]);
+		// The location of the `Assets` pallet on the relay chain.
+		pub PolkadotPara1000AssetsPallet: Location = [Parachain(1000), PalletInstance(50)].into();
+		// The asset with index `1984` of the Assets pallet on polkadot parachain with id 1000.
+		pub PolkadotPara1000Asset1984: Location = (Parachain(1000), PalletInstance(50), GeneralIndex(1984)).into();
+		// The Kusama parachain with id 1000.
+		pub KusamaPara1000: Location = (Parent, GlobalConsensus(Kusama), Parachain(1000)).into();
 	}
 }
 
 /// All these locations are relative to a Polkadot parachain with id 1000.
-///
-/// Notice that every entry below names the *same thing* as the previous module — only the
-/// perspective changes. Locations are relative; the answers will not match.
 pub mod relative_to_polkadot_para_1000 {
 	use super::*;
 
 	parameter_types! {
-		// TODO: Parachain 1000, from its own perspective.
-		pub PolkadotPara1000: Location = todo!();
-
-		// TODO: Sibling parachain 2004, from para 1000's view.
-		// Hint: to reach a sibling, you first have to leave your own parachain.
-		pub PolkadotPara2004: Location = todo!();
-
-		// TODO: The Polkadot relay chain, from para 1000's view.
-		pub PolkadotRelay: Location = todo!();
-
-		// Same `AliceBytes` as the previous module.
-		pub AliceBytes: [u8; 32] = todo!();
-
-		// TODO: Alice's account *on this parachain*.
-		pub PolkadotPara1000Alice: Location = todo!();
-
-		// TODO: The `Assets` pallet on this parachain.
-		pub PolkadotPara1000AssetsPallet: Location = todo!();
-
-		// TODO: Asset 1984 on this parachain.
-		pub PolkadotPara1000Asset1984: Location = todo!();
-
-		// TODO: Kusama parachain 1000, from Polkadot parachain 1000.
-		// Hint: count the boundaries you have to cross: out of your parachain, out of Polkadot.
-		pub KusamaPara1000: Location = todo!();
+		// The Polkadot parachain with id 1000.
+		pub PolkadotPara1000: Location = Here.into();
+		// The Polkadot parachain with id 2004.
+		pub PolkadotPara2004: Location = (Parent, Parachain(2004)).into();
+		// The Polkadot relay chain.
+		pub PolkadotRelay: Location = Parent.into();
+		// A 32 byte account on para 1000.
+		pub AliceBytes: [u8; 32] = ALICE.into();
+		pub PolkadotPara1000Alice: Location = Location::new(0, [AliceBytes::get().into()]);
+		// The location of the `Balances` pallet on the relay chain.
+		pub PolkadotPara1000AssetsPallet: Location = (PalletInstance(50)).into();
+		// The asset with index `1984` of the Assets pallet on the Polkadot parachain with id 1000.
+		pub PolkadotPara1000Asset1984: Location = (PalletInstance(50), GeneralIndex(1984)).into();
+		// The Kusama parachain with id 1000.
+		pub KusamaPara1000: Location = (Parent, Parent, GlobalConsensus(Kusama), Parachain(1000)).into();
 	}
 }
 
@@ -192,28 +153,21 @@ pub mod absolute {
 	use super::*;
 
 	parameter_types! {
-		// TODO: Polkadot parachain 1000, absolutely.
-		pub PolkadotPara1000: Location = todo!();
-
-		// TODO: Polkadot parachain 2004, absolutely.
-		pub PolkadotPara2004: Location = todo!();
-
-		// TODO: The Polkadot relay chain, absolutely.
-		pub PolkadotRelay: Location = todo!();
-
-		pub AliceBytes: [u8; 32] = todo!();
-
-		// TODO: Alice's account on Polkadot parachain 1000, absolutely.
-		pub PolkadotPara1000Alice: Location = todo!();
-
-		// TODO: The `Assets` pallet on Polkadot parachain 1000.
-		pub PolkadotPara1000AssetsPallet: Location = todo!();
-
-		// TODO: Asset 1984 on that pallet on that parachain.
-		pub PolkadotPara1000Asset1984: Location = todo!();
-
-		// TODO: Kusama parachain 1000, absolutely.
-		pub KusamaPara1000: Location = todo!();
+		// The Polkadot parachain with id 1000.
+		pub PolkadotPara1000: Location = [GlobalConsensus(Polkadot), Parachain(1000)].into();
+		// The Polkadot parachain with id 2004.
+		pub PolkadotPara2004: Location = [GlobalConsensus(Polkadot), Parachain(2004)].into();
+		// The Polkadot relay chain.
+		pub PolkadotRelay: Location = [GlobalConsensus(Polkadot)].into();
+		// A 32 byte account on para 1000.
+		pub AliceBytes: [u8; 32] = ALICE.into();
+		pub PolkadotPara1000Alice: Location = [GlobalConsensus(Polkadot), Parachain(1000), AliceBytes::get().into()].into();
+		// The location of the `Balances` pallet on the relay chain.
+		pub PolkadotPara1000AssetsPallet: Location = [GlobalConsensus(Polkadot), Parachain(1000), PalletInstance(50)].into();
+		// The asset with index `1984` of the Assets pallet on the Polkadot parachain with id 1000.
+		pub PolkadotPara1000Asset1984: Location = [GlobalConsensus(Polkadot), Parachain(1000), PalletInstance(50), GeneralIndex(1984)].into();
+		// The Kusama parachain with id 1000.
+		pub KusamaPara1000: Location = [GlobalConsensus(Kusama), Parachain(1000)].into();
 	}
 }
 

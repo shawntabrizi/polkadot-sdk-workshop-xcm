@@ -1,7 +1,6 @@
-#![allow(dead_code)]
 //! # Fundamentals Lesson 2
 //!
-//! All locations in this module are relative to AssetHub (Polkadot parachain 1000).
+//! All locations in this module are relative to Polkadot parachain 2000.
 
 use frame_support::parameter_types;
 use xcm::latest::prelude::*;
@@ -38,58 +37,38 @@ use xcm::latest::prelude::*;
 // │ Id 1337   │ │  Id 1984  │  │    Id 3    │ │    Id 66   │
 // └───────────┘ └───────────┘  └────────────┘ └────────────┘
 
-// Number of decimal places for each token (DOT has 10, USDT has 6).
-// One whole unit is `10u128.pow(DECIMALS)` planks.
 const DOT_DECIMALS: u32 = 10;
 const USDT_DECIMALS: u32 = 6;
 
 // Fungible Tokens
-// Construct these assets from the perspective of AssetHub (parachain 1000).
+// Construct these assets from the perspective of AssetHub (1000).
 parameter_types! {
-	// ✅ Worked example — an `Assets` collection containing nothing.
-	// An empty `Vec<Asset>` coerces into `Assets` via `.into()`.
+	// `Assets` instance that contains no assets.
 	pub EmptyAssets: Assets = vec![].into();
-
-	// TODO: The `AssetId` for USDT, from AssetHub's own view.
-	// Hint: USDT is asset 1984 inside the Assets pallet (index 50) on this chain.
-	//       An `AssetId` wraps a `Location`.
-	pub Usdt: AssetId = todo!();
-
-	// TODO: The `AssetId` for DOT (the relay's native token), from AssetHub's view.
-	// Hint: DOT is native to the relay — what's the relay's location from here?
-	pub DotToken: AssetId = todo!();
-
-	// TODO: 100 USDT as a single fungible `Asset`.
-	// Hint: an `Asset` is "what" + "how much". Use `USDT_DECIMALS` (declared above) to
-	//       convert 100 USDT into planks.
-	pub OneHundredUsdt: Asset = todo!();
-
-	// TODO: 100 DOT, following the same pattern as `OneHundredUsdt`.
-	pub OneHundredDot: Asset = todo!();
+	// USDT.
+	pub Usdt: AssetId = (PalletInstance(50), GeneralIndex(1984)).into();
+	// The native token of the relay chain, i.e. DOT.
+	pub DotToken: AssetId = Parent.into();
+	// 100 USDT.
+	pub OneHundredUsdt: Asset = (Usdt::get(), 100u128 * 10u128.pow(USDT_DECIMALS)).into();
+	// Some amount of the native token of the relay chain.
+	pub OneHundredDot: Asset = (DotToken::get(), 100u128 * 10u128.pow(DOT_DECIMALS)).into();
 }
 
 // Non-Fungible Tokens
 parameter_types! {
-	// TODO: The location of NFT collection 3, inside the NFT pallet (index 52) on
-	//       Polkadot parachain 1000.
-	pub NftLocation: Location = todo!();
-
-	// TODO: The NFT with id 69 inside that collection, as a non-fungible `Asset`.
-	// Hint: for NFTs the fungibility carries an instance identifier.
-	pub Nft: Asset = todo!();
+	// Location of NFT collection with id 3 inside of the NFT pallet in Polkadot parachain 1000.
+	pub NftLocation: Location = [PalletInstance(52), GeneralIndex(3)].into();
+	// The NFT with id 69 inside of that collection.
+	pub Nft: Asset = (NftLocation::get(), 69u64).into();
 }
 
 // Asset Filters
 parameter_types! {
-	// TODO: A filter that matches every possible asset.
-	// Hint: `AssetFilter` has a wildcard variant.
-	pub AllAssetsFilter: AssetFilter = todo!();
-
-	// TODO: A filter that matches only the DOT asset.
-	// Hint: a specific `Asset` can become a single-item filter — try `.into()` on the
-	//       asset you already constructed above.
-	pub DotFilter: AssetFilter = todo!();
-
-	// TODO: A filter that matches only USDT (same pattern as `DotFilter`).
-	pub UsdtFilter: AssetFilter = todo!();
+	// A filter which will capture all possible assets.
+	pub AllAssetsFilter: AssetFilter = AssetFilter::Wild(WildAsset::All);
+	// A filter specific for the DOT Token.
+	pub DotFilter: AssetFilter = OneHundredDot::get().into();
+	// A filter specific for USDT.
+	pub UsdtFilter: AssetFilter = OneHundredUsdt::get().into();
 }

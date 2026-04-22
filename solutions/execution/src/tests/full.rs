@@ -66,8 +66,16 @@ fn cross_chain_transfer() {
 		Xcm::<()>::builder_unsafe().deposit_asset(AllCounted(1), receiver.clone()).build();
 
 	// We assemble everything into the XCM we'll execute locally.
-	let xcm = Xcm::<<CustomPara as Chain>::RuntimeCall>::builder_unsafe()
-		// TODO: Add instructions.
+	let xcm = Xcm::<<CustomPara as Chain>::RuntimeCall>::builder()
+		.withdraw_asset(assets_to_withdraw)
+		.pay_fees(fees_assets)
+		.initiate_transfer(
+			destination,
+			remote_fees,
+			preserve_origin,
+			transfer_assets,
+			remote_xcm,
+		)
 		.build();
 
 	// This lets us execute calls on `CustomPara`.
@@ -267,8 +275,16 @@ fn transfer_and_transact() {
 		.build();
 
 	// We assemble the XCM with all the previous values.
-	let xcm = Xcm::<<CustomPara as Chain>::RuntimeCall>::builder_unsafe()
-		// TODO: Add instructions.
+	let xcm = Xcm::<<CustomPara as Chain>::RuntimeCall>::builder()
+		.withdraw_asset(assets_to_withdraw)
+		.pay_fees(fees_assets)
+		.initiate_transfer(
+			destination,
+			remote_fees,
+			preserve_origin,
+			transfer_assets,
+			remote_xcm,
+		)
 		.build();
 
 	// We execute the XCM and assert that the `transfer_amount` is taken
@@ -338,8 +354,16 @@ fn transfer_and_swap() {
 		.deposit_asset(AllCounted(1), sender.clone())
 		.build();
 
-	let xcm = Xcm::<<CustomPara as Chain>::RuntimeCall>::builder_unsafe()
-		// TODO: Add instructions.
+	let xcm = Xcm::<<CustomPara as Chain>::RuntimeCall>::builder()
+		.withdraw_asset(assets_to_withdraw)
+		.pay_fees(fees_asset)
+		.initiate_transfer(
+			destination,
+			remote_fees,
+			preserve_origin,
+			assets_to_transfer,
+			remote_xcm,
+		)
 		.build();
 
 	// We get the initial WND amount so we can compare it later.
@@ -373,8 +397,36 @@ fn transfer_swap_and_back() {
 	let (sender, _) = common::setup(initial_wnd_balance, initial_para_balance);
 	let transfer_amount = 23 * PARA_UNITS;
 	let fees_amount = 10 * PARA_CENTS;
-	let xcm = Xcm::<<CustomPara as Chain>::RuntimeCall>::builder_unsafe()
-		// TODO: Add instructions.
+	let xcm = Xcm::<<CustomPara as Chain>::RuntimeCall>::builder()
+		.withdraw_asset(vec![(Here, transfer_amount).into()])
+		.pay_fees((Here, fees_amount))
+		.initiate_transfer(
+			(Parent, Parachain(1000)),
+			AssetTransferFilter::Teleport(Definite((Here, 20 * PARA_CENTS).into())),
+			false,
+			vec![AssetTransferFilter::Teleport(Wild(AllCounted(1)))],
+			Xcm::builder_unsafe()
+				// After the exchange...
+				.exchange_asset(
+					Wild(AllCounted(1)),
+					(Parent, 10 * WND_UNITS),
+					true, // Maximal.
+				)
+				// ..we just send all the assets back...
+				.initiate_transfer(
+					(Parent, Parachain(2000)),
+					AssetTransferFilter::ReserveDeposit(Definite(
+						(Parent, 50 * WND_CENTS).into(),
+					)),
+					false,
+					vec![AssetTransferFilter::ReserveDeposit(Wild(AllCounted(1)))],
+					Xcm::builder_unsafe()
+						// ...and deposit them.
+						.deposit_asset(AllCounted(1), sender.clone())
+						.build(),
+				)
+				.build(),
+		)
 		.build();
 
 	CustomPara::execute_with(|| {
