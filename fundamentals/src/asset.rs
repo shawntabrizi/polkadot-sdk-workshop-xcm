@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 //! # Fundamentals Lesson 2
 //!
 //! All locations in this module are relative to Polkadot parachain 2000.
@@ -37,38 +38,38 @@ use xcm::latest::prelude::*;
 // │ Id 1337   │ │  Id 1984  │  │    Id 3    │ │    Id 66   │
 // └───────────┘ └───────────┘  └────────────┘ └────────────┘
 
-const DOT_DECIMALS: u32 = 10;
-const USDT_DECIMALS: u32 = 6;
+const DOT_DECIMALS: u128 = 10_000_000_000;
+const USDT_DECIMALS: u128 = 1_000_000;
 
 // Fungible Tokens
 // Construct these assets from the perspective of AssetHub (1000).
 parameter_types! {
 	// `Assets` instance that contains no assets.
-	pub EmptyAssets: Assets = vec![].into();
+	pub EmptyAssets: Assets = todo!();
 	// USDT.
-	pub Usdt: AssetId = (PalletInstance(50), GeneralIndex(1984)).into();
+	pub Usdt: AssetId = todo!();
 	// The native token of the relay chain, i.e. DOT.
-	pub DotToken: AssetId = Parent.into();
+	pub DotToken: AssetId = todo!();
 	// 100 USDT.
-	pub OneHundredUsdt: Asset = (Usdt::get(), 100u128 * 10u128.pow(USDT_DECIMALS)).into();
+	pub OneHundredUsdt: Asset = todo!();
 	// Some amount of the native token of the relay chain.
-	pub OneHundredDot: Asset = (DotToken::get(), 100u128 * 10u128.pow(DOT_DECIMALS)).into();
+	pub OneHundredDot: Asset = todo!();
 }
 
 // Non-Fungible Tokens
 parameter_types! {
 	// Location of NFT collection with id 3 inside of the NFT pallet in Polkadot parachain 1000.
-	pub NftLocation: Location = [PalletInstance(52), GeneralIndex(3)].into();
+	pub NftLocation: Location = todo!();
 	// The NFT with id 69 inside of that collection.
-	pub Nft: Asset = (NftLocation::get(), 69u64).into();
+	pub Nft: Asset = todo!();
 }
 
 // Asset Filters
 parameter_types! {
 	// A filter which will capture all possible assets.
-	pub AllAssetsFilter: AssetFilter = AssetFilter::Wild(WildAsset::All);
+	pub AllAssetsFilter: AssetFilter = todo!();
 	// A filter specific for the DOT Token.
-	pub DotFilter: AssetFilter = OneHundredDot::get().into();
+	pub DotFilter: AssetFilter = todo!();
 	// A filter specific for USDT.
-	pub UsdtFilter: AssetFilter = OneHundredUsdt::get().into();
+	pub UsdtFilter: AssetFilter = todo!();
 }

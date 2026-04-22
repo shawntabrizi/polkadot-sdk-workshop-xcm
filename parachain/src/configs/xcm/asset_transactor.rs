@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use crate::{AccountId, Balance, Balances, ForeignAssets};
 use super::{LocationToAccountId, HereLocation, CheckingAccount};
 
@@ -41,4 +43,5 @@ pub type ForeignFungiblesTransactor = FungiblesAdapter<
 	CheckingAccount,
 >;
 
-pub type AssetTransactor = (LocalFungibleTransactor, ForeignFungiblesTransactor);
+// TODO: Need to plug in the adapters here.
+pub type AssetTransactor = ();

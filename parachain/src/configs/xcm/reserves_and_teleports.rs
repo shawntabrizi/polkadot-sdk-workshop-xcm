@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use super::ASSET_HUB_ID;
 
 use core::marker::PhantomData;
@@ -30,7 +32,8 @@ parameter_types! {
 	pub AssetHubLocation: Location = Location::new(1, [Parachain(ASSET_HUB_ID)]);
 }
 
-pub type TrustedReserves = RelayAssetFrom<AssetHubLocation>;
+// TODO: Configure.
+pub type TrustedReserves = ();
 
-/// We only allow teleports of our native asset PARA between here and AssetHub.
-pub type TrustedTeleporters = NativeAssetFrom<AssetHubLocation>;
+// TODO: Configure.
+pub type TrustedTeleporters = ();
