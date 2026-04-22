@@ -6,6 +6,6 @@ pub mod location;
 #[cfg(feature = "asset")]
 pub mod asset;
 
-/// Lesson 4
+/// Lesson 3
 #[cfg(feature = "instruction")]
 pub mod instruction;

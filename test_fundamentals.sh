@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # List of cargo features to be tested
@@ -6,9 +5,6 @@ features=(
     "location"
     "asset"
     "instruction"
-    "holding"
-	"xcm_executor"
-	"pallet_xcm"
 )
 
 # Run cargo test commands

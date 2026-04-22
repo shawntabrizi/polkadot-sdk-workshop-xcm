@@ -11,21 +11,21 @@ To expose these trace logs, you can run your command with the `RUST_LOG` prefix.
 For example:
 
 ```sh
-RUST_LOG=xcm=trace cargo test -p simulator --features other-parachain-tokens reserve_asset_transfer_works
+RUST_LOG=xcm=trace cargo test -p execution cross_chain_transfer
 ```
 
 You can also be more specific with which `xcm` logs you want, for example only logs which are `xcm::process_instruction`:
 
 ```sh
-RUST_LOG=xcm::process_instruction=trace cargo test -p simulator --features other-parachain-tokens reserve_asset_transfer_works
+RUST_LOG=xcm::process_instruction=trace cargo test -p execution cross_chain_transfer
 ```
 
-The output would look like:
+The output would look something like this (output is illustrative):
 
 ```sh
-➜  polkadot-sdk-workshop-xcm git:(master) ✗ RUST_LOG=xcm::process_instruction=trace cargo test -p simulator --features other-parachain-tokens reserve_asset_transfer_works
+➜  polkadot-sdk-workshop-xcm git:(master) ✗ RUST_LOG=xcm::process_instruction=trace cargo test -p execution cross_chain_transfer
 	Finished `test` profile [unoptimized + debuginfo] target(s) in 0.46s
-	Running unittests src/lib.rs (target/debug/deps/simulator-6d2921fa3f073366)
+	Running unittests src/lib.rs (target/debug/deps/execution-…)
 
 running 1 test
 2024-06-14T02:10:26.152349Z TRACE xcm::process_instruction: === TransferAsset { assets: Assets([Asset { id: AssetId(Location { parents: 0, interior: Here }), fun: Fungible(500000000000) }]), beneficiary: Location { parents: 1, interior: X1([Parachain(1)]) } }
@@ -39,7 +39,7 @@ running 1 test
 2024-06-14T02:10:26.153784Z TRACE xcm::process_instruction: === ClearOrigin
 2024-06-14T02:10:26.153791Z TRACE xcm::process_instruction: === BuyExecution { fees: Asset { id: AssetId(Location { parents: 0, interior: Here }), fun: Fungible(250000000000) }, weight_limit: Unlimited }
 2024-06-14T02:10:26.153799Z TRACE xcm::process_instruction: === DepositAsset { assets: Wild(AllCounted(1)), beneficiary: Location { parents: 0, interior: X1([AccountId32 { network: Some(Kusama), id: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2] }]) } }
-test tests::other_parachain_tokens::reserve_asset_transfer_works ... ok
+test tests::full::cross_chain_transfer ... ok
 
 test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.01s
 ```

@@ -6,18 +6,18 @@ edition = "2021"
 publish = false
 
 [dependencies]
-codec = { package = "parity-scale-codec", version = "3.7.4" }
+codec = { workspace = true, features = ["std"] }
 
-frame-system = { git = "https://github.com/paritytech/polkadot-sdk", rev = "972e95732bc9828093a344d40952c19729a33331" }
-frame-support = { git = "https://github.com/paritytech/polkadot-sdk", rev = "972e95732bc9828093a344d40952c19729a33331" }
-pallet-message-queue = { git = "https://github.com/paritytech/polkadot-sdk", rev = "972e95732bc9828093a344d40952c19729a33331" }
-sp-io = { git = "https://github.com/paritytech/polkadot-sdk", rev = "972e95732bc9828093a344d40952c19729a33331" }
+frame-system = { workspace = true, features = ["std"] }
+frame-support = { workspace = true, features = ["std"] }
+pallet-message-queue = { workspace = true, features = ["std"] }
+sp-io = { workspace = true, features = ["std"] }
 
 emulator = { path = "../emulator" }
 
-xcm = { git = "https://github.com/paritytech/polkadot-sdk", rev = "972e95732bc9828093a344d40952c19729a33331", package = "staging-xcm" }
-xcm-runtime-apis = { git = "https://github.com/paritytech/polkadot-sdk", rev = "972e95732bc9828093a344d40952c19729a33331" }
+xcm = { workspace = true, features = ["std"] }
+xcm-runtime-apis = { workspace = true, features = ["std"] }
 
 [dev-dependencies]
-env_logger = "0.10.0"
-test-log = "0.2.12"
+env_logger = { workspace = true }
+test-log = { workspace = true }
