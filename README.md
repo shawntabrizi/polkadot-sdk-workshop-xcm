@@ -38,7 +38,7 @@ The repo ships with the starter state checked in. Fill in the TODOs in each file
 
 ### 1. Locations
 
-Learn how XCM identifies chains, accounts, pallets, and assets relative to a perspective. Fill in the `parameter_types!` blocks in [`fundamentals/src/location.rs`](fundamentals/src/location.rs). See [`docs/fundamentals/location.md`](docs/fundamentals/location.md) for the conceptual intro.
+Learn how XCM identifies chains, accounts, pallets, and assets relative to a perspective. Fill in the `parameter_types!` blocks in [`fundamentals/src/location.rs`](fundamentals/src/location.rs). The file's header comment introduces the filesystem analogy.
 
 ### 2. Assets
 
@@ -81,7 +81,6 @@ Each of the main folders has its own README with context for contributors and st
 | [`emulator/`](emulator/README.md) | Multi-chain XCM emulator setup (Westend + AssetHubWestend + CustomPara). Used by `execution/` tests. |
 | [`solutions/`](solutions/README.md) | Reference solutions that mirror the lesson-file paths. Consumed by `scripts/check-solutions.sh`. |
 | [`scripts/`](scripts/README.md) | Maintenance scripts. `check-solutions.sh` is the load-bearing one. |
-| [`docs/`](docs/README.md) | Long-form conceptual notes that don't fit in a file header. Sparse right now. |
 
 ## Debugging
 

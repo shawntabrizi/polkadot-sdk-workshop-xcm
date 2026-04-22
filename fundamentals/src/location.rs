@@ -1,5 +1,16 @@
 #![allow(unused_imports)]
-//! # Fundamentals Lesson 1
+//! # Fundamentals Lesson 1 — Locations
+//!
+//! A `Location` is XCM's way of pointing at *a thing* in a multi-chain world: a chain, an
+//! account, a pallet, an asset, etc. The closest mental model is a filesystem path.
+//!
+//! Like filesystem paths, locations are usually **relative** — `./foo` and `../bar` mean
+//! different things from different directories. XCM also supports **absolute** locations
+//! that look the same from everywhere, similar to `/tmp/x`.
+//!
+//! Every module below names the same set of targets. Only the perspective changes. Get
+//! the relay's view right first, then translate.
+
 use crate::constants::ALICE;
 use frame_support::parameter_types;
 use xcm::latest::prelude::*;
