@@ -1,6 +1,6 @@
 # polkadot-sdk-workshop-xcm
 
-A hands-on workshop for learning Polkadot SDK's XCM by filling in TODOs and running tests until everything passes. No branch switching — work from `master`, edit files in place, check your work with `./run_tests.sh`.
+A hands-on workshop for learning Polkadot SDK's XCM by filling in TODOs and running tests until everything passes. Work from `master`, edit files in place, check your work with `./run_tests.sh`.
 
 ## Get started
 
@@ -68,6 +68,20 @@ Configure the parachain runtime's XCM executor. Each lesson targets one type:
 - **10. Reserves & Teleporters**: which chains this parachain trusts for reserve-backed transfers and teleports. Edit [`parachain/src/configs/xcm/reserves_and_teleports.rs`](parachain/src/configs/xcm/reserves_and_teleports.rs).
 
 In the starter state each of these is `()` (a no-op tuple), so the runtime compiles but the relevant tests fail at runtime. Replace with a real implementation.
+
+## Repository layout
+
+Each of the main folders has its own README with context for contributors and students. The short version:
+
+| Folder | What lives there |
+|---|---|
+| [`fundamentals/`](fundamentals/README.md) | Lessons 1–3 (location, asset, instruction) — pure-Rust tests, no emulator. |
+| [`execution/`](execution/README.md) | Lessons 4–7 (XCM programs) plus integration tests for config lessons 8–10. Uses the emulator. |
+| [`parachain/`](parachain/README.md) | The parachain runtime. The config-lesson files live in `src/configs/xcm/`; everything else is standard runtime scaffolding. |
+| [`emulator/`](emulator/README.md) | Multi-chain XCM emulator setup (Westend + AssetHubWestend + CustomPara). Used by `execution/` tests. |
+| [`solutions/`](solutions/README.md) | Reference solutions that mirror the lesson-file paths. Consumed by `scripts/check-solutions.sh`. |
+| [`scripts/`](scripts/README.md) | Maintenance scripts. `check-solutions.sh` is the load-bearing one. |
+| [`docs/`](docs/README.md) | Long-form conceptual notes that don't fit in a file header. Sparse right now. |
 
 ## Debugging
 
