@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 //! # Fundamentals Lesson 2
 //!
-//! All locations in this module are relative to Polkadot parachain 2000.
+//! All locations in this module are relative to AssetHub (Polkadot parachain 1000).
 
 use frame_support::parameter_types;
 use xcm::latest::prelude::*;
@@ -42,34 +42,51 @@ const DOT_DECIMALS: u128 = 10_000_000_000;
 const USDT_DECIMALS: u128 = 1_000_000;
 
 // Fungible Tokens
-// Construct these assets from the perspective of AssetHub (1000).
+// Construct these assets from the perspective of AssetHub (parachain 1000).
 parameter_types! {
-	// `Assets` instance that contains no assets.
-	pub EmptyAssets: Assets = todo!();
-	// USDT.
+	// ✅ Worked example — an `Assets` collection containing nothing.
+	// An empty `Vec<Asset>` coerces into `Assets` via `.into()`.
+	pub EmptyAssets: Assets = vec![].into();
+
+	// TODO: The `AssetId` for USDT, from AssetHub's own view.
+	// Hint: USDT is asset 1984 inside the Assets pallet (index 50) on this chain.
+	//       An `AssetId` wraps a `Location`.
 	pub Usdt: AssetId = todo!();
-	// The native token of the relay chain, i.e. DOT.
+
+	// TODO: The `AssetId` for DOT (the relay's native token), from AssetHub's view.
+	// Hint: DOT is native to the relay — what's the relay's location from here?
 	pub DotToken: AssetId = todo!();
-	// 100 USDT.
+
+	// TODO: 100 USDT as a single fungible `Asset`.
+	// Hint: an `Asset` is "what" + "how much". `USDT_DECIMALS` is declared above.
 	pub OneHundredUsdt: Asset = todo!();
-	// Some amount of the native token of the relay chain.
+
+	// TODO: 100 DOT, following the same pattern as `OneHundredUsdt`.
 	pub OneHundredDot: Asset = todo!();
 }
 
 // Non-Fungible Tokens
 parameter_types! {
-	// Location of NFT collection with id 3 inside of the NFT pallet in Polkadot parachain 1000.
+	// TODO: The location of NFT collection 3, inside the NFT pallet (index 52) on
+	//       Polkadot parachain 1000.
 	pub NftLocation: Location = todo!();
-	// The NFT with id 69 inside of that collection.
+
+	// TODO: The NFT with id 69 inside that collection, as a non-fungible `Asset`.
+	// Hint: for NFTs the fungibility carries an instance identifier.
 	pub Nft: Asset = todo!();
 }
 
 // Asset Filters
 parameter_types! {
-	// A filter which will capture all possible assets.
+	// TODO: A filter that matches every possible asset.
+	// Hint: `AssetFilter` has a wildcard variant.
 	pub AllAssetsFilter: AssetFilter = todo!();
-	// A filter specific for the DOT Token.
+
+	// TODO: A filter that matches only the DOT asset.
+	// Hint: a specific `Asset` can become a single-item filter — try `.into()` on the
+	//       asset you already constructed above.
 	pub DotFilter: AssetFilter = todo!();
-	// A filter specific for USDT.
+
+	// TODO: A filter that matches only USDT (same pattern as `DotFilter`).
 	pub UsdtFilter: AssetFilter = todo!();
 }

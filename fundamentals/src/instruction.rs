@@ -3,63 +3,48 @@
 //! Instructions are the fundamental building block of XCM programs.
 //! Let's look at the most basic ones.
 
+#![allow(unused_imports, unused_variables)]
+
 use xcm::latest::prelude::*;
 
 use crate::constants::ALICE;
 
-/// A message containing only a simple `ClearOrigin` instruction.
-/// This instruction clears the origin of the sender, meaning after this point,
-/// no special privileges are granted.
+/// ✅ Worked example — a message containing only a single `ClearOrigin` instruction.
+/// `ClearOrigin` strips the sender's privileges for the rest of the program.
+/// An `Xcm<Call>` wraps a `Vec<Instruction<Call>>`.
 pub fn clear_origin_message() -> Xcm<()> {
-	let message = Xcm(vec![ClearOrigin]);
-
-	message
+	Xcm(vec![ClearOrigin])
 }
 
-/// Put all your knowledge of assets to the test.
-/// Use the `WithdrawAsset` instruction to withdraw 100 planks
-/// of the relay native token, i.e. DOT.
-/// The XCM program is executed on a parachain.
-/// This program won't do anything with the funds.
+/// Put your asset knowledge to the test.
+/// Return an XCM that withdraws 100 planks of the relay's native token (DOT).
+/// The program is assumed to execute on a parachain; it doesn't need to do anything
+/// with the funds yet.
+///
+/// Hint: there's an instruction for taking assets from the sender and putting them
+/// into the holding register.
 pub fn withdraw_asset() -> Xcm<()> {
-	let assets: Assets = (Parent, 100u128).into();
-	let message = Xcm(vec![WithdrawAsset(assets)]);
-
-	message
+	todo!()
 }
 
-/// Let's do something with the funds.
-/// This time, incorporate the `DepositAsset` instruction right after
-/// withdrawing the assets.
-/// Use the same assets.
-/// Deposit all the assets to `ALICE`.
-/// Remember how to use wildcards.
+/// Let's do something with the withdrawn funds.
+/// Return an XCM that withdraws the same 100 planks, then deposits everything currently
+/// in the holding register to `ALICE`.
+///
+/// Hints:
+///   - A wildcard can refer to "all the assets we just withdrew" without restating them.
+///   - `ALICE` is a 32-byte array; the beneficiary needs to be a `Location`.
 pub fn withdraw_and_deposit() -> Xcm<()> {
-	let assets: Assets = (Parent, 100u128).into();
-	let message = Xcm(vec![
-		WithdrawAsset(assets),
-		DepositAsset {
-			assets: All.into(),
-			beneficiary: AccountId32 { id: ALICE.into(), network: None }.into(),
-		},
-	]);
-
-	message
+	todo!()
 }
 
-/// Normally, we charge fees for execution on the Blockchain.
-/// XCM programs specify paying this fee with the `BuyExecution` instruction.
-/// We're missing paying execution fees in the previous example.
-/// Use up to 10% of the assets to pay for execution.
-/// You're going to have to first convert `ALICE` into bytes.
-/// Bonus points: Use the builder pattern.
+/// Real XCMs have to pay for their execution. Return an XCM that withdraws 100 planks,
+/// pays up to 10% of that for execution, and deposits the rest to `ALICE`.
+///
+/// Try writing this one with the builder API: `Xcm::builder().withdraw_asset(...).<...>.build()`.
+///
+/// Hint: three instructions — withdraw, pay for execution, deposit. There is a dedicated
+/// builder method for each one.
 pub fn withdraw_and_deposit_paying_fees() -> Xcm<()> {
-	let alice_bytes: [u8; 32] = ALICE.into();
-	let message = Xcm::builder()
-		.withdraw_asset((Parent, 100u128))
-		.buy_execution((Parent, 10u128), Unlimited)
-		.deposit_asset(All, alice_bytes)
-		.build();
-
-	message
+	todo!()
 }
