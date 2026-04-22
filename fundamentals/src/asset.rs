@@ -38,8 +38,10 @@ use xcm::latest::prelude::*;
 // │ Id 1337   │ │  Id 1984  │  │    Id 3    │ │    Id 66   │
 // └───────────┘ └───────────┘  └────────────┘ └────────────┘
 
-const DOT_DECIMALS: u128 = 10_000_000_000;
-const USDT_DECIMALS: u128 = 1_000_000;
+// Number of decimal places for each token (DOT has 10, USDT has 6).
+// One whole unit is `10u128.pow(DECIMALS)` planks.
+const DOT_DECIMALS: u32 = 10;
+const USDT_DECIMALS: u32 = 6;
 
 // Fungible Tokens
 // Construct these assets from the perspective of AssetHub (parachain 1000).
@@ -58,7 +60,8 @@ parameter_types! {
 	pub DotToken: AssetId = todo!();
 
 	// TODO: 100 USDT as a single fungible `Asset`.
-	// Hint: an `Asset` is "what" + "how much". `USDT_DECIMALS` is declared above.
+	// Hint: an `Asset` is "what" + "how much". Use `USDT_DECIMALS` (declared above) to
+	//       convert 100 USDT into planks.
 	pub OneHundredUsdt: Asset = todo!();
 
 	// TODO: 100 DOT, following the same pattern as `OneHundredUsdt`.
