@@ -43,5 +43,8 @@ pub type ForeignFungiblesTransactor = FungiblesAdapter<
 	CheckingAccount,
 >;
 
-// TODO: Need to plug in the adapters here.
+// The two adapters above are fully defined. Compose them into a single `AssetTransactor`.
+//
+// TODO: Combine them. XCM config types compose via tuples — the executor will try each
+// in order until one handles the asset.
 pub type AssetTransactor = ();

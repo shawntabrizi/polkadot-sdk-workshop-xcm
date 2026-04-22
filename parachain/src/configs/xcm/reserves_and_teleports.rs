@@ -32,8 +32,16 @@ parameter_types! {
 	pub AssetHubLocation: Location = Location::new(1, [Parachain(ASSET_HUB_ID)]);
 }
 
-// TODO: Configure.
+// Chains this parachain trusts to hold assets in reserve on its behalf — i.e. when they
+// say "this asset is backed 1:1 by us", we believe them.
+//
+// TODO: Configure. AssetHub is the system's reserve for the relay chain's native token.
+// One of the helper structs above matches the "relay asset arriving from X" shape.
 pub type TrustedReserves = ();
 
-// TODO: Configure.
+// Chains this parachain trusts to teleport (destroy + recreate) its own native asset.
+// Teleport trust is stronger than reserve trust — both sides must agree on the asset's
+// canonical total issuance.
+//
+// TODO: Configure. We only teleport our native asset with AssetHub.
 pub type TrustedTeleporters = ();
